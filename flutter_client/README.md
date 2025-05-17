@@ -1,3 +1,1 @@
-# flutter_client
-
-A new Flutter project.
+# Trasholini Flutter Client
