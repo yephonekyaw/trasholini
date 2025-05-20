@@ -1,1 +1,1 @@
-# Trasholini Flutter Client
+# Cross-platform client for Transholini application written in Flutter.

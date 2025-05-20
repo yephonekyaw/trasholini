@@ -1,0 +1,1 @@
+# The folder for utility functions that will be shared across the whole flutter project.
