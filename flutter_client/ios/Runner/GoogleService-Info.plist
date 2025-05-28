@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>609475407163-35kh21ig5i2iis435tursddf7no0jbav.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.609475407163-35kh21ig5i2iis435tursddf7no0jbav</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCB5viG8hY2gGcDuAjdH3kZD1PyMyU0VEQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>609475407163</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>io.trasholini.vibegods.flutterClient</string>
+	<key>PROJECT_ID</key>
+	<string>gen-lang-client-0495386713</string>
+	<key>STORAGE_BUCKET</key>
+	<string>gen-lang-client-0495386713.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:609475407163:ios:87fba1429c415c899b1b1e</string>
+</dict>
+</plist>

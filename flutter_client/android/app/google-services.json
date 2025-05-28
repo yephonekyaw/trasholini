@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "609475407163",
+    "project_id": "gen-lang-client-0495386713",
+    "storage_bucket": "gen-lang-client-0495386713.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609475407163:android:54a0abb245379acf9b1b1e",
+        "android_client_info": {
+          "package_name": "io.trasholini.vibegods.flutter_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjJgmLPa3EUeEhpzqzHutWQiGMu0TsGWo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
