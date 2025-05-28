@@ -24,7 +24,7 @@ class TrasholiniApp extends ConsumerWidget {
         textTheme: GoogleFonts.poppinsTextTheme(),
         useMaterial3: true,
         splashFactory: NoSplash.splashFactory,
-        dialogTheme: DialogTheme(backgroundColor: Colors.white),
+        dialogTheme: DialogThemeData(backgroundColor: Colors.white),
         scaffoldBackgroundColor: Colors.white,
       ),
       debugShowCheckedModeBanner: false,
