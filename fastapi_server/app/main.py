@@ -14,7 +14,7 @@ from typing import Callable, Awaitable
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(_: FastAPI):
     """Startup and shutdown events."""
     logger.info("Application starting up...")
     yield

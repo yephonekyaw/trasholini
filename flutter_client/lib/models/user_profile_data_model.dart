@@ -4,6 +4,7 @@ class UserProfile {
   final String? displayName;
   final String? photoUrl;
   final DateTime createdAt;
+  final DateTime updatedAt;
   final int totalScans;
   final int ecoPoints;
 
@@ -13,6 +14,7 @@ class UserProfile {
     this.displayName,
     this.photoUrl,
     required this.createdAt,
+    required this.updatedAt,
     required this.totalScans,
     required this.ecoPoints,
   });
@@ -24,6 +26,7 @@ class UserProfile {
       displayName: json['display_name'],
       photoUrl: json['photo_url'],
       createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at'] ?? json['created_at']),
       totalScans: json['total_scans'] ?? 0,
       ecoPoints: json['eco_points'] ?? 0,
     );
@@ -36,6 +39,7 @@ class UserProfile {
       'display_name': displayName,
       'photo_url': photoUrl,
       'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
       'total_scans': totalScans,
       'eco_points': ecoPoints,
     };

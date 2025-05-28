@@ -15,6 +15,7 @@ class Settings(BaseSettings):
     ALLOWED_HOSTS: Union[str, List[str]] = ""
 
     LOG_LEVEL: str = "info"
+    GOOGLE_APPLICATION_CREDENTIALS: str = "path/to/your/google-credentials.json"
 
     @field_validator("ALLOWED_HOSTS", mode="before")
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:
