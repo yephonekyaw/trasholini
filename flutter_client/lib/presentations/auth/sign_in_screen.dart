@@ -17,7 +17,7 @@ class SignInScreen extends ConsumerWidget {
         children: [
           // Static background icons in fixed grid positions
           ...List.generate(
-            15,
+            10,
             (index) => StaticWasteIcon(
               key: Key('waste_icon_$index'),
               screenSize: screenSize,
@@ -247,7 +247,7 @@ class SignInScreen extends ConsumerWidget {
                 'Continue with Google',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 18,
+                  fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -304,7 +304,7 @@ class SignInScreen extends ConsumerWidget {
   Widget _buildTermsText() {
     return Text(
       'By continuing, you agree to our Terms & Privacy Policy',
-      style: TextStyle(fontSize: 13, color: Colors.grey[500]),
+      style: TextStyle(fontSize: 12, color: Colors.grey[500]),
       textAlign: TextAlign.center,
     );
   }

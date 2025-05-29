@@ -131,8 +131,8 @@ class StaticWasteIcon extends StatelessWidget {
     // Left side positions (3 icons) - avoiding center content
     positions.addAll([
       Offset(screenSize.width * 0.05, centerY - 150),
-      Offset(screenSize.width * 0.08, centerY),
-      Offset(screenSize.width * 0.12, centerY + 120),
+      Offset(screenSize.width * 0.4, centerY - 150),
+      Offset(screenSize.width * 0.6, centerY - 160),
     ]);
 
     // Right side positions (3 icons) - avoiding center content
