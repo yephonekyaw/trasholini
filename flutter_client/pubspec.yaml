@@ -7,6 +7,7 @@ environment:
   sdk: ^3.7.2
 
 dependencies:
+  flutter_svg: ^2.0.10
   dio: ^5.8.0+1
   flutter:
     sdk: flutter
@@ -24,4 +25,23 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/profiles/
+
+    - assets/trashbins/bluetrashbin.svg
+    - assets/trashbins/redtrashbin.svg
+    - assets/trashbins/greentrashbin.svg
+    - assets/trashbins/yellowtrashbin.svg
+    - assets/trash_catagories/paper.jpg
+    - assets/trash_catagories/plastic.jpg
+    - assets/trash_catagories/organic.jpg
+    - assets/trash_catagories/metal.jpg
+    - assets/trash_catagories/glass.jpg
+    - assets/trash_catagories/inorganic.jpg
+    - assets/trash_catagories/construction.jpg
+    - assets/trash_catagories/taxtile-waste.jpg
+    - assets/trash_catagories/e-waste.jpg
+    - assets/trash_catagories/property.jpg
+    - assets/Profile/elle fanning.jpg
+
+
+    
+    
