@@ -192,7 +192,7 @@ class CategoriesScreen extends ConsumerWidget {
               borderRadius: BorderRadius.circular(35),
               onTap: () => _onBottomNavTap(context, 1),
               child: const Icon(
-                Icons.camera_alt_rounded,
+                Icons.qr_code_scanner,
                 color: Colors.white,
                 size: 30,
               ),
