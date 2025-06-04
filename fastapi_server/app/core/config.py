@@ -4,18 +4,19 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    APP_NAME: str = "Trasholini FastAPI Server"
-    APP_VERSION: str = "1.0.0"
-    APP_API_PREFIX: str = "/api/v1"
-
-    SECRET_KEY: str = "your-secret-key"
-    ALGORITHM: str = "HS256"
-
-    """Pydantic v2 (which you're using via pydantic-settings) doesn't support parsing List[str] from a plain comma-separated string by default anymore."""
+    APP_NAME: str = ""
+    APP_VERSION: str = ""
+    APP_API_PREFIX: str = ""
+    APP_WEB_SOCKET_PREFIX: str = ""
+    SECRET_KEY: str = ""
+    ALGORITHM: str = ""
+    """Pydantic v2 doesn't support parsing List[str] from a plain comma-separated string by default anymore."""
     ALLOWED_HOSTS: Union[str, List[str]] = ""
-
-    LOG_LEVEL: str = "info"
-    GOOGLE_APPLICATION_CREDENTIALS: str = "path/to/your/google-credentials.json"
+    LOG_LEVEL: str = ""
+    GOOGLE_APPLICATION_CREDENTIALS: str = ""
+    ROBOFLOW_MODEL_URL: str = ""
+    ROBOFLOW_API_KEY: str = ""
+    ROBOFLOW_MODEL_ID: str = ""
 
     @field_validator("ALLOWED_HOSTS", mode="before")
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

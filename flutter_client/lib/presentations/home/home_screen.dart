@@ -1,342 +1,461 @@
+// Updated home screen using the WebSocket service
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_client/providers/user_profile_provider.dart';
+import 'package:flutter_client/utils/websocket.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_client/models/user_profile_data_model.dart';
 import 'package:flutter_client/providers/google_auth_provider.dart';
+import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
 
-class HomeScreen extends ConsumerWidget {
+// Import the WebSocket service
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final userProfileAsyncValue = ref.watch(userProfileProvider);
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Eco Waste Tracker'),
-        backgroundColor: Colors.green,
-        foregroundColor: Colors.white,
-        actions: [
-          // Logout button in app bar
-          IconButton(
-            onPressed: () => _showLogoutDialog(context, ref),
-            icon: const Icon(Icons.logout),
-            tooltip: 'Logout',
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  CameraController? _cameraController;
+  List<CameraDescription>? _cameras;
+  List<WasteDetectionResult> _currentDetections = [];
+  Timer? _detectionTimer;
+  bool _isDetecting = false;
+  bool _isCameraActive = false;
+  bool _pauseDetection = false;
+  bool _isConnected = false;
+
+  // Get the WebSocket service instance
+  WasteDetectionWebSocketService get _wasteService =>
+      WasteDetectionWebSocketService.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeWebSocketService();
+  }
+
+  Future<void> _initializeWebSocketService() async {
+    // Connect to WebSocket service
+    await _wasteService.connect();
+
+    // Listen to detection results
+    _wasteService.detectionStream.listen((detections) {
+      setState(() {
+        _currentDetections = detections;
+        _isDetecting = false;
+
+        if (detections.isNotEmpty) {
+          // Pause detection for 15 seconds when we find something
+          _pauseDetection = true;
+          HapticFeedback.lightImpact();
+
+          // Resume detection after 15 seconds
+          Timer(Duration(seconds: 15), () {
+            if (mounted) {
+              setState(() {
+                _pauseDetection = false;
+              });
+            }
+          });
+        }
+      });
+    });
+
+    // Listen to connection status
+    _wasteService.connectionStream.listen((isConnected) {
+      setState(() {
+        _isConnected = isConnected;
+      });
+    });
+
+    // Set initial connection status
+    setState(() {
+      _isConnected = _wasteService.isConnected;
+    });
+  }
+
+  Future<void> _startCamera() async {
+    try {
+      await Permission.camera.request();
+
+      _cameras = await availableCameras();
+      if (_cameras != null && _cameras!.isNotEmpty) {
+        _cameraController = CameraController(
+          _cameras![0],
+          ResolutionPreset.medium,
+          enableAudio: false,
+        );
+        await _cameraController!.initialize();
+
+        setState(() {
+          _isCameraActive = true;
+        });
+
+        _startPeriodicDetection();
+      }
+    } catch (e) {
+      debugPrint('Error starting camera: $e');
+    }
+  }
+
+  void _startPeriodicDetection() {
+    _detectionTimer = Timer.periodic(Duration(milliseconds: 1000), (timer) {
+      if (!_isDetecting && !_pauseDetection && _cameraController != null) {
+        _captureAndDetect();
+      }
+    });
+  }
+
+  Future<void> _captureAndDetect() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return;
+    }
+
+    setState(() {
+      _isDetecting = true;
+    });
+
+    try {
+      final XFile imageFile = await _cameraController!.takePicture();
+      final Uint8List imageBytes = await imageFile.readAsBytes();
+
+      // Use the WebSocket service to detect waste
+      await _wasteService.detectWaste(imageBytes);
+    } catch (e) {
+      debugPrint('Error capturing image: $e');
+      setState(() {
+        _isDetecting = false;
+      });
+    }
+  }
+
+  void _stopCamera() {
+    _detectionTimer?.cancel();
+    _cameraController?.dispose();
+    setState(() {
+      _isCameraActive = false;
+      _currentDetections.clear();
+      _pauseDetection = false;
+    });
+  }
+
+  String _formatClassName(String className) {
+    switch (className.toLowerCase()) {
+      case 'biodegradable':
+        return 'Biodegradable';
+      case 'cardboard':
+        return 'Cardboard';
+      case 'glass':
+        return 'Glass';
+      case 'metal':
+        return 'Metal';
+      case 'paper':
+        return 'Paper';
+      case 'plastic':
+        return 'Plastic';
+      default:
+        return className;
+    }
+  }
+
+  Color _getColorForClass(String className) {
+    switch (className.toLowerCase()) {
+      case 'biodegradable':
+        return Colors.green;
+      case 'cardboard':
+        return Colors.brown;
+      case 'glass':
+        return Colors.cyan;
+      case 'metal':
+        return Colors.red;
+      case 'paper':
+        return Colors.orange;
+      case 'plastic':
+        return Colors.blue;
+      default:
+        return Colors.purple;
+    }
+  }
+
+  Widget _buildDetectionPanel() {
+    if (!_isCameraActive) return Container();
+
+    return Container(
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .2),
+            blurRadius: 10,
+            offset: Offset(0, 5),
           ),
         ],
       ),
-      body: userProfileAsyncValue.when(
-        data: (userProfile) {
-          if (userProfile == null) {
-            // User is not authenticated
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+      child:
+          _isDetecting
+              ? Row(
                 children: [
-                  Icon(Icons.account_circle, size: 80, color: Colors.grey),
-                  SizedBox(height: 16),
+                  SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                    ),
+                  ),
+                  SizedBox(width: 12),
+                  Text('Scanning...', style: TextStyle(fontSize: 16)),
+                ],
+              )
+              : _currentDetections.isEmpty
+              ? Row(
+                children: [
+                  Icon(Icons.search, color: Colors.grey[400], size: 24),
+                  SizedBox(width: 12),
                   Text(
-                    'Please sign in to continue',
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    'Point camera at waste item',
+                    style: TextStyle(fontSize: 16),
                   ),
                 ],
-              ),
-            );
-          }
-
-          // User is authenticated, show home content
-          return _buildHomeContent(context, ref, userProfile);
-        },
-        loading:
-            () => const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(color: Colors.green),
-                  SizedBox(height: 16),
-                  Text(
-                    'Loading your profile...',
-                    style: TextStyle(fontSize: 16, color: Colors.grey),
-                  ),
-                ],
-              ),
-            ),
-        error:
-            (error, stackTrace) => Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 80, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Error loading profile',
-                    style: TextStyle(fontSize: 18, color: Colors.red[700]),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    error.toString(),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 14, color: Colors.grey),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Retry loading the profile
-                      ref.invalidate(userProfileProvider);
-                    },
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            ),
-      ),
+              )
+              : _buildDetectionResults(),
     );
   }
 
-  Widget _buildHomeContent(
-    BuildContext context,
-    WidgetRef ref,
-    UserProfile userProfile,
-  ) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Welcome section
-          Card(
-            elevation: 4,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage:
-                        userProfile.photoUrl != null
-                            ? NetworkImage(userProfile.photoUrl!)
-                            : null,
-                    child:
-                        userProfile.photoUrl == null
-                            ? const Icon(Icons.person, size: 30)
-                            : null,
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Welcome back,',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          userProfile.displayName ?? "Anonymous",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Points section
-          Card(
-            elevation: 4,
-            color: Colors.green[50],
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Icon(Icons.eco, color: Colors.white, size: 24),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Eco Points',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          '${userProfile.ecoPoints}',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 24),
-
-          // Main features section
-          const Text(
-            'What would you like to do?',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-
-          const SizedBox(height: 16),
-
-          // Feature buttons
-          GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            children: [
-              _buildFeatureCard(
-                icon: Icons.camera_alt,
-                title: 'Scan Trash',
-                subtitle: 'Identify waste items',
-                color: Colors.blue,
-                onTap: () {
-                  // Navigate to scanner
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Opening AI Scanner...')),
-                  );
-                },
-              ),
-              _buildFeatureCard(
-                icon: Icons.history,
-                title: 'Scan History',
-                subtitle: 'View your progress',
-                color: Colors.purple,
-                onTap: () {
-                  // Navigate to history
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Opening scan history...')),
-                  );
-                },
-              ),
-              _buildFeatureCard(
-                icon: Icons.recycling,
-                title: 'Disposal Guide',
-                subtitle: 'Learn how to dispose',
-                color: Colors.orange,
-                onTap: () {
-                  // Navigate to guide
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Opening disposal guide...')),
-                  );
-                },
-              ),
-              _buildFeatureCard(
-                icon: Icons.leaderboard,
-                title: 'Leaderboard',
-                subtitle: 'Compare with others',
-                color: Colors.red,
-                onTap: () {
-                  // Navigate to leaderboard
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Opening leaderboard...')),
-                  );
-                },
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 24),
-
-          // Logout button
-          Center(
-            child: ElevatedButton.icon(
-              onPressed: () => _showLogoutDialog(context, ref),
-              icon: const Icon(Icons.logout),
-              label: const Text('Logout'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+  Widget _buildDetectionResults() {
+    final bestDetection = _currentDetections.reduce(
+      (a, b) => a.confidence > b.confidence ? a : b,
     );
-  }
 
-  Widget _buildFeatureCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Card(
-      elevation: 4,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+    return Row(
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: _getColorForClass(bestDetection.className),
+            shape: BoxShape.circle,
+          ),
+        ),
+        SizedBox(width: 12),
+        Expanded(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: color, size: 32),
-              ),
-              const SizedBox(height: 12),
               Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
+                _formatClassName(bestDetection.className),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 4),
               Text(
-                subtitle,
-                style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                textAlign: TextAlign.center,
+                '${(bestDetection.confidence * 100).toStringAsFixed(1)}% confidence',
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               ),
             ],
           ),
         ),
-      ),
+        Icon(Icons.check_circle, color: Colors.green, size: 24),
+      ],
     );
   }
 
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: _isCameraActive ? Colors.black : null,
+      appBar:
+          _isCameraActive
+              ? null
+              : AppBar(
+                title: const Text('Waste Scanner Test'),
+                backgroundColor: Colors.green,
+                foregroundColor: Colors.white,
+                actions: [
+                  IconButton(
+                    onPressed: () => _showLogoutDialog(context),
+                    icon: const Icon(Icons.logout),
+                  ),
+                ],
+              ),
+      body: _isCameraActive ? _buildCameraView() : _buildTestInterface(),
+    );
+  }
+
+  Widget _buildCameraView() {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text(
+              'Initializing camera...',
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Stack(
+      children: [
+        // Camera preview
+        SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: CameraPreview(_cameraController!),
+        ),
+
+        // Top status
+        SafeArea(
+          child: Container(
+            margin: EdgeInsets.all(16),
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: .7),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  _isConnected ? Icons.wifi : Icons.wifi_off,
+                  color: _isConnected ? Colors.green : Colors.red,
+                  size: 16,
+                ),
+                SizedBox(width: 8),
+                Text(
+                  _isConnected ? 'Connected' : 'Disconnected',
+                  style: TextStyle(color: Colors.white, fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+        ),
+
+        // Detection panel
+        Positioned(
+          bottom: 100,
+          left: 0,
+          right: 0,
+          child: _buildDetectionPanel(),
+        ),
+
+        // Close button
+        Positioned(
+          bottom: 30,
+          left: 20,
+          right: 20,
+          child: Center(
+            child: FloatingActionButton(
+              onPressed: _stopCamera,
+              backgroundColor: Colors.red,
+              child: Icon(Icons.close),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTestInterface() {
+    final userProfileAsyncValue = ref.watch(userProfileProvider);
+    return userProfileAsyncValue.when(
+      data: (userProfile) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Connection status
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                      Icon(
+                        _isConnected ? Icons.wifi : Icons.wifi_off,
+                        color: _isConnected ? Colors.green : Colors.red,
+                      ),
+                      SizedBox(width: 12),
+                      Text(
+                        _isConnected
+                            ? 'Connected to AI Server'
+                            : 'Disconnected',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 32),
+
+              // Main test button
+              SizedBox(
+                width: double.infinity,
+                height: 200,
+                child: ElevatedButton(
+                  onPressed: _startCamera,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt, size: 48),
+                      SizedBox(height: 16),
+                      Text(
+                        'Test Waste Scanner',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Tap to start detection',
+                        style: TextStyle(fontSize: 14),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 24),
+
+              // User info
+              if (userProfile != null) ...[
+                Text('Logged in as: ${userProfile.displayName ?? "Anonymous"}'),
+                Text(
+                  'Eco Points: ${userProfile.ecoPoints}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        );
+      },
+      loading: () => Center(child: CircularProgressIndicator()),
+      error: (error, stackTrace) => Center(child: Text('Error: $error')),
+    );
+  }
+
+  void _showLogoutDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -345,9 +464,7 @@ class HomeScreen extends ConsumerWidget {
           content: const Text('Are you sure you want to logout?'),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -355,18 +472,21 @@ class HomeScreen extends ConsumerWidget {
                 Navigator.of(context).pop();
                 ref.read(googleAuthProvider.notifier).signOut();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
               child: const Text('Logout'),
             ),
           ],
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    _detectionTimer?.cancel();
+    _cameraController?.dispose();
+    // Note: Don't dispose the WebSocket service here as it's a singleton
+    // that should persist across the app
+    super.dispose();
   }
 }
