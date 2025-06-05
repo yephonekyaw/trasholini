@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../../models/category/category_item_model.dart';
 
-
 class CategoryService {
-  
   /// 🔧 MAIN METHOD: Currently using mock data
-  static Future<List<CategoryItemModel>> getCategoryItems(String categoryId) async {
+  static Future<List<CategoryItemModel>> getCategoryItems(
+    String categoryId,
+  ) async {
     try {
       print('🔄 Fetching items for category: $categoryId');
-      
+
       // 🔧 COMMENTED OUT: Backend integration (uncomment when backend is ready)
       /*
       final response = await http.get(
@@ -39,15 +39,16 @@ class CategoryService {
         throw Exception('Failed to load items: HTTP ${response.statusCode}');
       }
       */
-      
+
       // 🎯 TEMPORARY: Using mock data (remove when backend is ready)
       print('⚠️ Using mock data for development');
-      await Future.delayed(const Duration(milliseconds: 500)); // Simulate network delay
-      
+      await Future.delayed(
+        const Duration(milliseconds: 500),
+      ); // Simulate network delay
+
       final mockItems = _getMockData(categoryId);
       print('✅ Loaded ${mockItems.length} mock items for category $categoryId');
       return mockItems;
-      
     } on SocketException {
       print('❌ Network error: No internet connection');
       throw Exception('No internet connection');
@@ -148,7 +149,7 @@ class CategoryService {
   /// 🔧 MOCK DATA: Complete dataset with multi-category items
   static List<CategoryItemModel> _getMockData(String categoryId) {
     print('📋 Using mock data for category: $categoryId');
-    
+
     // Complete mock dataset with multi-category items
     final allMockItems = [
       // PLASTIC ITEMS (Category: 1)
@@ -208,7 +209,8 @@ class CategoryService {
         imageUrl: 'https://your-backend.com/images/items/pizza_box.jpg',
         category: ['2', '8'], // Paper AND Organic (grease)
         isRecyclable: false,
-        disposalTip: 'Remove food waste first, check if box is clean enough to recycle',
+        disposalTip:
+            'Remove food waste first, check if box is clean enough to recycle',
       ),
       CategoryItemModel(
         id: '7',
@@ -257,7 +259,8 @@ class CategoryService {
         imageUrl: 'https://your-backend.com/images/items/laptop.jpg',
         category: ['1', '5', '10'], // Plastic, E-waste, AND Metal
         isRecyclable: true,
-        disposalTip: 'Remove battery, take to e-waste center for proper recycling',
+        disposalTip:
+            'Remove battery, take to e-waste center for proper recycling',
       ),
 
       // TEXTILE WASTE ITEMS (Category: 6)
@@ -355,10 +358,11 @@ class CategoryService {
     ];
 
     // Filter items that belong to the requested category
-    final categoryItems = allMockItems.where((item) => 
-      item.belongsToCategory(categoryId)
-    ).toList();
-    
+    final categoryItems =
+        allMockItems
+            .where((item) => item.belongsToCategory(categoryId))
+            .toList();
+
     print('📊 Found ${categoryItems.length} items for category $categoryId');
     return categoryItems;
   }
