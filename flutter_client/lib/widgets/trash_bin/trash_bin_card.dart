@@ -20,7 +20,9 @@ class TrashBinCard extends StatelessWidget {
       case 'yellow':
         return const Color(0xFFF57C00); // Darker orange-yellow
       case 'grey':
-        return const Color(0xFF757575); // Slightly lighter grey for better distinction
+        return const Color(
+          0xFF757575,
+        ); // Slightly lighter grey for better distinction
       case 'green':
         return const Color(0xFF388E3C); // Darker, more vibrant green
       default:
@@ -32,9 +34,13 @@ class TrashBinCard extends StatelessWidget {
   Color get detailsBoxColor {
     switch (bin.id) {
       case 'yellow':
-        return const Color(0xFFF57C00); // Always use enhanced yellow for details
+        return const Color(
+          0xFFF57C00,
+        ); // Always use enhanced yellow for details
       case 'grey':
-        return const Color(0xFF757575); // Slightly lighter grey for better distinction from blue
+        return const Color(
+          0xFF757575,
+        ); // Slightly lighter grey for better distinction from blue
       case 'green':
         return const Color(0xFF388E3C); // Darker, more vibrant green
       default:
@@ -59,7 +65,7 @@ class TrashBinCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayColor = enhancedBinColor;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -67,16 +73,18 @@ class TrashBinCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: bin.isSelected 
-              ? displayColor.withOpacity(0.4)
-              : Colors.grey.shade300, // More visible unselected border
+            color:
+                bin.isSelected
+                    ? displayColor.withValues(alpha: 0.4)
+                    : Colors.grey.shade300, // More visible unselected border
             width: bin.isSelected ? 2.5 : 1.5, // Thicker borders
           ),
           boxShadow: [
             BoxShadow(
-              color: bin.isSelected 
-                ? displayColor.withOpacity(0.2)
-                : Colors.black.withOpacity(0.08),
+              color:
+                  bin.isSelected
+                      ? displayColor.withValues(alpha: 0.2)
+                      : Colors.black.withValues(alpha: 0.08),
               blurRadius: bin.isSelected ? 10 : 6,
               offset: const Offset(0, 3),
               spreadRadius: bin.isSelected ? 2 : 0,
@@ -96,49 +104,56 @@ class TrashBinCard extends StatelessWidget {
                     height: 16,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: bin.isSelected
-                          ? displayColor
-                          : Colors.transparent,
+                      color: bin.isSelected ? displayColor : Colors.transparent,
                       border: Border.all(
-                        color: bin.isSelected
-                            ? displayColor
-                            : Colors.grey.shade400,
+                        color:
+                            bin.isSelected
+                                ? displayColor
+                                : Colors.grey.shade400,
                         width: 1.5,
                       ),
-                      boxShadow: bin.isSelected ? [
-                        BoxShadow(
-                          color: displayColor.withOpacity(0.4),
-                          blurRadius: 4,
-                          offset: const Offset(0, 1),
-                        ),
-                      ] : [],
+                      boxShadow:
+                          bin.isSelected
+                              ? [
+                                BoxShadow(
+                                  color: displayColor.withValues(alpha: 0.4),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ]
+                              : [],
                     ),
-                    child: bin.isSelected
-                        ? const Icon(
-                            Icons.check,
-                            size: 10,
-                            color: Colors.white,
-                          )
-                        : null,
+                    child:
+                        bin.isSelected
+                            ? const Icon(
+                              Icons.check,
+                              size: 10,
+                              color: Colors.white,
+                            )
+                            : null,
                   ),
                 ],
               ),
             ),
-            
+
             // Bin image
             Expanded(
               flex: 3,
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
-                  color: bin.isSelected 
-                    ? displayColor.withOpacity(0.15)
-                    : detailsBoxColor.withOpacity(backgroundOpacity),
+                  color:
+                      bin.isSelected
+                          ? displayColor.withValues(alpha: 0.15)
+                          : detailsBoxColor.withValues(
+                            alpha: backgroundOpacity,
+                          ),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: bin.isSelected 
-                      ? displayColor.withOpacity(0.3)
-                      : detailsBoxColor.withOpacity(0.25),
+                    color:
+                        bin.isSelected
+                            ? displayColor.withValues(alpha: 0.3)
+                            : detailsBoxColor.withValues(alpha: 0.25),
                     width: 1,
                   ),
                 ),
@@ -155,11 +170,15 @@ class TrashBinCard extends StatelessWidget {
                           width: 45,
                           height: 55,
                           decoration: BoxDecoration(
-                            color: bin.isSelected ? displayColor : detailsBoxColor,
+                            color:
+                                bin.isSelected ? displayColor : detailsBoxColor,
                             borderRadius: BorderRadius.circular(8),
                             boxShadow: [
                               BoxShadow(
-                                color: (bin.isSelected ? displayColor : detailsBoxColor).withOpacity(0.3),
+                                color: (bin.isSelected
+                                        ? displayColor
+                                        : detailsBoxColor)
+                                    .withValues(alpha: 0.3),
                                 blurRadius: 3,
                                 offset: const Offset(0, 1),
                               ),
@@ -177,7 +196,7 @@ class TrashBinCard extends StatelessWidget {
                 ),
               ),
             ),
-            
+
             // Bin info with enhanced styling
             Expanded(
               flex: 2,
@@ -198,7 +217,7 @@ class TrashBinCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 2),
-                    
+
                     // Description - Increased font size for readability
                     Expanded(
                       child: Center(
@@ -215,34 +234,44 @@ class TrashBinCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    
+
                     // Enhanced Arrow button with navigation - More compact
                     GestureDetector(
                       onTap: onArrowTap,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: bin.isSelected ? [
-                              displayColor.withOpacity(0.15),
-                              displayColor.withOpacity(0.25),
-                            ] : [
-                              detailsBoxColor.withOpacity(0.12),
-                              detailsBoxColor.withOpacity(0.22),
-                            ],
+                            colors:
+                                bin.isSelected
+                                    ? [
+                                      displayColor.withValues(alpha: 0.15),
+                                      displayColor.withValues(alpha: 0.25),
+                                    ]
+                                    : [
+                                      detailsBoxColor.withValues(alpha: 0.12),
+                                      detailsBoxColor.withValues(alpha: 0.22),
+                                    ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: bin.isSelected 
-                              ? displayColor.withOpacity(0.4)
-                              : detailsBoxColor.withOpacity(0.25),
+                            color:
+                                bin.isSelected
+                                    ? displayColor.withValues(alpha: 0.4)
+                                    : detailsBoxColor.withValues(alpha: 0.25),
                             width: 1,
                           ),
                           boxShadow: [
                             BoxShadow(
-                              color: (bin.isSelected ? displayColor : detailsBoxColor).withOpacity(0.15),
+                              color: (bin.isSelected
+                                      ? displayColor
+                                      : detailsBoxColor)
+                                  .withValues(alpha: 0.15),
                               blurRadius: 1,
                               offset: const Offset(0, 0.5),
                             ),
@@ -256,18 +285,22 @@ class TrashBinCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 8,
                                 fontWeight: FontWeight.w600,
-                                color: bin.isSelected 
-                                  ? displayColor.withOpacity(0.8)
-                                  : detailsBoxColor.withOpacity(0.9),
+                                color:
+                                    bin.isSelected
+                                        ? displayColor.withValues(alpha: 0.8)
+                                        : detailsBoxColor.withValues(
+                                          alpha: 0.9,
+                                        ),
                               ),
                             ),
                             const SizedBox(width: 2),
                             Icon(
                               Icons.arrow_forward,
                               size: 8,
-                              color: bin.isSelected 
-                                ? displayColor.withOpacity(0.8)
-                                : detailsBoxColor.withOpacity(0.9),
+                              color:
+                                  bin.isSelected
+                                      ? displayColor.withValues(alpha: 0.8)
+                                      : detailsBoxColor.withValues(alpha: 0.9),
                             ),
                           ],
                         ),

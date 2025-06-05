@@ -68,7 +68,7 @@ class CategoriesScreen extends ConsumerWidget {
           Text(
             'Choose a category to explore',
             style: TextStyle(
-              color: const Color(0xFF388E3C).withOpacity(0.8),
+              color: const Color(0xFF388E3C).withValues(alpha: 0.8),
               fontSize: 13,
               fontWeight: FontWeight.w500,
               letterSpacing: 0.3,
@@ -88,7 +88,7 @@ class CategoriesScreen extends ConsumerWidget {
           center: Alignment.topCenter,
           radius: 2.0,
           colors: [
-            const Color(0xFFE8F5E8).withOpacity(0.3),
+            const Color(0xFFE8F5E8).withValues(alpha: 0.3),
             const Color(0xFFF8FCF8),
           ],
         ),

@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 class TrashBinSaveButton extends StatelessWidget {
   final VoidCallback onPressed;
 
-  const TrashBinSaveButton({
-    Key? key,
-    required this.onPressed,
-  }) : super(key: key);
+  const TrashBinSaveButton({Key? key, required this.onPressed})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +22,7 @@ class TrashBinSaveButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(25),
             ),
             elevation: 4,
-            shadowColor: const Color(0xFF4CAF50).withOpacity(0.3),
+            shadowColor: const Color(0xFF4CAF50).withValues(alpha: 0.3),
           ),
           child: const Text(
             'Save',

@@ -8,16 +8,13 @@ class CategoryItemCard extends StatelessWidget {
   final CategoryItemModel item;
   final int index;
 
-  const CategoryItemCard({
-    Key? key,
-    required this.item,
-    this.index = 0,
-  }) : super(key: key);
+  const CategoryItemCard({Key? key, required this.item, this.index = 0})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final delay = index * 100;
-    
+
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 500 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -30,13 +27,13 @@ class CategoryItemCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                   spreadRadius: 0,
                 ),
                 BoxShadow(
-                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                   blurRadius: 15,
                   offset: const Offset(0, 4),
                   spreadRadius: -2,
@@ -57,7 +54,7 @@ class CategoryItemCard extends StatelessWidget {
                     ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFF4CAF50).withOpacity(0.1),
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                       width: 1.5,
                     ),
                   ),
@@ -84,7 +81,7 @@ class CategoryItemCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -104,7 +101,10 @@ class CategoryItemCard extends StatelessWidget {
               Positioned(
                 top: 8,
                 left: 8,
-                child: CategoryBadges(categories: item.category, isCardView: true),
+                child: CategoryBadges(
+                  categories: item.category,
+                  isCardView: true,
+                ),
               ),
             Positioned(
               top: 8,
@@ -112,7 +112,10 @@ class CategoryItemCard extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
+                  color:
+                      item.isRecyclable
+                          ? Colors.green.shade600
+                          : Colors.orange.shade600,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
@@ -167,7 +170,10 @@ class CategoryItemCard extends StatelessWidget {
               Icon(
                 item.isRecyclable ? Icons.eco : Icons.warning_amber_rounded,
                 size: 14,
-                color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
+                color:
+                    item.isRecyclable
+                        ? Colors.green.shade600
+                        : Colors.orange.shade600,
               ),
               const SizedBox(width: 4),
               Expanded(
@@ -175,7 +181,10 @@ class CategoryItemCard extends StatelessWidget {
                   item.isRecyclable ? 'Recyclable' : 'Non-recyclable',
                   style: TextStyle(
                     fontSize: 11,
-                    color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
+                    color:
+                        item.isRecyclable
+                            ? Colors.green.shade600
+                            : Colors.orange.shade600,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -198,9 +207,11 @@ class CategoryItemCard extends StatelessWidget {
           if (loadingProgress == null) return child;
           return Center(
             child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
-                  : null,
+              value:
+                  loadingProgress.expectedTotalBytes != null
+                      ? loadingProgress.cumulativeBytesLoaded /
+                          loadingProgress.expectedTotalBytes!
+                      : null,
               color: const Color(0xFF4CAF50),
               strokeWidth: 2,
             ),
@@ -224,8 +235,8 @@ class CategoryItemCard extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            const Color(0xFF4CAF50).withOpacity(0.2),
-            const Color(0xFF81C784).withOpacity(0.1),
+            const Color(0xFF4CAF50).withValues(alpha: 0.2),
+            const Color(0xFF81C784).withValues(alpha: 0.1),
           ],
         ),
       ),

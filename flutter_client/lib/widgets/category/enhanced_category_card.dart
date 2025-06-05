@@ -17,7 +17,7 @@ class EnhancedCategoryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     // Create a staggered animation delay
     final delay = index * 100;
-    
+
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 600 + delay),
       tween: Tween(begin: 0.0, end: 1.0),
@@ -30,13 +30,13 @@ class EnhancedCategoryCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
+                  color: Colors.black.withValues(alpha: 0.08),
                   blurRadius: 20,
                   offset: const Offset(0, 8),
                   spreadRadius: 0,
                 ),
                 BoxShadow(
-                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                   blurRadius: 15,
                   offset: const Offset(0, 4),
                   spreadRadius: -2,
@@ -53,29 +53,20 @@ class EnhancedCategoryCard extends StatelessWidget {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Colors.white,
-                        Color(0xFFF8FCF8),
-                      ],
+                      colors: [Colors.white, Color(0xFFF8FCF8)],
                     ),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFF4CAF50).withOpacity(0.1),
+                      color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                       width: 1.5,
                     ),
                   ),
                   child: Column(
                     children: [
                       // Image container with enhanced styling
-                      Expanded(
-                        flex: 3,
-                        child: _buildImageContainer(),
-                      ),
+                      Expanded(flex: 3, child: _buildImageContainer()),
                       // Title section with enhanced typography
-                      Expanded(
-                        flex: 1,
-                        child: _buildTitleSection(),
-                      ),
+                      Expanded(flex: 1, child: _buildTitleSection()),
                     ],
                   ),
                 ),
@@ -94,7 +85,7 @@ class EnhancedCategoryCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -120,8 +111,8 @@ class EnhancedCategoryCard extends StatelessWidget {
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          const Color(0xFF4CAF50).withOpacity(0.3),
-                          const Color(0xFF81C784).withOpacity(0.2),
+                          const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                          const Color(0xFF81C784).withValues(alpha: 0.2),
                         ],
                       ),
                     ),
@@ -143,7 +134,7 @@ class EnhancedCategoryCard extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    Colors.black.withOpacity(0.1),
+                    Colors.black.withValues(alpha: 0.1),
                   ],
                 ),
               ),

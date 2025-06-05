@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart'; // For debugPrint
 
 class DioClient {
   static DioClient? _instance;
@@ -6,7 +7,7 @@ class DioClient {
   bool _isInitialized = false;
 
   // Manual IP configuration - change this to your server IP
-  static const String _baseUrl = 'http://10.4.150.200:8000/api/v1';
+  static const String _baseUrl = 'http://192.168.0.102:8000/api/v1';
 
   DioClient._internal();
 
@@ -50,11 +51,24 @@ class DioClient {
     await initialize();
   }
 
-  // Add interceptors - NO LOGGING
+  // Add interceptors
   void _addInterceptors() {
     if (_dio == null) return;
 
-    // Only add your custom interceptor for auth and error handling
+    // Add log interceptor for debugging
+    _dio!.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (obj) => debugPrint(obj.toString()),
+      ),
+    );
+
+    // Add your custom interceptor for auth and error handling
     _dio!.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
@@ -89,7 +103,7 @@ class DioClient {
   // Get WebSocket URL (for your waste detection)
   static String get wsUrl => _baseUrl
       .replaceFirst('http://', 'ws://')
-      .replaceFirst('/api/v1', '/ws/v1');
+      .replaceFirst('/api/v1', '/ws/v1/detect');
 
   Exception _handleError(DioException error) {
     if (error.response != null) {

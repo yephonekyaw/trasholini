@@ -28,7 +28,7 @@ class MainPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Profile Card
-            UserProfileCard(),
+            // UserProfileCard(),
             const SizedBox(height: 20),
 
             // Waste Bin Profile Section

@@ -9,7 +9,10 @@ class WasteBinProfile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12), // Reduced padding significantly
+      padding: const EdgeInsets.symmetric(
+        horizontal: 16,
+        vertical: 12,
+      ), // Reduced padding significantly
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -31,7 +34,7 @@ class WasteBinProfile extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(
@@ -53,16 +56,20 @@ class WasteBinProfile extends StatelessWidget {
             children: [
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start, // Align icons to start
-                  children: bins
-                      .take(6) // Show more bins since we have full width
-                      .map(
-                        (bin) => Padding(
-                          padding: const EdgeInsets.only(right: 12), // Slightly increased spacing between icons
-                          child: BinIcon(bin: bin),
-                        ),
-                      )
-                      .toList(),
+                  mainAxisAlignment:
+                      MainAxisAlignment.start, // Align icons to start
+                  children:
+                      bins
+                          .take(6) // Show more bins since we have full width
+                          .map(
+                            (bin) => Padding(
+                              padding: const EdgeInsets.only(
+                                right: 12,
+                              ), // Slightly increased spacing between icons
+                              child: BinIcon(bin: bin),
+                            ),
+                          )
+                          .toList(),
                 ),
               ),
               // Show overflow indicator if more than 6 bins
@@ -108,13 +115,14 @@ class BinIcon extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: bin.imageUrl.endsWith('.svg')
-            ? SvgPicture.asset(bin.imageUrl, fit: BoxFit.contain)
-            : Image.asset(
-                bin.imageUrl,
-                fit: BoxFit.contain,
-                filterQuality: FilterQuality.high,
-              ),
+        child:
+            bin.imageUrl.endsWith('.svg')
+                ? SvgPicture.asset(bin.imageUrl, fit: BoxFit.contain)
+                : Image.asset(
+                  bin.imageUrl,
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                ),
       ),
     );
   }

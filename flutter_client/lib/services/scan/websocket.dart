@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_client/services/dio_client.dart';
+import 'package:flutter_client/services/apis/dio_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Model for waste detection results

@@ -1,6 +1,8 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_client/models/user_profile_data_model.dart';
-import 'package:flutter_client/services/dio_client.dart';
+import 'package:flutter_client/services/apis/dio_client.dart';
 
 class AuthApiService {
   final DioClient _dioClient = DioClient();
@@ -22,6 +24,7 @@ class AuthApiService {
           'photo_url': photoUrl,
         },
       );
+      log("LEE RESPONSE");
       return UserProfile.fromJson(response.data);
     } on DioException catch (e) {
       throw e.error ??

@@ -11,22 +11,19 @@ class WeeklyImpactSection extends ConsumerWidget {
     final weeklyData = _getWeeklyImpactData();
     final scanCount = weeklyData['scanCount'] as int;
     final points = weeklyData['points'] as String;
-    
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [
-            Color(0xFFE3F7BA),
-            Color(0x524CAF50),
-          ],
+          colors: [Color(0xFFE3F7BA), Color(0x524CAF50)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(15),
         boxShadow: [
           BoxShadow(
-            color: Colors.green.withOpacity(0.1),
+            color: Colors.green.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: Offset(0, 4),
           ),
@@ -40,7 +37,7 @@ class WeeklyImpactSection extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
@@ -74,13 +71,16 @@ class WeeklyImpactSection extends ConsumerWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.green.withOpacity(0.2),
+                      color: Colors.green.withValues(alpha: 0.2),
                       blurRadius: 4,
                       offset: Offset(0, 2),
                     ),
@@ -108,19 +108,19 @@ class WeeklyImpactSection extends ConsumerWidget {
               ),
             ],
           ),
-          
+
           const SizedBox(height: 24),
-          
+
           // Main points display with modern card design
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 20),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.green.withOpacity(0.15),
+                  color: Colors.green.withValues(alpha: 0.15),
                   blurRadius: 12,
                   offset: Offset(0, 6),
                 ),
@@ -133,17 +133,14 @@ class WeeklyImpactSection extends ConsumerWidget {
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [
-                        Colors.blue[400]!,
-                        Colors.blue[600]!,
-                      ],
+                      colors: [Colors.blue[400]!, Colors.blue[600]!],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.blue.withOpacity(0.4),
+                        color: Colors.blue.withValues(alpha: 0.4),
                         blurRadius: 8,
                         offset: Offset(0, 4),
                       ),
@@ -213,7 +210,7 @@ class WeeklyImpactSection extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.blue.withOpacity(0.1),
+                    color: Colors.blue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -225,14 +222,14 @@ class WeeklyImpactSection extends ConsumerWidget {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 20),
-          
+
           // Progress summary
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(12),
             ),
             child: _buildWeeklyProgress(scanCount),
@@ -259,11 +256,7 @@ class WeeklyImpactSection extends ConsumerWidget {
           children: [
             Row(
               children: [
-                Icon(
-                  Icons.flag_rounded,
-                  size: 16,
-                  color: Colors.green[700],
-                ),
+                Icon(Icons.flag_rounded, size: 16, color: Colors.green[700]),
                 const SizedBox(width: 6),
                 Text(
                   'Weekly Goal',
@@ -300,8 +293,8 @@ class WeeklyImpactSection extends ConsumerWidget {
           progress >= 1.0
               ? '🎉 Amazing! Goal achieved this week!'
               : remaining == 1
-                  ? '🔥 Just 1 more scan to reach your goal!'
-                  : '💪 $remaining more scans to reach your weekly goal',
+              ? '🔥 Just 1 more scan to reach your goal!'
+              : '💪 $remaining more scans to reach your weekly goal',
           style: TextStyle(
             fontSize: 11,
             color: Colors.green[700],
@@ -314,9 +307,6 @@ class WeeklyImpactSection extends ConsumerWidget {
   }
 
   Map<String, dynamic> _getWeeklyImpactData() {
-    return {
-      'scanCount': 12,
-      'points': '960',
-    };
+    return {'scanCount': 12, 'points': '960'};
   }
-} 
+}

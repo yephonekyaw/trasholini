@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class FloatingScanButton extends StatelessWidget {
-  const FloatingScanButton({Key? key}) : super(key: key);
+class FloatingScanButton extends ConsumerWidget {
+  const FloatingScanButton({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -24,7 +26,9 @@ class FloatingScanButton extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(35),
-              onTap: () {},
+              onTap: () {
+                ref.read(routerProvider).go('/scan');
+              },
               child: const Icon(
                 Icons.camera_alt_sharp,
                 color: Colors.white,
@@ -37,7 +41,7 @@ class FloatingScanButton extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
           decoration: BoxDecoration(
-            color: const Color(0xFF4CAF50).withOpacity(0.1),
+            color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(10),
           ),
           child: const Text(

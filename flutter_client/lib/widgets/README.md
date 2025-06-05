@@ -1,1 +1,0 @@
-# The folder for small widgets used in the main presentation pages.

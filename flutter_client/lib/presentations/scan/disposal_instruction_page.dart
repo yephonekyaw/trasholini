@@ -75,7 +75,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
               borderRadius: BorderRadius.circular(isTablet ? 18 : 16),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Colors.black.withValues(alpha: 0.1),
                   blurRadius: 8,
                   offset: Offset(0, 2),
                 ),
@@ -99,7 +99,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
                 Container(
                   //padding: EdgeInsets.all(isTablet ? 12 : 8),
                   decoration: BoxDecoration(
-                    color: AppConstants.primaryGreen.withOpacity(0.1),
+                    color: AppConstants.primaryGreen.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
                   ),
                   child: Icon(
@@ -178,7 +178,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
         borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -259,7 +259,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
         borderRadius: BorderRadius.circular(isTablet ? 20 : 16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -371,7 +371,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
               gradient: LinearGradient(
                 colors: [
                   AppConstants.primaryGreen,
-                  AppConstants.primaryGreen.withOpacity(0.8),
+                  AppConstants.primaryGreen.withValues(alpha: 0.8),
                 ],
               ),
               borderRadius: BorderRadius.circular(isTablet ? 14 : 12),
@@ -422,7 +422,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
           color: AppConstants.lightGreen,
           borderRadius: BorderRadius.circular(isTablet ? 30 : 25),
           border: Border.all(
-            color: AppConstants.primaryGreen.withOpacity(0.3),
+            color: AppConstants.primaryGreen.withValues(alpha: 0.3),
             width: 1,
           ),
         ),
@@ -465,7 +465,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
         color: Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 12,
             offset: Offset(0, -4),
           ),
@@ -597,7 +597,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //               borderRadius: BorderRadius.circular(16),
 //               boxShadow: [
 //                 BoxShadow(
-//                   color: Colors.black.withOpacity(0.1),
+//                   color: Colors.black.withValues(alpha:0.1),
 //                   blurRadius: 8,
 //                   offset: Offset(0, 2),
 //                 ),
@@ -617,7 +617,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //                 Container(
 //                   padding: EdgeInsets.all(8),
 //                   decoration: BoxDecoration(
-//                     color: AppConstants.primaryGreen.withOpacity(0.1),
+//                     color: AppConstants.primaryGreen.withValues(alpha:0.1),
 //                     borderRadius: BorderRadius.circular(12),
 //                   ),
 //                   child: Icon(
@@ -661,7 +661,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //         borderRadius: BorderRadius.circular(16),
 //         boxShadow: [
 //           BoxShadow(
-//             color: Colors.black.withOpacity(0.1),
+//             color: Colors.black.withValues(alpha:0.1),
 //             blurRadius: 12,
 //             offset: Offset(0, 4),
 //           ),
@@ -732,7 +732,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //         borderRadius: BorderRadius.circular(16),
 //         boxShadow: [
 //           BoxShadow(
-//             color: Colors.black.withOpacity(0.1),
+//             color: Colors.black.withValues(alpha:0.1),
 //             blurRadius: 12,
 //             offset: Offset(0, 4),
 //           ),
@@ -835,7 +835,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //               gradient: LinearGradient(
 //                 colors: [
 //                   AppConstants.primaryGreen,
-//                   AppConstants.primaryGreen.withOpacity(0.8),
+//                   AppConstants.primaryGreen.withValues(alpha:0.8),
 //                 ],
 //               ),
 //               borderRadius: BorderRadius.circular(12),
@@ -883,7 +883,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //           color: AppConstants.lightGreen,
 //           borderRadius: BorderRadius.circular(25),
 //           border: Border.all(
-//             color: AppConstants.primaryGreen.withOpacity(0.3),
+//             color: AppConstants.primaryGreen.withValues(alpha:0.3),
 //             width: 1,
 //           ),
 //         ),
@@ -924,7 +924,7 @@ class _DisposalInstructionsPageState extends State<DisposalInstructionsPage> {
 //         color: Colors.white,
 //         boxShadow: [
 //           BoxShadow(
-//             color: Colors.black.withOpacity(0.1),
+//             color: Colors.black.withValues(alpha:0.1),
 //             blurRadius: 12,
 //             offset: Offset(0, -4),
 //           ),
