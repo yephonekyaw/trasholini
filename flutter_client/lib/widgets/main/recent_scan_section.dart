@@ -17,7 +17,7 @@ class RecentScansSection extends ConsumerWidget {
     final mockScans = _getMockScanData();
 
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16), // Reduced padding
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(15),
@@ -36,15 +36,16 @@ class RecentScansSection extends ConsumerWidget {
             children: [
               Icon(Icons.access_time, color: Colors.blue[600], size: 24),
               const SizedBox(width: 8),
-              const Text(
-                'Recent Scans',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              const Expanded( // Make title flexible
+                child: Text(
+                  'Recent Scans',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
-              const Spacer(),
               // Optional: View all button
               GestureDetector(
                 onTap: () {
@@ -104,6 +105,7 @@ class RecentScansSection extends ConsumerWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align to top
         children: [
           Container(
             padding: const EdgeInsets.all(8),
@@ -118,7 +120,7 @@ class RecentScansSection extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 12),
-          Expanded(
+          Expanded( // Make content area flexible
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -129,33 +131,29 @@ class RecentScansSection extends ConsumerWidget {
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
                   ),
+                  overflow: TextOverflow.ellipsis, // Handle text overflow
+                  maxLines: 1,
                 ),
-                Row(
-                  children: [
-                    Text(
-                      scan['timeAgo'],
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '• CO₂ saved: ${scan['co2Saved']}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.green[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
+                const SizedBox(height: 2),
+                Text(
+                  scan['timeAgo'],
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
           ),
-          Text(
-            scan['points'],
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.green[600],
+          const SizedBox(width: 8), // Small gap before points
+          // Points with fixed width to prevent overflow
+          Container(
+            constraints: const BoxConstraints(minWidth: 60), // Ensure minimum width
+            child: Text(
+              scan['points'],
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+                color: Colors.green[600],
+              ),
+              textAlign: TextAlign.end,
             ),
           ),
         ],
@@ -168,7 +166,6 @@ class RecentScansSection extends ConsumerWidget {
     return [
       {
         'material': 'Plastic Bottle',
-        'co2Saved': '2.3kg',
         'points': '+80 pts',
         'timeAgo': '2 hours ago',
         'materialIcon': Icons.recycling,
@@ -176,7 +173,6 @@ class RecentScansSection extends ConsumerWidget {
       },
       {
         'material': 'Paper Document',
-        'co2Saved': '1.5kg',
         'points': '+60 pts',
         'timeAgo': '1 day ago',
         'materialIcon': Icons.description,
@@ -184,7 +180,6 @@ class RecentScansSection extends ConsumerWidget {
       },
       {
         'material': 'Aluminum Can',
-        'co2Saved': '4.2kg',
         'points': '+120 pts',
         'timeAgo': '3 days ago',
         'materialIcon': Icons.sports_bar,
