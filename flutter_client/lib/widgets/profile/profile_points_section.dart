@@ -1,11 +1,10 @@
-// widgets/profile_points_section.dart
-
 import 'package:flutter/material.dart';
+import 'package:flutter_client/models/user_profile_data_model.dart';
+import 'package:flutter_client/providers/user_profile_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProfilePointsSection extends StatelessWidget {
-  final dynamic user; // Replace with your User model type
-
-  const ProfilePointsSection({super.key, required this.user});
+class ProfilePointsSection extends ConsumerWidget {
+  const ProfilePointsSection({super.key});
 
   // Get user level based on points (every 100 points = 1 level)
   int _getUserLevel(int points) {
@@ -222,9 +221,235 @@ class ProfilePointsSection extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final userLevel = _getUserLevel(user.points);
+  Widget _buildLoadingState() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE3F7BA), Color(0x524CAF50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF4CAF50).withValues(alpha: 0.2),
+            spreadRadius: 0,
+            blurRadius: 20,
+            offset: const Offset(0, 4),
+          ),
+        ],
+        border: Border.all(
+          color: Color(0xFF81C784).withValues(alpha: 0.3),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Loading Header Row
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Container(
+                      height: 12,
+                      width: 140,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Container(
+                  width: 40,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[400],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 20),
+
+          // Loading Points Display
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Loading Current Points
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    height: 42,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 6.0),
+                    child: Container(
+                      height: 18,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(9),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              // Loading Level title
+              Container(
+                height: 14,
+                width: 120,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(7),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Loading Progress
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.6),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Color(0xFF81C784).withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Container(
+                          height: 14,
+                          width: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                        ),
+                        Container(
+                          height: 20,
+                          width: 90,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 18),
+                    Container(
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE3F7BA), Color(0x524CAF50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.red.withValues(alpha: 0.3), width: 1),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.error_outline, size: 48, color: Colors.red[400]),
+          const SizedBox(height: 12),
+          Text(
+            'Failed to load eco points',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.red[700],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Please try again later',
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPointsContent(UserProfile user) {
+    final userLevel = _getUserLevel(user.ecoPoints);
     final levelIcon = _getLevelIcon(userLevel);
     final levelColor = _getLevelColor(userLevel);
 
@@ -351,7 +576,7 @@ class ProfilePointsSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    '${user.points}',
+                    '${user.ecoPoints}',
                     style: TextStyle(
                       fontSize: 42,
                       fontWeight: FontWeight.bold,
@@ -389,11 +614,22 @@ class ProfilePointsSection extends StatelessWidget {
               const SizedBox(height: 16),
 
               // Progress to next level
-              _buildEcoLevelProgress(user.points, userLevel),
+              _buildEcoLevelProgress(user.ecoPoints, userLevel),
             ],
           ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userProfileAsync = ref.watch(userProfileProvider);
+
+    return userProfileAsync.when(
+      data: (userProfile) => _buildPointsContent(userProfile!),
+      loading: () => _buildLoadingState(),
+      error: (error, stackTrace) => _buildErrorState(error),
     );
   }
 }

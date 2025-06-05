@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_client/models/user_profile_data_model.dart';
+import 'package:flutter_client/providers/user_profile_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfileHeaderSection extends ConsumerStatefulWidget {
-  final dynamic user; // Replace with your User model type
-
-  const ProfileHeaderSection({super.key, required this.user});
+  const ProfileHeaderSection({super.key});
 
   @override
   ConsumerState<ProfileHeaderSection> createState() =>
@@ -68,9 +68,173 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final userLevel = _getUserLevel(widget.user.points);
+  Widget _buildLoadingState() {
+    return Column(
+      children: [
+        // Header with back button
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => context.goNamed('mainpage'),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black87,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Text(
+                'TRASHOLINI',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Loading Profile Content
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                // Loading Profile Picture
+                Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.grey[300],
+                    border: Border.all(color: Colors.grey[400]!, width: 3),
+                  ),
+                  child: const Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Loading User Name
+                Container(
+                  height: 24,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+
+                const SizedBox(height: 8),
+
+                // Loading User Level
+                Container(
+                  height: 16,
+                  width: 100,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildErrorState(Object error) {
+    return Column(
+      children: [
+        // Header with back button
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            children: [
+              GestureDetector(
+                onTap: () => context.goNamed('mainpage'),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    color: Colors.black87,
+                    size: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Text(
+                'TRASHOLINI',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+        ),
+
+        // Error Content
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              children: [
+                Icon(Icons.error_outline, size: 60, color: Colors.red[400]),
+                const SizedBox(height: 16),
+                Text(
+                  'Failed to load profile',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.red[700],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Please try again later',
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeaderContent(UserProfile user) {
+    final userLevel = _getUserLevel(user.ecoPoints);
     final levelIcon = _getLevelIcon(userLevel);
     final levelColor = _getLevelColor(userLevel);
 
@@ -148,9 +312,9 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                         ),
                         child: ClipOval(
                           child:
-                              widget.user.profileImageUrl.isNotEmpty
-                                  ? Image.asset(
-                                    widget.user.profileImageUrl,
+                              user.photoUrl != null
+                                  ? Image.network(
+                                    user.photoUrl!,
                                     fit: BoxFit.cover,
                                     errorBuilder:
                                         (context, error, stackTrace) =>
@@ -208,7 +372,8 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                           ),
                           onSubmitted: (value) {
                             if (value.trim().isNotEmpty) {
-                              // ref.read(userProvider.notifier).updateProfile(name: value.trim());
+                              // TODO: Update user name in provider
+                              // ref.read(userProfileProvider.notifier).updateProfile(name: value.trim());
                             }
                             setState(() {
                               _isEditingName = false;
@@ -218,7 +383,7 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                       )
                     else
                       Text(
-                        widget.user.name,
+                        user.displayName ?? 'Anonymous',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -230,13 +395,14 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                       onTap: () {
                         if (_isEditingName) {
                           if (_nameController.text.trim().isNotEmpty) {
-                            // ref.read(userProvider.notifier).updateProfile(name: _nameController.text.trim());
+                            // TODO: Update user name in provider
+                            // ref.read(userProfileProvider.notifier).updateProfile(name: _nameController.text.trim());
                           }
                           setState(() {
                             _isEditingName = false;
                           });
                         } else {
-                          _nameController.text = widget.user.name;
+                          _nameController.text = user.displayName ?? '';
                           setState(() {
                             _isEditingName = true;
                           });
@@ -279,6 +445,17 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
           ),
         ),
       ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final userProfileAsync = ref.watch(userProfileProvider);
+
+    return userProfileAsync.when(
+      data: (userProfile) => _buildHeaderContent(userProfile!),
+      loading: () => _buildLoadingState(),
+      error: (error, stackTrace) => _buildErrorState(error),
     );
   }
 }

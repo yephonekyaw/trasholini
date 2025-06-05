@@ -1,11 +1,8 @@
-// widgets/profile_history_section.dart
-
 import 'package:flutter/material.dart';
 
 class ProfileHistorySection extends StatelessWidget {
   const ProfileHistorySection({super.key});
 
-  // Mock history data - replace with real data from scan history provider
   List<Map<String, dynamic>> _getHistoryData() {
     return [
       {
@@ -199,9 +196,7 @@ class ProfileHistorySection extends StatelessWidget {
                 const Spacer(),
                 // Optional: Filter or sort button
                 GestureDetector(
-                  onTap: () {
-                    // TODO: Implement filter/sort functionality
-                  },
+                  onTap: () {},
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
