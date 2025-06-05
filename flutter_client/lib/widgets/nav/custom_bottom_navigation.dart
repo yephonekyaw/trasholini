@@ -1,18 +1,12 @@
-// lib/widgets/navigation/custom_bottom_navigation.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_client/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CustomBottomNavigation extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onTap;
-
-  const CustomBottomNavigation({
-    Key? key,
-    required this.currentIndex,
-    required this.onTap,
-  }) : super(key: key);
+class CustomBottomNavigation extends ConsumerWidget {
+  const CustomBottomNavigation({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       height: 90,
       decoration: BoxDecoration(
@@ -43,15 +37,13 @@ class CustomBottomNavigation extends StatelessWidget {
               _buildNavItem(
                 icon: Icons.home_rounded,
                 label: 'Home',
-                isSelected: currentIndex == 0,
-                onTap: () => onTap(0),
+                onTap: () => ref.watch(routerProvider).go('/'),
               ),
               const SizedBox(width: 80),
               _buildNavItem(
-                icon: Icons.settings_rounded,
-                label: 'Settings',
-                isSelected: currentIndex == 2,
-                onTap: () => onTap(2),
+                icon: Icons.category,
+                label: 'Categories',
+                onTap: () => ref.watch(routerProvider).go('/categories'),
               ),
             ],
           ),
@@ -63,7 +55,6 @@ class CustomBottomNavigation extends StatelessWidget {
   Widget _buildNavItem({
     required IconData icon,
     required String label,
-    required bool isSelected,
     required VoidCallback onTap,
   }) {
     return Expanded(
@@ -78,16 +69,10 @@ class CustomBottomNavigation extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: isSelected 
-                      ? const Color(0xFF4CAF50).withOpacity(0.1)
-                      : Colors.transparent,
+                  color: const Color(0xFF4CAF50).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
-                ),
+                child: Icon(icon, size: 22, color: const Color(0xFF4CAF50)),
               ),
               const SizedBox(height: 4),
               Flexible(
@@ -95,8 +80,8 @@ class CustomBottomNavigation extends StatelessWidget {
                   label,
                   style: TextStyle(
                     fontSize: 11,
-                    color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                    color: const Color(0xFF4CAF50),
+                    fontWeight: FontWeight.w600,
                     letterSpacing: 0.3,
                   ),
                   maxLines: 1,

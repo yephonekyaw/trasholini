@@ -1,5 +1,5 @@
-// lib/pages/categories/categories_screen.dart (Updated to use reusable components)
 import 'package:flutter/material.dart';
+import 'package:flutter_client/router/router.dart';
 import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,21 +13,18 @@ class CategoriesScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FCF8), // Slightly lighter green background
-      appBar: _buildAppBar(context),
+      backgroundColor: const Color(
+        0xFFF8FCF8,
+      ), // Slightly lighter green background
+      appBar: _buildAppBar(context, ref),
       body: _buildBody(context, ref),
-      bottomNavigationBar: CustomBottomNavigation(
-        currentIndex: 0, // Home is selected
-        onTap: (index) => _onBottomNavTap(context, index),
-      ),
-      floatingActionButton: FloatingScanButton(
-        onTap: () => _onBottomNavTap(context, 1),
-      ),
+      bottomNavigationBar: CustomBottomNavigation(),
+      floatingActionButton: FloatingScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
+  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -37,10 +34,7 @@ class CategoriesScreen extends ConsumerWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [
-              Color(0xFFE8F5E8),
-              Color(0xFFF1F8E9),
-            ],
+            colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
           ),
         ),
       ),
@@ -50,7 +44,7 @@ class CategoriesScreen extends ConsumerWidget {
           color: Colors.transparent,
           child: InkWell(
             borderRadius: BorderRadius.circular(12),
-            onTap: () => Navigator.pop(context),
+            onTap: () => ref.read(routerProvider).go('/'),
             child: const Icon(
               Icons.arrow_back_ios_new_rounded,
               color: Color(0xFF2E7D32),
@@ -110,16 +104,13 @@ class CategoriesScreen extends ConsumerWidget {
                 mainAxisSpacing: 20,
                 childAspectRatio: 0.85, // Slightly taller cards
               ),
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  return EnhancedCategoryCard(
-                    category: _categories[index],
-                    index: index,
-                    onTap: () => _onCategoryTap(context, ref, _categories[index]),
-                  );
-                },
-                childCount: _categories.length,
-              ),
+              delegate: SliverChildBuilderDelegate((context, index) {
+                return EnhancedCategoryCard(
+                  category: _categories[index],
+                  index: index,
+                  onTap: () => _onCategoryTap(context, ref, _categories[index]),
+                );
+              }, childCount: _categories.length),
             ),
           ),
         ],
@@ -127,22 +118,28 @@ class CategoriesScreen extends ConsumerWidget {
     );
   }
 
-  void _onCategoryTap(BuildContext context, WidgetRef ref, CategoryModel category) {
+  void _onCategoryTap(
+    BuildContext context,
+    WidgetRef ref,
+    CategoryModel category,
+  ) {
     Navigator.push(
       context,
       PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) => CategoryDetailScreen(
-          categoryId: category.id,
-          categoryName: category.name,
-        ),
+        pageBuilder:
+            (context, animation, secondaryAnimation) => CategoryDetailScreen(
+              categoryId: category.id,
+              categoryName: category.name,
+            ),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(1.0, 0.0);
           const end = Offset.zero;
           const curve = Curves.easeInOutCubic;
 
-          var tween = Tween(begin: begin, end: end).chain(
-            CurveTween(curve: curve),
-          );
+          var tween = Tween(
+            begin: begin,
+            end: end,
+          ).chain(CurveTween(curve: curve));
 
           return SlideTransition(
             position: animation.drive(tween),
@@ -152,22 +149,6 @@ class CategoriesScreen extends ConsumerWidget {
         transitionDuration: const Duration(milliseconds: 300),
       ),
     );
-  }
-
-  void _onBottomNavTap(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        // Already on home page
-        break;
-      case 1:
-        print('Navigate to scan screen');
-        // TODO: Navigate to scan page
-        break;
-      case 2:
-        print('Navigate to settings screen');
-        // TODO: Navigate to settings page
-        break;
-    }
   }
 
   static final List<CategoryModel> _categories = CategoryModel.categories;

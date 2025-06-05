@@ -1,13 +1,7 @@
-// lib/widgets/navigation/floating_scan_button.dart
 import 'package:flutter/material.dart';
 
 class FloatingScanButton extends StatelessWidget {
-  final VoidCallback onTap;
-
-  const FloatingScanButton({
-    Key? key,
-    required this.onTap,
-  }) : super(key: key);
+  const FloatingScanButton({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +16,7 @@ class FloatingScanButton extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF66BB6A),
-                Color(0xFF4CAF50),
-              ],
+              colors: [Color(0xFF66BB6A), Color(0xFF4CAF50)],
             ),
             shape: BoxShape.circle,
           ),
@@ -33,7 +24,7 @@ class FloatingScanButton extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(35),
-              onTap: onTap,
+              onTap: () {},
               child: const Icon(
                 Icons.camera_alt_sharp,
                 color: Colors.white,

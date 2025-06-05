@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/widgets/main/catagories_section.dart';
-import 'package:flutter_client/widgets/main/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/main/eco_tip_section.dart';
 import 'package:flutter_client/widgets/main/loading_error_widgets.dart';
-
 import 'package:flutter_client/widgets/main/recent_scan_section.dart';
 import 'package:flutter_client/widgets/main/user_profile_card.dart';
 import 'package:flutter_client/widgets/main/waste_bin_profile.dart';
 import 'package:flutter_client/widgets/main/weekly_impact_section.dart';
+import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
+import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/main/catagories_provider.dart';
 import '../../providers/main/waste_bins_provider.dart';
@@ -65,11 +65,12 @@ class MainPage extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // Nearby Bin Stations Map Section (REPLACED Environmental Impact)
-            
           ],
         ),
       ),
-      bottomNavigationBar: const CustomBottomNavigation(),
+      bottomNavigationBar: CustomBottomNavigation(),
+      floatingActionButton: FloatingScanButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 

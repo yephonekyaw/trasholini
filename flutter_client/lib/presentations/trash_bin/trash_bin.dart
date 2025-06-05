@@ -1,4 +1,3 @@
-// lib/pages/trash_bin/trash_bin_page.dart (Updated to use reusable components)
 import 'package:flutter/material.dart';
 import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
@@ -48,7 +47,9 @@ class TrashBinPage extends ConsumerWidget {
             },
             onSavePressed: () {
               final selectedBins = trashBinNotifier.selectedBins;
-              print('Selected bins: ${selectedBins.map((b) => b.name).join(', ')}');
+              print(
+                'Selected bins: ${selectedBins.map((b) => b.name).join(', ')}',
+              );
             },
           ),
           TrashBinGrid(
@@ -62,31 +63,9 @@ class TrashBinPage extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: CustomBottomNavigation(
-        currentIndex: 0, // Home is selected
-        onTap: (index) => _onBottomNavTap(context, index),
-      ),
-      floatingActionButton: FloatingScanButton(
-        onTap: () => _onBottomNavTap(context, 1),
-      ),
+      bottomNavigationBar: CustomBottomNavigation(),
+      floatingActionButton: FloatingScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
-  }
-
-  void _onBottomNavTap(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        // Already on home page
-        print('Home tapped');
-        break;
-      case 1:
-        print('Navigate to scan screen');
-        // TODO: Navigate to scan page or open camera
-        break;
-      case 2:
-        print('Navigate to settings screen');
-        // TODO: Navigate to settings page
-        break;
-    }
   }
 }

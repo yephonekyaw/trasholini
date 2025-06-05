@@ -1,4 +1,3 @@
-// Example: Updated Category Detail Screen using the improved providers
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/category/category_item_model.dart';
@@ -18,12 +17,14 @@ class CategoryDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // ✅ Main provider - handles all state management
-    final categoryItemsAsync = ref.watch(categoryItemsNotifierProvider(categoryId));
-    
+    final categoryItemsAsync = ref.watch(
+      categoryItemsNotifierProvider(categoryId),
+    );
+
     // ✅ Optional: Watch search functionality
     final searchQuery = ref.watch(categorySearchProvider(categoryId));
     final filteredItems = ref.watch(filteredCategoryItemsProvider(categoryId));
-    
+
     // ✅ Optional: Watch statistics
     final stats = ref.watch(categoryStatsProvider(categoryId));
 
@@ -33,19 +34,28 @@ class CategoryDetailScreen extends ConsumerWidget {
       body: Column(
         children: [
           // ✅ Optional: Search bar
-          if (categoryItemsAsync.hasValue && categoryItemsAsync.value!.isNotEmpty)
+          if (categoryItemsAsync.hasValue &&
+              categoryItemsAsync.value!.isNotEmpty)
             _buildSearchBar(ref),
-          
+
           // ✅ Main content using filtered items if search is active
           Expanded(
-            child: _buildBody(context, ref, searchQuery.isEmpty ? categoryItemsAsync : filteredItems),
+            child: _buildBody(
+              context,
+              ref,
+              searchQuery.isEmpty ? categoryItemsAsync : filteredItems,
+            ),
           ),
         ],
       ),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref, CategoryStats stats) {
+  PreferredSizeWidget _buildAppBar(
+    BuildContext context,
+    WidgetRef ref,
+    CategoryStats stats,
+  ) {
     return AppBar(
       backgroundColor: Colors.transparent,
       elevation: 0,
@@ -97,7 +107,6 @@ class CategoryDetailScreen extends ConsumerWidget {
       ),
       centerTitle: true,
       toolbarHeight: 75,
-      
     );
   }
 
@@ -178,7 +187,9 @@ class CategoryDetailScreen extends ConsumerWidget {
           ElevatedButton.icon(
             onPressed: () {
               // ✅ Use retry method from notifier
-              ref.read(categoryItemsNotifierProvider(categoryId).notifier).retry();
+              ref
+                  .read(categoryItemsNotifierProvider(categoryId).notifier)
+                  .retry();
             },
             icon: const Icon(Icons.refresh),
             label: const Text('Try Again'),
@@ -200,7 +211,9 @@ class CategoryDetailScreen extends ConsumerWidget {
     return RefreshIndicator(
       onRefresh: () async {
         // ✅ Use the improved refresh method
-        ref.read(categoryItemsNotifierProvider(categoryId).notifier).invalidateAndRefresh();
+        ref
+            .read(categoryItemsNotifierProvider(categoryId).notifier)
+            .invalidateAndRefresh();
       },
       child: CustomScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
@@ -215,10 +228,8 @@ class CategoryDetailScreen extends ConsumerWidget {
                 childAspectRatio: 0.75,
               ),
               delegate: SliverChildBuilderDelegate(
-                (context, index) => CategoryItemCard(
-                  item: items[index],
-                  index: index,
-                ),
+                (context, index) =>
+                    CategoryItemCard(item: items[index], index: index),
                 childCount: items.length,
               ),
             ),
