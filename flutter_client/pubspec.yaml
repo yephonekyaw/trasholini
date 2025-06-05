@@ -21,13 +21,14 @@ dependencies:
   google_sign_in: ^6.3.0
   network_info_plus: ^6.1.4
   permission_handler: ^12.0.0+1
+  riverpod: ^2.6.1
   uuid: ^4.5.1
   web_socket_channel: ^3.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   uses-material-design: true
@@ -36,3 +37,5 @@ flutter:
     - assets/logos/
     - assets/trashbins/
     - assets/trash_catagories/
+    - assets/categories_images/
+    - assets/trash_images/
