@@ -5,6 +5,9 @@ import 'package:flutter_client/presentations/main/main_page.dart';
 import 'package:flutter_client/presentations/profile/profile_page.dart';
 import 'package:flutter_client/presentations/category/category_page.dart';
 import 'package:flutter_client/presentations/trash_bin/trash_bin.dart';
+import 'package:flutter_client/presentations/scan/catergory_detail_page.dart';
+import 'package:flutter_client/presentations/scan/disposal_instruction_page.dart';
+import 'package:flutter_client/presentations/scan/scan_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -50,6 +53,29 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: "/trash",
         name: "trash",
         builder: (context, state) => const TrashBinPage(),
+      ),
+      GoRoute(path: '/scan', builder: (context, state) => ScanPage()),
+      GoRoute(
+        path: '/category-details',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return CategoryDetailsPage(
+            imagePath: extra?['imagePath'] as String? ?? '',
+            analysisResult:
+                extra?['analysisResult'] as Map<String, dynamic>? ?? {},
+          );
+        },
+      ),
+      GoRoute(
+        path: '/disposal-instructions',
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>?;
+          return DisposalInstructionsPage(
+            imagePath: extra?['imagePath'] as String? ?? '',
+            analysisResult:
+                extra?['analysisResult'] as Map<String, dynamic>? ?? {},
+          );
+        },
       ),
     ],
     errorBuilder: (context, state) => MainErrorScreen(),
