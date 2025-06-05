@@ -3,7 +3,7 @@ import 'package:flutter_client/widgets/main/catagories_section.dart';
 import 'package:flutter_client/widgets/main/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/main/eco_tip_section.dart';
 import 'package:flutter_client/widgets/main/loading_error_widgets.dart';
-import 'package:flutter_client/widgets/main/nearby_bins_map_section.dart';
+
 import 'package:flutter_client/widgets/main/recent_scan_section.dart';
 import 'package:flutter_client/widgets/main/user_profile_card.dart';
 import 'package:flutter_client/widgets/main/waste_bin_profile.dart';
@@ -65,8 +65,7 @@ class MainPage extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // Nearby Bin Stations Map Section (REPLACED Environmental Impact)
-            const NearbyBinsMapSection(),
-            const SizedBox(height: 100), // Extra space for bottom navigation
+            
           ],
         ),
       ),
