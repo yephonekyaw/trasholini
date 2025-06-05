@@ -6,7 +6,7 @@ class DioClient {
   bool _isInitialized = false;
 
   // Manual IP configuration - change this to your server IP
-  static const String _baseUrl = 'http://192.168.0.102:8000/api/v1';
+  static const String _baseUrl = 'http://10.250.122.112:8000/api/v1';
 
   DioClient._internal();
 
