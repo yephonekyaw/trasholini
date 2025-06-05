@@ -21,33 +21,13 @@ class CategoryDetailScreen extends ConsumerWidget {
       categoryItemsNotifierProvider(categoryId),
     );
 
-    // ✅ Optional: Watch search functionality
-    final searchQuery = ref.watch(categorySearchProvider(categoryId));
-    final filteredItems = ref.watch(filteredCategoryItemsProvider(categoryId));
-
     // ✅ Optional: Watch statistics
     final stats = ref.watch(categoryStatsProvider(categoryId));
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FCF8),
       appBar: _buildAppBar(context, ref, stats),
-      body: Column(
-        children: [
-          // ✅ Optional: Search bar
-          if (categoryItemsAsync.hasValue &&
-              categoryItemsAsync.value!.isNotEmpty)
-            _buildSearchBar(ref),
-
-          // ✅ Main content using filtered items if search is active
-          Expanded(
-            child: _buildBody(
-              context,
-              ref,
-              searchQuery.isEmpty ? categoryItemsAsync : filteredItems,
-            ),
-          ),
-        ],
-      ),
+      body: _buildBody(context, ref, categoryItemsAsync),
     );
   }
 
@@ -96,7 +76,7 @@ class CategoryDetailScreen extends ConsumerWidget {
             ),
           ),
           Text(
-            '${stats.totalItems} items • ${stats.recyclablePercentage.toStringAsFixed(0)}% recyclable',
+            '${stats.totalItems} items',
             style: TextStyle(
               color: const Color(0xFF388E3C).withOpacity(0.8),
               fontSize: 12,
@@ -107,34 +87,6 @@ class CategoryDetailScreen extends ConsumerWidget {
       ),
       centerTitle: true,
       toolbarHeight: 75,
-    );
-  }
-
-  // ✅ Optional: Search bar widget
-  Widget _buildSearchBar(WidgetRef ref) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      child: TextField(
-        onChanged: (value) {
-          ref.read(categorySearchProvider(categoryId).notifier).state = value;
-        },
-        decoration: InputDecoration(
-          hintText: 'Search items...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            onPressed: () {
-              ref.read(categorySearchProvider(categoryId).notifier).state = '';
-            },
-            icon: const Icon(Icons.clear),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-        ),
-      ),
     );
   }
 
@@ -208,6 +160,19 @@ class CategoryDetailScreen extends ConsumerWidget {
       return _buildEmptyState();
     }
 
+    // Get screen dimensions for responsive design
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+    
+    // Determine grid settings based on screen size
+    final isSmallScreen = screenHeight < 700;
+    final crossAxisCount = screenWidth > 600 ? 3 : 2; // 3 columns on tablets, 2 on phones
+    final childAspectRatio = isSmallScreen ? 0.85 : 0.75; // Taller cards on small screens
+    final crossAxisSpacing = isSmallScreen ? 12.0 : 16.0;
+    final mainAxisSpacing = isSmallScreen ? 12.0 : 20.0;
+    final padding = isSmallScreen ? 16.0 : 20.0;
+
     return RefreshIndicator(
       onRefresh: () async {
         // ✅ Use the improved refresh method
@@ -219,13 +184,13 @@ class CategoryDetailScreen extends ConsumerWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         slivers: [
           SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+            padding: EdgeInsets.fromLTRB(padding, 10, padding, padding),
             sliver: SliverGrid(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 20,
-                childAspectRatio: 0.75,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: crossAxisSpacing,
+                mainAxisSpacing: mainAxisSpacing,
+                childAspectRatio: childAspectRatio,
               ),
               delegate: SliverChildBuilderDelegate(
                 (context, index) =>

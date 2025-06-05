@@ -156,10 +156,9 @@ class CategoryService {
       CategoryItemModel(
         id: '1',
         name: 'Plastic Water Bottle',
-        description: 'PET plastic bottle, recyclable',
+        description: 'PET plastic bottle',
         imageUrl: 'https://your-backend.com/images/items/plastic_bottle.jpg',
         category: ['1'], // Only plastic
-        isRecyclable: true,
         disposalTip: 'Remove cap and rinse before recycling',
       ),
       CategoryItemModel(
@@ -168,7 +167,6 @@ class CategoryService {
         description: 'Single-use plastic bag',
         imageUrl: 'https://your-backend.com/images/items/plastic_bag.jpg',
         category: ['1'], // Only plastic
-        isRecyclable: false,
         disposalTip: 'Take to special collection points at grocery stores',
       ),
       CategoryItemModel(
@@ -177,7 +175,6 @@ class CategoryService {
         description: 'Plastic yogurt container with foil lid',
         imageUrl: 'https://your-backend.com/images/items/yogurt_container.jpg',
         category: ['1'], // Only plastic
-        isRecyclable: true,
         disposalTip: 'Remove foil lid, rinse container before recycling',
       ),
 
@@ -185,10 +182,9 @@ class CategoryService {
       CategoryItemModel(
         id: '4',
         name: 'Newspaper',
-        description: 'Daily newspaper, fully recyclable',
+        description: 'Daily newspaper',
         imageUrl: 'https://your-backend.com/images/items/newspaper.jpg',
         category: ['2'], // Only paper
-        isRecyclable: true,
         disposalTip: 'Keep dry and remove plastic inserts',
       ),
       CategoryItemModel(
@@ -197,7 +193,6 @@ class CategoryService {
         description: 'Clean cardboard shipping box',
         imageUrl: 'https://your-backend.com/images/items/cardboard_box.jpg',
         category: ['2'], // Only paper
-        isRecyclable: true,
         disposalTip: 'Flatten box and remove tape/labels',
       ),
 
@@ -208,9 +203,7 @@ class CategoryService {
         description: 'Cardboard box with grease stains',
         imageUrl: 'https://your-backend.com/images/items/pizza_box.jpg',
         category: ['2', '8'], // Paper AND Organic (grease)
-        isRecyclable: false,
-        disposalTip:
-            'Remove food waste first, check if box is clean enough to recycle',
+        disposalTip: 'Remove food waste first, check if box is clean enough to recycle',
       ),
       CategoryItemModel(
         id: '7',
@@ -218,7 +211,6 @@ class CategoryService {
         description: 'Soda can with plastic label',
         imageUrl: 'https://your-backend.com/images/items/aluminum_can.jpg',
         category: ['1', '10'], // Plastic label AND Metal can
-        isRecyclable: true,
         disposalTip: 'Remove plastic label, rinse can before recycling',
       ),
 
@@ -229,7 +221,6 @@ class CategoryService {
         description: 'Clear glass bottle',
         imageUrl: 'https://your-backend.com/images/items/wine_bottle.jpg',
         category: ['4'], // Only glass
-        isRecyclable: true,
         disposalTip: 'Remove cork and labels before recycling',
       ),
       CategoryItemModel(
@@ -238,7 +229,6 @@ class CategoryService {
         description: 'Jam jar with metal twist lid',
         imageUrl: 'https://your-backend.com/images/items/glass_jar.jpg',
         category: ['4', '10'], // Glass AND Metal
-        isRecyclable: true,
         disposalTip: 'Separate glass jar from metal lid for recycling',
       ),
 
@@ -249,7 +239,6 @@ class CategoryService {
         description: 'Old smartphone with battery',
         imageUrl: 'https://your-backend.com/images/items/smartphone.jpg',
         category: ['5', '10'], // E-waste AND Metal
-        isRecyclable: true,
         disposalTip: 'Take to certified e-waste recycling center',
       ),
       CategoryItemModel(
@@ -258,9 +247,7 @@ class CategoryService {
         description: 'Old laptop with battery and plastic casing',
         imageUrl: 'https://your-backend.com/images/items/laptop.jpg',
         category: ['1', '5', '10'], // Plastic, E-waste, AND Metal
-        isRecyclable: true,
-        disposalTip:
-            'Remove battery, take to e-waste center for proper recycling',
+        disposalTip: 'Remove battery, take to e-waste center for proper recycling',
       ),
 
       // TEXTILE WASTE ITEMS (Category: 6)
@@ -270,7 +257,6 @@ class CategoryService {
         description: 'Cotton t-shirt in good condition',
         imageUrl: 'https://your-backend.com/images/items/tshirt.jpg',
         category: ['6'], // Only textile
-        isRecyclable: true,
         disposalTip: 'Donate if wearable, or take to textile recycling center',
       ),
       CategoryItemModel(
@@ -279,7 +265,6 @@ class CategoryService {
         description: 'Athletic shoes with mixed materials',
         imageUrl: 'https://your-backend.com/images/items/sneakers.jpg',
         category: ['6', '1'], // Textile AND Plastic (rubber)
-        isRecyclable: true,
         disposalTip: 'Take to specialized shoe recycling programs',
       ),
 
@@ -290,7 +275,6 @@ class CategoryService {
         description: 'Old wooden chair with metal screws',
         imageUrl: 'https://your-backend.com/images/items/wooden_chair.jpg',
         category: ['7', '10'], // Construction AND Metal
-        isRecyclable: true,
         disposalTip: 'Remove metal parts, donate if still usable',
       ),
 
@@ -301,7 +285,6 @@ class CategoryService {
         description: 'Paper plate with food residue',
         imageUrl: 'https://your-backend.com/images/items/paper_plate.jpg',
         category: ['2', '8'], // Paper AND Organic
-        isRecyclable: false,
         disposalTip: 'Compost if biodegradable, otherwise general waste',
       ),
       CategoryItemModel(
@@ -310,7 +293,6 @@ class CategoryService {
         description: 'Organic food waste',
         imageUrl: 'https://your-backend.com/images/items/banana_peel.jpg',
         category: ['8'], // Only organic
-        isRecyclable: true,
         disposalTip: 'Perfect for composting',
       ),
 
@@ -321,7 +303,6 @@ class CategoryService {
         description: 'Food can made of steel',
         imageUrl: 'https://your-backend.com/images/items/steel_can.jpg',
         category: ['10'], // Only metal
-        isRecyclable: true,
         disposalTip: 'Remove label and rinse before recycling',
       ),
 
@@ -332,7 +313,6 @@ class CategoryService {
         description: 'Large appliance with refrigerant',
         imageUrl: 'https://your-backend.com/images/items/refrigerator.jpg',
         category: ['3', '5', '10'], // Property, E-waste, AND Metal
-        isRecyclable: true,
         disposalTip: 'Contact appliance recycling service for proper disposal',
       ),
 
@@ -343,7 +323,6 @@ class CategoryService {
         description: 'Broken ceramic dinnerware',
         imageUrl: 'https://your-backend.com/images/items/ceramic_plate.jpg',
         category: ['9'], // Only in-organic
-        isRecyclable: false,
         disposalTip: 'Wrap in newspaper and dispose in general waste',
       ),
       CategoryItemModel(
@@ -352,7 +331,6 @@ class CategoryService {
         description: 'Used disposable diaper',
         imageUrl: 'https://your-backend.com/images/items/diaper.jpg',
         category: ['1', '9'], // Plastic AND In-organic
-        isRecyclable: false,
         disposalTip: 'Dispose in general waste bin',
       ),
     ];

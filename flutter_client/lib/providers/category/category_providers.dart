@@ -138,16 +138,16 @@ class CategoryItemsNotifier extends FamilyAsyncNotifier<List<CategoryItemModel>,
     }
   }
 
-  // ✅ Get items by recyclable status
-  List<CategoryItemModel> getRecyclableItems() {
-    final items = state.value ?? [];
-    return items.where((item) => item.isRecyclable).toList();
-  }
-
   // ✅ Get items by multiple categories
   List<CategoryItemModel> getMultiCategoryItems() {
     final items = state.value ?? [];
     return items.where((item) => item.isMultiCategory).toList();
+  }
+
+  // ✅ Get items by specific category
+  List<CategoryItemModel> getItemsByCategory(String categoryId) {
+    final items = state.value ?? [];
+    return items.where((item) => item.belongsToCategory(categoryId)).toList();
   }
 
   // ✅ Get item count
@@ -174,38 +174,35 @@ final categoryStatsProvider = Provider.family<CategoryStats, String>((ref, categ
   );
 });
 
-// ✅ Stats model
+// ✅ Updated Stats model without recyclable functionality
 class CategoryStats {
   final int totalItems;
-  final int recyclableItems;
-  final int nonRecyclableItems;
   final int multiCategoryItems;
+  final int singleCategoryItems;
   
   const CategoryStats({
     required this.totalItems,
-    required this.recyclableItems,
-    required this.nonRecyclableItems,
     required this.multiCategoryItems,
+    required this.singleCategoryItems,
   });
   
   factory CategoryStats.fromItems(List<CategoryItemModel> items) {
     return CategoryStats(
       totalItems: items.length,
-      recyclableItems: items.where((item) => item.isRecyclable).length,
-      nonRecyclableItems: items.where((item) => !item.isRecyclable).length,
       multiCategoryItems: items.where((item) => item.isMultiCategory).length,
+      singleCategoryItems: items.where((item) => !item.isMultiCategory).length,
     );
   }
   
   factory CategoryStats.empty() {
     return const CategoryStats(
       totalItems: 0,
-      recyclableItems: 0,
-      nonRecyclableItems: 0,
       multiCategoryItems: 0,
+      singleCategoryItems: 0,
     );
   }
   
-  double get recyclablePercentage => 
-    totalItems > 0 ? (recyclableItems / totalItems) * 100 : 0;
+  // ✅ Updated percentage calculation for multi-category items
+  double get multiCategoryPercentage => 
+    totalItems > 0 ? (multiCategoryItems / totalItems) * 100 : 0;
 }

@@ -17,6 +17,14 @@ class CategoryItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final delay = index * 100;
+    final screenSize = MediaQuery.of(context).size;
+    final screenHeight = screenSize.height;
+    final screenWidth = screenSize.width;
+    
+    // Enhanced screen detection
+    final isSmallScreen = screenHeight < 700;
+    final isNarrowScreen = screenWidth < 400;
+    final isVeryCompact = isSmallScreen && isNarrowScreen;
     
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 500 + delay),
@@ -64,8 +72,16 @@ class CategoryItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(flex: 3, child: _buildImageSection()),
-                      Expanded(flex: 2, child: _buildContentSection()),
+                      // Responsive image section
+                      Expanded(
+                        flex: isVeryCompact ? 1 : (isSmallScreen ? 2 : 3),
+                        child: _buildImageSection(isSmallScreen, isNarrowScreen),
+                      ),
+                      // Responsive content section  
+                      Expanded(
+                        flex: isVeryCompact ? 2 : (isSmallScreen ? 3 : 2),
+                        child: _buildContentSection(isSmallScreen, isNarrowScreen, isVeryCompact),
+                      ),
                     ],
                   ),
                 ),
@@ -77,9 +93,11 @@ class CategoryItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageSection() {
+  Widget _buildImageSection(bool isSmallScreen, bool isNarrowScreen) {
+    final margin = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
+    
     return Container(
-      margin: const EdgeInsets.all(12),
+      margin: EdgeInsets.all(margin),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -100,88 +118,93 @@ class CategoryItemCard extends StatelessWidget {
               color: const Color(0xFFE8F5E8),
               child: _buildItemImage(),
             ),
-            if (item.category.isNotEmpty)
+            if (item.category.isNotEmpty && !isNarrowScreen) // Hide badges on very narrow screens
               Positioned(
-                top: 8,
-                left: 8,
-                child: CategoryBadges(categories: item.category, isCardView: true),
-              ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.all(4),
-                decoration: BoxDecoration(
-                  color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  item.isRecyclable ? Icons.recycling : Icons.delete_outline,
-                  color: Colors.white,
-                  size: 14,
+                top: isSmallScreen ? 4 : 8,
+                left: isSmallScreen ? 4 : 8,
+                child: CategoryBadges(
+                  categories: item.category, 
+                  isCardView: true,
                 ),
               ),
-            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContentSection() {
+  Widget _buildContentSection(bool isSmallScreen, bool isNarrowScreen, bool isVeryCompact) {
+    final horizontalPadding = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
+    final verticalPadding = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
+    
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      padding: EdgeInsets.fromLTRB(
+        horizontalPadding,
+        0,
+        horizontalPadding,
+        verticalPadding,
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Title with enhanced responsive font size
           Flexible(
+            flex: isVeryCompact ? 4 : (isSmallScreen ? 3 : 1),
             child: Text(
               item.name,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1B5E20),
-                height: 1.2,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Flexible(
-            flex: 2,
-            child: Text(
-              item.description,
               style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                height: 1.3,
+                fontSize: isNarrowScreen ? 11 : (isSmallScreen ? 13 : 14),
+                fontWeight: FontWeight.w700,
+                color: const Color(0xFF1B5E20),
+                height: 1.1,
               ),
-              maxLines: 2,
+              maxLines: isVeryCompact ? 4 : (isSmallScreen ? 3 : 1),
               overflow: TextOverflow.ellipsis,
             ),
           ),
-          const Spacer(),
-          Row(
-            children: [
-              Icon(
-                item.isRecyclable ? Icons.eco : Icons.warning_amber_rounded,
-                size: 14,
-                color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
+          
+          // Description - only show on normal screens
+          if (!isSmallScreen && !isNarrowScreen) ...[
+            const SizedBox(height: 4),
+            Flexible(
+              flex: 2,
+              child: Text(
+                item.description,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  height: 1.3,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(width: 4),
-              Expanded(
-                child: Text(
-                  item.isRecyclable ? 'Recyclable' : 'Non-recyclable',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: item.isRecyclable ? Colors.green.shade600 : Colors.orange.shade600,
-                    fontWeight: FontWeight.w600,
+            ),
+          ],
+          
+          const Spacer(),
+          
+          // Bottom status with enhanced responsive sizing
+          if (!isVeryCompact) // Hide on very compact screens to save space
+            Row(
+              children: [
+                Icon(
+                  Icons.lightbulb_outline,
+                  size: isNarrowScreen ? 10 : (isSmallScreen ? 12 : 14),
+                  color: Colors.blue.shade600,
+                ),
+                SizedBox(width: isNarrowScreen ? 2 : (isSmallScreen ? 2 : 4)),
+                Expanded(
+                  child: Text(
+                    'Disposal tip',
+                    style: TextStyle(
+                      fontSize: isNarrowScreen ? 8 : (isSmallScreen ? 10 : 11),
+                      color: Colors.blue.shade600,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

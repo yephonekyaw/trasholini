@@ -4,7 +4,6 @@ class CategoryItemModel {
   final String description;
   final String imageUrl;
   final List<String> category; // 🔧 CHANGED: from categoryId to category array
-  final bool isRecyclable;
   final String disposalTip;
 
   CategoryItemModel({
@@ -13,7 +12,6 @@ class CategoryItemModel {
     required this.description,
     required this.imageUrl,
     required this.category, // 🔧 CHANGED: Now an array
-    required this.isRecyclable,
     required this.disposalTip,
   });
 
@@ -26,7 +24,6 @@ class CategoryItemModel {
       imageUrl: json['image_url']?.toString() ?? '',
       // 🔧 CHANGED: Parse category array
       category: _parseCategoryArray(json['category']),
-      isRecyclable: json['is_recyclable'] == true,
       disposalTip: json['disposal_tip']?.toString() ?? '',
     );
   }
@@ -53,7 +50,6 @@ class CategoryItemModel {
       'description': description,
       'image_url': imageUrl,
       'category': category, // 🔧 CHANGED: Send as array
-      'is_recyclable': isRecyclable,
       'disposal_tip': disposalTip,
     };
   }
@@ -76,7 +72,6 @@ class CategoryItemModel {
     String? description,
     String? imageUrl,
     List<String>? category, // 🔧 CHANGED: Now array
-    bool? isRecyclable,
     String? disposalTip,
   }) {
     return CategoryItemModel(
@@ -85,7 +80,6 @@ class CategoryItemModel {
       description: description ?? this.description,
       imageUrl: imageUrl ?? this.imageUrl,
       category: category ?? this.category, // 🔧 CHANGED
-      isRecyclable: isRecyclable ?? this.isRecyclable,
       disposalTip: disposalTip ?? this.disposalTip,
     );
   }
