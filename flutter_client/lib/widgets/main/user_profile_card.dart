@@ -151,7 +151,7 @@ class UserProfileCard extends ConsumerWidget {
             ),
             const SizedBox(width: 15),
 
-            // Loading User Name
+            // Loading User Name - FIXED: Use Expanded instead of fixed width
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -160,13 +160,15 @@ class UserProfileCard extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.star, color: Colors.grey[400], size: 30),
-                      const SizedBox(width: 25),
-                      Container(
-                        height: 20,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
+                      const SizedBox(width: 8), // Reduced spacing from 25 to 8
+                      Expanded(
+                        // FIXED: Use Expanded instead of fixed width Container
+                        child: Container(
+                          height: 20,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ],

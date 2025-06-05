@@ -1,11 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_client/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../utils/constants.dart';
 
-class CategoryDetailsPage extends StatelessWidget {
+class CategoryDetailsPage extends ConsumerWidget {
   final String imagePath;
   final Map<String, dynamic> analysisResult;
 
@@ -16,7 +18,7 @@ class CategoryDetailsPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -25,7 +27,7 @@ class CategoryDetailsPage extends StatelessWidget {
         bottom: false,
         child: Column(
           children: [
-            _buildHeader(context, size),
+            _buildHeader(context, size, ref),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(size.width * 0.04),
@@ -294,7 +296,7 @@ class CategoryDetailsPage extends StatelessWidget {
   }
 }
 
-Widget _buildHeader(BuildContext context, Size size) {
+Widget _buildHeader(BuildContext context, Size size, WidgetRef ref) {
   return Container(
     padding: EdgeInsets.symmetric(
       horizontal: size.width * 0.04,
@@ -318,7 +320,7 @@ Widget _buildHeader(BuildContext context, Size size) {
             ],
           ),
           child: IconButton(
-            onPressed: () => context.pop(),
+            onPressed: () => ref.read(routerProvider).go('/scan'),
             icon: Icon(
               Icons.arrow_back,
               color: Colors.black87,
@@ -334,7 +336,7 @@ Widget _buildHeader(BuildContext context, Size size) {
             children: [
               Flexible(
                 child: Text(
-                  'Categories Details',
+                  'Waste Item Details',
                   style: TextStyle(
                     fontSize: size.width * 0.055,
                     fontWeight: FontWeight.bold,

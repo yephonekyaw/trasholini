@@ -12,6 +12,7 @@ class LiveDetectionService {
   bool _isDetecting = false;
   bool _isCooldownActive = false;
   CameraController? _cameraController;
+  WasteDetectionResult? _lastDetection; // Store the last detection
 
   final _detectionController =
       StreamController<WasteDetectionResult?>.broadcast();
@@ -26,12 +27,15 @@ class LiveDetectionService {
     return _instance!;
   }
 
-  /// Stream of detection results (only when new detection found)
+  /// Stream of detection results (updates with every new detection)
   Stream<WasteDetectionResult?> get detectionStream =>
       _detectionController.stream;
 
   /// Stream of detection status updates
   Stream<LiveDetectionStatus> get statusStream => _statusController.stream;
+
+  /// Get the last detection result
+  WasteDetectionResult? get lastDetection => _lastDetection;
 
   /// Start live detection with camera controller
   Future<void> startLiveDetection(CameraController cameraController) async {
@@ -41,6 +45,7 @@ class LiveDetectionService {
     }
 
     _cameraController = cameraController;
+    _lastDetection = null; // Reset last detection
 
     // Ensure WebSocket is connected
     await WasteDetectionWebSocketService.instance.connect();
@@ -54,11 +59,16 @@ class LiveDetectionService {
           (a, b) => a.confidence > b.confidence ? a : b,
         );
 
-        // Emit detection result
+        // Update last detection and emit
+        _lastDetection = bestDetection;
         _detectionController.add(bestDetection);
 
         // Start 10-second cooldown
         _startCooldown();
+
+        debugPrint(
+          'LiveDetectionService: Detection updated - ${bestDetection.className} (${(bestDetection.confidence * 100).toStringAsFixed(1)}%)',
+        );
       }
 
       _isDetecting = false;
@@ -87,6 +97,7 @@ class LiveDetectionService {
     _isDetecting = false;
     _isCooldownActive = false;
     _cameraController = null;
+    _lastDetection = null;
 
     debugPrint('LiveDetectionService: Stopped live detection');
     _updateStatus();
@@ -114,18 +125,34 @@ class LiveDetectionService {
     }
   }
 
-  /// Start 10-second cooldown after detection
+  /// Start 5-second cooldown after detection
   void _startCooldown() {
     _isCooldownActive = true;
     _updateStatus();
 
-    _cooldownTimer = Timer(Duration(seconds: 10), () {
+    _cooldownTimer = Timer(Duration(seconds: 5), () {
       _isCooldownActive = false;
       _updateStatus();
       debugPrint('LiveDetectionService: Cooldown ended, resuming detection');
     });
 
-    debugPrint('LiveDetectionService: Started 10-second cooldown');
+    debugPrint('LiveDetectionService: Started 5-second cooldown');
+  }
+
+  /// Capture a photo for manual analysis
+  Future<String?> capturePhoto() async {
+    if (_cameraController == null || !_cameraController!.value.isInitialized) {
+      return null;
+    }
+
+    try {
+      final XFile imageFile = await _cameraController!.takePicture();
+      debugPrint('LiveDetectionService: Photo captured - ${imageFile.path}');
+      return imageFile.path;
+    } catch (e) {
+      debugPrint('LiveDetectionService: Error capturing photo - $e');
+      return null;
+    }
   }
 
   /// Update status for UI
@@ -174,7 +201,7 @@ class LiveDetectionStatus {
   String get displayText {
     if (!isWebSocketConnected) return 'Connecting to AI...';
     if (!isActive) return 'Live detection stopped';
-    if (isCooldownActive) return 'Detection paused (10s)';
+    if (isCooldownActive) return 'Next scan in 5s';
     if (isDetecting) return 'Scanning...';
     return 'Ready to detect';
   }

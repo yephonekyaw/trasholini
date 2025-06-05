@@ -22,50 +22,52 @@ class MainPage extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // User Profile Card
-            // UserProfileCard(),
-            const SizedBox(height: 20),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // User Profile Card
+              UserProfileCard(),
+              const SizedBox(height: 20),
 
-            // Waste Bin Profile Section
-            wasteBinsAsync.when(
-              data: (bins) => WasteBinProfile(bins: bins),
-              loading: () => const WasteBinProfileLoading(),
-              error: (error, stack) => WasteBinProfileError(error: error),
-            ),
-            const SizedBox(height: 20),
+              // Waste Bin Profile Section
+              wasteBinsAsync.when(
+                data: (bins) => WasteBinProfile(bins: bins),
+                loading: () => const WasteBinProfileLoading(),
+                error: (error, stack) => WasteBinProfileError(error: error),
+              ),
+              const SizedBox(height: 20),
 
-            // Enhanced Categories Section
-            // 🔥 FIREBASE INTEGRATION POINT 10: HANDLE ASYNC CATEGORIES
-            categoriesAsync.when(
-              data: (categories) => CategoriesSection(categories: categories),
-              loading: () => const CategoriesSectionLoading(),
-              error: (error, stack) => CategoriesSectionError(error: error),
-            ),
-            const SizedBox(height: 20),
+              // Enhanced Categories Section
+              // 🔥 FIREBASE INTEGRATION POINT 10: HANDLE ASYNC CATEGORIES
+              categoriesAsync.when(
+                data: (categories) => CategoriesSection(categories: categories),
+                loading: () => const CategoriesSectionLoading(),
+                error: (error, stack) => CategoriesSectionError(error: error),
+              ),
+              const SizedBox(height: 20),
 
-            // Quick Actions Section
-            _buildQuickActionsSection(),
-            const SizedBox(height: 20),
+              // Quick Actions Section
+              _buildQuickActionsSection(),
+              const SizedBox(height: 20),
 
-            // Eco Tips Section (Separated Widget)
-            const EcoTipSection(),
-            const SizedBox(height: 20),
+              // Eco Tips Section (Separated Widget)
+              const EcoTipSection(),
+              const SizedBox(height: 20),
 
-            // Recent Scans Section (Separated Widget)
-            const RecentScansSection(),
-            const SizedBox(height: 20),
+              // Recent Scans Section (Separated Widget)
+              const RecentScansSection(),
+              const SizedBox(height: 20),
 
-            // Weekly Impact Summary Section (Separated Widget)
-            const WeeklyImpactSection(),
-            const SizedBox(height: 20),
+              // Weekly Impact Summary Section (Separated Widget)
+              const WeeklyImpactSection(),
+              const SizedBox(height: 20),
 
-            // Nearby Bin Stations Map Section (REPLACED Environmental Impact)
-          ],
+              // Nearby Bin Stations Map Section (REPLACED Environmental Impact)
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: CustomBottomNavigation(),

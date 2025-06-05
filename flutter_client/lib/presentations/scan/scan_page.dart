@@ -138,7 +138,7 @@ class ScanPage extends ConsumerWidget {
                           painter: DashedBorderPainter(),
                         ),
 
-                        // Center content with tips
+                        // Center content
                         Padding(
                           padding: const EdgeInsets.all(24),
                           child: Column(
@@ -164,7 +164,7 @@ class ScanPage extends ConsumerWidget {
                               const SizedBox(height: 20),
 
                               Text(
-                                'Position your waste item here',
+                                'Live Detection Camera',
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w600,
@@ -173,50 +173,15 @@ class ScanPage extends ConsumerWidget {
                                 textAlign: TextAlign.center,
                               ),
 
-                              const SizedBox(height: 32),
+                              const SizedBox(height: 8),
 
-                              // Tips section integrated into the frame
-                              Container(
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.9),
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: const Color(
-                                      0xFF4CAF50,
-                                    ).withValues(alpha: 0.2),
-                                    width: 1,
-                                  ),
+                              Text(
+                                'Point camera at waste for instant AI recognition',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey[600],
                                 ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.lightbulb_outline,
-                                          color: const Color(0xFF4CAF50),
-                                          size: 18,
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          'For best results',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.grey[700],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    const SizedBox(height: 12),
-
-                                    // Compact tips list
-                                    ..._buildCompactTips(),
-                                  ],
-                                ),
+                                textAlign: TextAlign.center,
                               ),
                             ],
                           ),
@@ -273,7 +238,7 @@ class ScanPage extends ConsumerWidget {
               onTap:
                   scanState.isProcessing
                       ? null
-                      : () => _openCamera(context, ref),
+                      : () => _openLiveDetectionCamera(context, ref),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -282,7 +247,7 @@ class ScanPage extends ConsumerWidget {
                     const Icon(Icons.camera_alt, color: Colors.white, size: 24),
                     const SizedBox(width: 12),
                     const Text(
-                      'Take Photo',
+                      'Open Live Detection',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
@@ -352,30 +317,6 @@ class ScanPage extends ConsumerWidget {
         ),
       ],
     );
-  }
-
-  List<Widget> _buildCompactTips() {
-    final tips = [
-      'Good Lighting • Clean Surface',
-      'Include Labels • Hold Steady',
-    ];
-
-    return tips
-        .map(
-          (tip) => Padding(
-            padding: const EdgeInsets.only(bottom: 4),
-            child: Text(
-              tip,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[600],
-                height: 1.3,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        )
-        .toList();
   }
 
   List<Widget> _buildCornerFrames() {
@@ -509,7 +450,10 @@ class ScanPage extends ConsumerWidget {
     );
   }
 
-  Future<void> _openCamera(BuildContext context, WidgetRef ref) async {
+  Future<void> _openLiveDetectionCamera(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
     try {
       // Request camera permission
       final cameras = await availableCameras();
@@ -524,11 +468,13 @@ class ScanPage extends ConsumerWidget {
         return;
       }
 
-      // Initialize camera controller
+      // Initialize camera controller with max resolution
       final cameraController = CameraController(
         cameras.first,
-        ResolutionPreset.high,
+        ResolutionPreset.max,
         enableAudio: false,
+        imageFormatGroup: ImageFormatGroup.jpeg,
+        fps: 60,
       );
 
       await cameraController.initialize();
@@ -540,7 +486,40 @@ class ScanPage extends ConsumerWidget {
             builder:
                 (context) => LiveDetectionCameraOverlay(
                   cameraController: cameraController,
-                  onClose: () => Navigator.of(context).pop(),
+                  ref: ref,
+                  onImageCaptured: (imagePath) async {
+                    // Don't dispose camera here - let the overlay handle it
+                    // Just navigate to the next page
+                    try {
+                      final analysisResult = await ref
+                          .read(scanProvider.notifier)
+                          .processImage(imagePath);
+
+                      if (context.mounted) {
+                        // Navigate to results page with captured image
+                        ref
+                            .read(routerProvider)
+                            .go(
+                              '/category-details',
+                              extra: {
+                                'imagePath': imagePath,
+                                'analysisResult': analysisResult,
+                              },
+                            );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        // Close camera overlay on error too
+                        Navigator.of(context).pop();
+
+                        Utility.showSnackBar(
+                          context,
+                          'Error processing captured image: ${Utility.getErrorMessage(e)}',
+                          isError: true,
+                        );
+                      }
+                    }
+                  },
                 ),
           ),
         );

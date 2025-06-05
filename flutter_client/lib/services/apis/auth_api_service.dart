@@ -15,6 +15,7 @@ class AuthApiService {
   }) async {
     try {
       await _dioClient.initialize();
+      log('Authenticating user with Google ID: $googleId, Email: $email');
       final response = await _dioClient.dio.post(
         '/auth/signin',
         data: {
@@ -24,7 +25,6 @@ class AuthApiService {
           'photo_url': photoUrl,
         },
       );
-      log("LEE RESPONSE");
       return UserProfile.fromJson(response.data);
     } on DioException catch (e) {
       throw e.error ??
