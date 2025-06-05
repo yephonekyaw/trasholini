@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 import app.core.errors as _
 from app.apis.routes import api_router
+from app.apis.routes.websocket_router import websocket_router
 from app.core.config import settings
 from app.core.logging import logger
 
@@ -90,12 +91,17 @@ def create_application() -> FastAPI:
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Permissions-Policy"] = "geolocation=(self), microphone=()"
         response.headers["Content-Security-Policy"] = (
-            "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'"
+            "default-src 'self';"
+            "script-src 'self';"
+            "style-src 'self';"
+            "img-src 'self' data:;"
+            "connect-src 'self' ws: wss:"
         )
+
         return response
 
-    # Include API router
     application.include_router(api_router, prefix=settings.APP_API_PREFIX)
+    application.include_router(websocket_router, prefix=settings.APP_WEB_SOCKET_PREFIX)
 
     return application
 
@@ -106,6 +112,20 @@ app = create_application()
 @app.get("/")
 async def root():
     return {"message": "Welcome to the FastAPI application!"}
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint"""
+    return {
+        "status": "healthy",
+        "timestamp": time.time(),
+        "services": {
+            "api": "running",
+            "websocket": "running",
+            "waste_detection": "ready",
+        },
+    }
 
 
 if __name__ == "__main__":

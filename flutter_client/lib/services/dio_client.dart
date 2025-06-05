@@ -1,19 +1,12 @@
-import 'dart:io';
 import 'package:dio/dio.dart';
-import 'package:network_info_plus/network_info_plus.dart';
 
 class DioClient {
   static DioClient? _instance;
-  late final Dio dio;
-  static String? _dynamicBaseUrl;
+  Dio? _dio;
+  bool _isInitialized = false;
 
-  // Fallback IPs to try
-  static const List<String> _fallbackIPs = [
-    '10.4.150.200',
-    '192.168.1.100',
-    '192.168.0.100',
-    '10.0.0.100',
-  ];
+  // Manual IP configuration - change this to your server IP
+  static const String _baseUrl = 'http://10.250.122.112:8000/api/v1';
 
   DioClient._internal();
 
@@ -22,13 +15,23 @@ class DioClient {
     return _instance!;
   }
 
-  // Initialize with dynamic IP detection using network_info_plus
-  Future<void> initialize() async {
-    final baseUrl = await _getWorkingBaseUrl();
+  // Get dio instance
+  Dio get dio {
+    if (_dio == null) {
+      throw Exception('DioClient not initialized. Call initialize() first.');
+    }
+    return _dio!;
+  }
 
-    dio = Dio(
+  // Simple initialization - can be called multiple times safely
+  Future<void> initialize() async {
+    if (_isInitialized) {
+      return; // Already initialized, skip
+    }
+
+    _dio = Dio(
       BaseOptions(
-        baseUrl: baseUrl,
+        baseUrl: _baseUrl,
         connectTimeout: const Duration(seconds: 30),
         receiveTimeout: const Duration(seconds: 30),
         headers: {'Content-Type': 'application/json'},
@@ -36,80 +39,26 @@ class DioClient {
     );
 
     _addInterceptors();
+    _isInitialized = true;
   }
 
-  // Find a working IP address using network_info_plus
-  static Future<String> _getWorkingBaseUrl() async {
-    if (_dynamicBaseUrl != null) return _dynamicBaseUrl!;
-
-    // Try to get device's WiFi IP using network_info_plus
-    final deviceIP = await _getDeviceWiFiIP();
-    if (deviceIP != null && await _testConnection(deviceIP)) {
-      _dynamicBaseUrl = 'http://$deviceIP:8000/api/v1';
-      return _dynamicBaseUrl!;
-    }
-
-    // Try fallback IPs
-    for (final ip in _fallbackIPs) {
-      if (await _testConnection(ip)) {
-        _dynamicBaseUrl = 'http://$ip:8000/api/v1';
-        return _dynamicBaseUrl!;
-      }
-    }
-
-    // Last resort - use original hardcoded IP
-    _dynamicBaseUrl = 'http://10.4.150.200:8000/api/v1';
-    return _dynamicBaseUrl!;
+  // Reset and re-initialize (useful for changing IP)
+  Future<void> reset() async {
+    _dio?.close();
+    _dio = null;
+    _isInitialized = false;
+    await initialize();
   }
 
-  // Get device WiFi IP using network_info_plus
-  static Future<String?> _getDeviceWiFiIP() async {
-    try {
-      final networkInfo = NetworkInfo();
-
-      // Get WiFi IP address
-      final wifiIP = await networkInfo.getWifiIP();
-
-      if (wifiIP != null && wifiIP.isNotEmpty && wifiIP != '0.0.0.0') {
-        return wifiIP;
-      }
-    } catch (e) {
-      // Ignore errors, will try fallback IPs
-    }
-    return null;
-  }
-
-  // Test if IP is reachable
-  static Future<bool> _testConnection(String ip) async {
-    try {
-      final socket = await Socket.connect(
-        ip,
-        8000,
-        timeout: const Duration(seconds: 2),
-      );
-      socket.destroy();
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Add interceptors (your existing code)
+  // Add interceptors - NO LOGGING
   void _addInterceptors() {
-    dio.interceptors.add(
-      LogInterceptor(
-        request: true,
-        requestHeader: true,
-        requestBody: true,
-        responseHeader: true,
-        responseBody: true,
-        error: true,
-      ),
-    );
+    if (_dio == null) return;
 
-    dio.interceptors.add(
+    // Only add your custom interceptor for auth and error handling
+    _dio!.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          // Add auth token if needed
           // final token = getStoredToken();
           // if (token != null) {
           //   options.headers['Authorization'] = 'Bearer $token';
@@ -117,11 +66,9 @@ class DioClient {
           handler.next(options);
         },
         onResponse: (response, handler) {
-          // Handle successful responses
           handler.next(response);
         },
         onError: (DioException error, handler) {
-          // Handle errors globally
           final customError = _handleError(error);
           handler.reject(
             DioException(
@@ -137,24 +84,18 @@ class DioClient {
   }
 
   // Get current base URL
-  static String? getCurrentBaseUrl() => _dynamicBaseUrl;
+  static String get baseUrl => _baseUrl;
 
-  // Reset for testing different IPs
-  static void reset() {
-    _dynamicBaseUrl = null;
-  }
-
-  // Manually set IP (for testing or manual override)
-  static void setManualIP(String ip) {
-    _dynamicBaseUrl = 'http://$ip:8000/api/v1';
-  }
+  // Get WebSocket URL (for your waste detection)
+  static String get wsUrl => _baseUrl
+      .replaceFirst('http://', 'ws://')
+      .replaceFirst('/api/v1', '/ws/v1');
 
   Exception _handleError(DioException error) {
     if (error.response != null) {
       final statusCode = error.response?.statusCode;
       final data = error.response?.data;
 
-      // Handle specific status codes
       switch (statusCode) {
         case 400:
           return BadRequestException(data['message'] ?? 'Bad request');
@@ -183,7 +124,7 @@ class DioClient {
   }
 }
 
-// Exception classes (your existing code)
+// Exception classes
 class ApiException implements Exception {
   final String message;
   ApiException(this.message);
