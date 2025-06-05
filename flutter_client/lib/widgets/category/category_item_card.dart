@@ -21,10 +21,10 @@ class CategoryItemCard extends StatelessWidget {
     final screenHeight = screenSize.height;
     final screenWidth = screenSize.width;
     
-    // Enhanced screen detection
-    final isSmallScreen = screenHeight < 700;
-    final isNarrowScreen = screenWidth < 400;
-    final isVeryCompact = isSmallScreen && isNarrowScreen;
+    // Optimized detection for modern phones like Xiaomi 13
+    final isModernPhone = screenHeight > 700 && screenHeight < 900 && screenWidth > 360;
+    final isSmallScreen = screenHeight < 800; // Most modern phones
+    final isLandscape = screenWidth > screenHeight;
     
     return TweenAnimationBuilder<double>(
       duration: Duration(milliseconds: 500 + delay),
@@ -72,15 +72,15 @@ class CategoryItemCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Responsive image section
+                      // Optimized for Xiaomi 13 and similar phones
                       Expanded(
-                        flex: isVeryCompact ? 1 : (isSmallScreen ? 2 : 3),
-                        child: _buildImageSection(isSmallScreen, isNarrowScreen),
+                        flex: isModernPhone ? 5 : (isSmallScreen ? 3 : 4),
+                        child: _buildImageSection(isModernPhone, isSmallScreen),
                       ),
-                      // Responsive content section  
+                      // Content section with optimal space for text
                       Expanded(
-                        flex: isVeryCompact ? 2 : (isSmallScreen ? 3 : 2),
-                        child: _buildContentSection(isSmallScreen, isNarrowScreen, isVeryCompact),
+                        flex: isModernPhone ? 4 : (isSmallScreen ? 4 : 3),
+                        child: _buildContentSection(isModernPhone, isSmallScreen, isLandscape),
                       ),
                     ],
                   ),
@@ -93,8 +93,8 @@ class CategoryItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImageSection(bool isSmallScreen, bool isNarrowScreen) {
-    final margin = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
+  Widget _buildImageSection(bool isModernPhone, bool isSmallScreen) {
+    final margin = isModernPhone ? 10.0 : (isSmallScreen ? 8.0 : 12.0);
     
     return Container(
       margin: EdgeInsets.all(margin),
@@ -118,10 +118,10 @@ class CategoryItemCard extends StatelessWidget {
               color: const Color(0xFFE8F5E8),
               child: _buildItemImage(),
             ),
-            if (item.category.isNotEmpty && !isNarrowScreen) // Hide badges on very narrow screens
+            if (item.category.isNotEmpty)
               Positioned(
-                top: isSmallScreen ? 4 : 8,
-                left: isSmallScreen ? 4 : 8,
+                top: 6,
+                left: 6,
                 child: CategoryBadges(
                   categories: item.category, 
                   isCardView: true,
@@ -133,78 +133,77 @@ class CategoryItemCard extends StatelessWidget {
     );
   }
 
-  Widget _buildContentSection(bool isSmallScreen, bool isNarrowScreen, bool isVeryCompact) {
-    final horizontalPadding = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
-    final verticalPadding = isNarrowScreen ? 6.0 : (isSmallScreen ? 8.0 : 12.0);
+  Widget _buildContentSection(bool isModernPhone, bool isSmallScreen, bool isLandscape) {
+    final horizontalPadding = isModernPhone ? 10.0 : (isSmallScreen ? 8.0 : 12.0);
+    final verticalPadding = isModernPhone ? 8.0 : (isSmallScreen ? 8.0 : 12.0);
     
     return Padding(
       padding: EdgeInsets.fromLTRB(
         horizontalPadding,
-        0,
+        4,
         horizontalPadding,
         verticalPadding,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Title with enhanced responsive font size
+          // Title optimized for Xiaomi 13 visibility
           Flexible(
-            flex: isVeryCompact ? 4 : (isSmallScreen ? 3 : 1),
+            flex: 3,
             child: Text(
               item.name,
               style: TextStyle(
-                fontSize: isNarrowScreen ? 11 : (isSmallScreen ? 13 : 14),
+                fontSize: isModernPhone ? 14 : (isSmallScreen ? 12 : 14),
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF1B5E20),
-                height: 1.1,
+                height: 1.15,
               ),
-              maxLines: isVeryCompact ? 4 : (isSmallScreen ? 3 : 1),
+              maxLines: isLandscape ? 2 : 3,
               overflow: TextOverflow.ellipsis,
             ),
           ),
           
-          // Description - only show on normal screens
-          if (!isSmallScreen && !isNarrowScreen) ...[
-            const SizedBox(height: 4),
+          const SizedBox(height: 4),
+          
+          // Description - always one line with ellipsis for clean look
+          if (isModernPhone || !isSmallScreen)
             Flexible(
-              flex: 2,
+              flex: 1,
               child: Text(
                 item.description,
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: isModernPhone ? 11 : (isSmallScreen ? 10 : 12),
                   color: Colors.grey[600],
-                  height: 1.3,
+                  height: 1.2,
                 ),
-                maxLines: 2,
+                maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-          ],
           
           const Spacer(),
           
-          // Bottom status with enhanced responsive sizing
-          if (!isVeryCompact) // Hide on very compact screens to save space
-            Row(
-              children: [
-                Icon(
-                  Icons.lightbulb_outline,
-                  size: isNarrowScreen ? 10 : (isSmallScreen ? 12 : 14),
-                  color: Colors.blue.shade600,
-                ),
-                SizedBox(width: isNarrowScreen ? 2 : (isSmallScreen ? 2 : 4)),
-                Expanded(
-                  child: Text(
-                    'Disposal tip',
-                    style: TextStyle(
-                      fontSize: isNarrowScreen ? 8 : (isSmallScreen ? 10 : 11),
-                      color: Colors.blue.shade600,
-                      fontWeight: FontWeight.w600,
-                    ),
+          // Bottom status - always show but compact
+          Row(
+            children: [
+              Icon(
+                Icons.lightbulb_outline,
+                size: isModernPhone ? 12 : (isSmallScreen ? 10 : 14),
+                color: Colors.blue.shade600,
+              ),
+              const SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'Disposal tip',
+                  style: TextStyle(
+                    fontSize: isModernPhone ? 10 : (isSmallScreen ? 9 : 11),
+                    color: Colors.blue.shade600,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
+          ),
         ],
       ),
     );
