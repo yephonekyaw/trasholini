@@ -1,4 +1,7 @@
+// lib/pages/categories/categories_screen.dart (Updated to use reusable components)
 import 'package:flutter/material.dart';
+import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
+import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/category/category_model.dart';
 import '../../widgets/category/enhanced_category_card.dart';
@@ -13,8 +16,13 @@ class CategoriesScreen extends ConsumerWidget {
       backgroundColor: const Color(0xFFF8FCF8), // Slightly lighter green background
       appBar: _buildAppBar(context),
       body: _buildBody(context, ref),
-      bottomNavigationBar: _buildCustomBottomNavigationBar(context),
-      floatingActionButton: _buildFloatingScanButton(context),
+      bottomNavigationBar: CustomBottomNavigation(
+        currentIndex: 0, // Home is selected
+        onTap: (index) => _onBottomNavTap(context, index),
+      ),
+      floatingActionButton: FloatingScanButton(
+        onTap: () => _onBottomNavTap(context, 1),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
@@ -119,157 +127,6 @@ class CategoriesScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildCustomBottomNavigationBar(BuildContext context) {
-    return Container(
-      height: 90,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-            spreadRadius: 0,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              _buildNavItem(
-                icon: Icons.home_rounded,
-                label: 'Home',
-                isSelected: true,
-                onTap: () => _onBottomNavTap(context, 0),
-              ),
-              const SizedBox(width: 80),
-              _buildNavItem(
-                icon: Icons.settings_rounded,
-                label: 'Settings',
-                isSelected: false,
-                onTap: () => _onBottomNavTap(context, 2),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildFloatingScanButton(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 70,
-          height: 70,
-          margin: const EdgeInsets.only(top: 45),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Color(0xFF66BB6A),
-                Color(0xFF4CAF50),
-              ],
-            ),
-            shape: BoxShape.circle,
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(35),
-              onTap: () => _onBottomNavTap(context, 1),
-              child: const Icon(
-                Icons.qr_code_scanner,
-                color: Colors.white,
-                size: 30,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-          decoration: BoxDecoration(
-            color: const Color(0xFF4CAF50).withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-          ),
-          child: const Text(
-            'Scan',
-            style: TextStyle(
-              fontSize: 11,
-              color: Color(0xFF2E7D32),
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNavItem({
-    required IconData icon,
-    required String label,
-    required bool isSelected,
-    required VoidCallback onTap,
-  }) {
-    return Expanded(
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: isSelected 
-                      ? const Color(0xFF4CAF50).withOpacity(0.1)
-                      : Colors.transparent,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Icon(
-                  icon,
-                  size: 22,
-                  color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
-                ),
-              ),
-              const SizedBox(height: 4),
-              Flexible(
-                child: Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: isSelected ? const Color(0xFF4CAF50) : Colors.grey[600],
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                    letterSpacing: 0.3,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   void _onCategoryTap(BuildContext context, WidgetRef ref, CategoryModel category) {
     Navigator.push(
       context,
@@ -300,12 +157,15 @@ class CategoriesScreen extends ConsumerWidget {
   void _onBottomNavTap(BuildContext context, int index) {
     switch (index) {
       case 0:
+        // Already on home page
         break;
       case 1:
         print('Navigate to scan screen');
+        // TODO: Navigate to scan page
         break;
       case 2:
         print('Navigate to settings screen');
+        // TODO: Navigate to settings page
         break;
     }
   }
