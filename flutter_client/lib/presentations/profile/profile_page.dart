@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/widgets/profile/profile_action.dart';
-import 'package:flutter_client/widgets/profile/profile_history_section.dart';
 import 'package:flutter_client/widgets/profile/profile_points_section.dart';
 import 'package:flutter_client/widgets/profile/profile_header_section.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,12 +23,7 @@ class ProfilePage extends ConsumerWidget {
               // Points Section (Eco points card with progress)
               ProfilePointsSection(),
 
-              const SizedBox(height: 20),
-
-              // History Section (Scan history with details)
-              const ProfileHistorySection(),
-
-               const SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               const ProfileAccountActionsSection(),
               // 4. Account actions (Sign out & Delete) - ADD HERE

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/widgets/error/action_button.dart';
-import 'package:flutter_client/widgets/error/animated_error_widget.dart';
 import 'package:go_router/go_router.dart';
 
 class MainErrorScreen extends StatelessWidget {
@@ -36,11 +35,6 @@ class MainErrorScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Animated Error Illustration
-                  AnimatedErrorWidget(isNotFound: isNotFound),
-
-                  const SizedBox(height: 48),
-
                   // Error Code
                   Text(
                     errorCode,
@@ -77,7 +71,8 @@ class MainErrorScreen extends StatelessWidget {
                   const SizedBox(height: 48),
 
                   // Action Buttons
-                  Row(
+                  Column(
+                    spacing: 16,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       // Go Back Button

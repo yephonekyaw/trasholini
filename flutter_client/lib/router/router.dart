@@ -1,4 +1,6 @@
+import 'package:flutter_client/presentations/auth/account_deletion_screen.dart';
 import 'package:flutter_client/presentations/auth/sign_in_screen.dart';
+import 'package:flutter_client/presentations/category/waste_items_page.dart';
 import 'package:flutter_client/presentations/error/main_error_screen.dart';
 import 'package:flutter_client/presentations/scan/image_preview_page.dart';
 import 'package:flutter_client/providers/google_auth_provider.dart';
@@ -71,6 +73,20 @@ final routerProvider = Provider<GoRouter>((ref) {
             imagePath: extra?['imagePath'] as String? ?? '',
           );
         },
+      ),
+      GoRoute(
+        path: '/waste-items/:wasteClass',
+        name: 'waste-items',
+        builder: (context, state) {
+          final wasteClass = state.pathParameters['wasteClass'] ?? '';
+
+          return WasteItemsPage(wasteClass: wasteClass);
+        },
+      ),
+      GoRoute(
+        path: "/account-deletion",
+        name: "account-deletion",
+        builder: (context, state) => const AccountDeletionPage(),
       ),
     ],
     errorBuilder: (context, state) => MainErrorScreen(),

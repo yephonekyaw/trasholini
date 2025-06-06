@@ -22,12 +22,11 @@ class ImagePreviewPage extends ConsumerWidget {
     final wasteAnalysisState = ref.watch(wasteAnalysisProvider);
 
     return Scaffold(
-      backgroundColor: AppConstants.lightGreen,
+      backgroundColor: const Color(0xFFF8FCF8), // Match other pages
       body: SafeArea(
-        bottom: false,
         child: Column(
           children: [
-            _buildHeader(context, size, ref),
+            _buildHeader(context, ref),
             Expanded(
               child: SingleChildScrollView(
                 padding: EdgeInsets.all(size.width * 0.04),
@@ -46,6 +45,65 @@ class ImagePreviewPage extends ConsumerWidget {
       bottomNavigationBar: CustomBottomNavigation(),
       floatingActionButton: FloatingScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
+        ),
+      ),
+      child: Row(
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => ref.read(routerProvider).go('/scan'),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFF2E7D32),
+                  size: 22,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Image Preview',
+                  style: TextStyle(
+                    color: Color(0xFF1B5E20),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Review your captured image',
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withValues(alpha: 0.8),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -369,62 +427,4 @@ class ImagePreviewPage extends ConsumerWidget {
       }
     }
   }
-}
-
-Widget _buildHeader(BuildContext context, Size size, WidgetRef ref) {
-  return Container(
-    padding: EdgeInsets.symmetric(
-      horizontal: size.width * 0.04,
-      vertical: size.height * 0.01,
-    ),
-    child: Row(
-      children: [
-        // Back button
-        Container(
-          width: size.width * 0.11,
-          height: size.width * 0.11,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(size.width * 0.03),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 6,
-                offset: Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            onPressed: () => ref.read(routerProvider).go('/scan'),
-            icon: Icon(
-              Icons.arrow_back,
-              color: Colors.black87,
-              size: size.width * 0.05,
-            ),
-          ),
-        ),
-
-        // Centered title with icon
-        Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Flexible(
-                child: Text(
-                  'Image Preview',
-                  style: TextStyle(
-                    fontSize: size.width * 0.055,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-        ),
-        SizedBox(width: size.width * 0.13), // Balance the row
-      ],
-    ),
-  );
 }

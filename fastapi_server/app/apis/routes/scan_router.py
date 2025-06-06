@@ -15,6 +15,7 @@ from app.utils.firestore import firestore_client
 from app.services.waste_detection import waste_detection_service
 from app.core.config import settings
 from app.core.logging import logger
+from google.cloud.firestore import FieldFilter
 
 scan_router = APIRouter()
 
@@ -381,7 +382,9 @@ async def save_disposal_tips(
             # Update user's profile with eco points and scan count (optional)
             try:
                 profiles_ref = firestore_client.collection("profiles")
-                user_query = profiles_ref.where("user_id", "==", user_id).limit(1)
+                user_query = profiles_ref.where(
+                    filter=FieldFilter("user_id", "==", user_id)
+                ).limit(1)
                 user_docs = list(user_query.stream())
 
                 if user_docs:
@@ -611,7 +614,7 @@ async def get_disposal_history(request: Request, limit: int = 20):
         # Query disposal history for the user
         disposal_collection = firestore_client.collection("disposal-history")
         query = (
-            disposal_collection.where("user_id", "==", user_id)
+            disposal_collection.where(filter=FieldFilter("user_id", "==", user_id))
             .order_by("created_at", direction="DESCENDING")
             .limit(limit)
         )

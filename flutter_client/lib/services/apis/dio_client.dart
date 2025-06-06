@@ -9,7 +9,7 @@ class DioClient {
   final TokenStorageService _tokenStorage = TokenStorageService();
 
   // Manual IP configuration - change this to your server IP
-  static const String _baseUrl = 'http://10.4.150.200:8000/api/v1';
+  static const String _baseUrl = 'http://192.168.0.102:8000/api/v1';
 
   DioClient._internal();
 

@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_client/router/router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/main/waste_category.dart';
 
-class EnhancedCategoryCard extends StatefulWidget {
+class EnhancedCategoryCard extends ConsumerStatefulWidget {
   final WasteCategory category;
   final bool isCompact;
 
   const EnhancedCategoryCard({
-    super.key, 
+    super.key,
     required this.category,
     this.isCompact = false,
   });
 
   @override
-  State<EnhancedCategoryCard> createState() => _EnhancedCategoryCardState();
+  ConsumerState<EnhancedCategoryCard> createState() =>
+      _EnhancedCategoryCardState();
 }
 
-class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
+class _EnhancedCategoryCardState extends ConsumerState<EnhancedCategoryCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -74,15 +77,12 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
   @override
   Widget build(BuildContext context) {
     final categoryColor = _getCategoryColor();
-    final screenWidth = MediaQuery.of(context).size.width;
-    
+
     // Responsive sizing
     final double borderRadius = widget.isCompact ? 14 : 16;
     final double imageBorderRadius = widget.isCompact ? 10 : 12;
     final double iconSize = widget.isCompact ? 10 : 12;
     final double titleFontSize = widget.isCompact ? 11 : 12;
-    final double descriptionFontSize = widget.isCompact ? 7 : 8;
-    final double actionFontSize = widget.isCompact ? 6 : 7;
 
     return AnimatedBuilder(
       animation: _animationController,
@@ -169,13 +169,17 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
                               top: widget.isCompact ? 4 : 6,
                               right: widget.isCompact ? 4 : 6,
                               child: Container(
-                                padding: EdgeInsets.all(widget.isCompact ? 3 : 4),
+                                padding: EdgeInsets.all(
+                                  widget.isCompact ? 3 : 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(alpha: 0.1),
+                                      color: Colors.black.withValues(
+                                        alpha: 0.1,
+                                      ),
                                       spreadRadius: 0,
                                       blurRadius: 3,
                                       offset: const Offset(0, 1),
@@ -239,36 +243,7 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
 
   void _handleCategoryTap() {
     HapticFeedback.lightImpact();
-
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Selected: ${widget.category.name}'),
-          duration: const Duration(seconds: 1),
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-        ),
-      );
-    }
-
-    // TODO: Track category interaction in Firebase Analytics
-    // FirebaseAnalytics.instance.logEvent(
-    //   name: 'category_selected',
-    //   parameters: {
-    //     'category_id': widget.category.id,
-    //     'category_name': widget.category.name,
-    //   },
-    // );
-
-    // TODO: Navigate to category details screen
-    // Navigator.push(
-    //   context,
-    //   MaterialPageRoute(
-    //     builder: (context) => CategoryDetailsScreen(
-    //       category: widget.category,
-    //     ),
-    //   ),
-    // );
+    ref.read(routerProvider).go('/waste-items/${widget.category.name}');
   }
 
   IconData _getCategoryIcon() {

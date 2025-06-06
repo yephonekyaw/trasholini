@@ -216,7 +216,7 @@ class _DisposalInstructionsPageState
     // If no analysis result available, show error or redirect
     if (analysisResult == null) {
       return Scaffold(
-        backgroundColor: AppConstants.lightGreen,
+        backgroundColor: const Color(0xFFF8FCF8),
         body: SafeArea(
           child: Center(
             child: Column(
@@ -257,34 +257,18 @@ class _DisposalInstructionsPageState
     }
 
     return Scaffold(
-      backgroundColor: AppConstants.lightGreen,
+      backgroundColor: const Color(0xFFF8FCF8), // Match other pages
       body: SafeArea(
-        bottom: false,
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return Column(
-              children: [
-                // Header with back button and title
-                _buildHeader(context, size, isTablet),
-
-                // Main content - scrollable
-                Expanded(
-                  child:
-                      isLandscape
-                          ? _buildLandscapeLayout(
-                            size,
-                            isTablet,
-                            analysisResult,
-                          )
-                          : _buildPortraitLayout(
-                            size,
-                            isTablet,
-                            analysisResult,
-                          ),
-                ),
-              ],
-            );
-          },
+        child: Column(
+          children: [
+            _buildHeader(context, ref),
+            Expanded(
+              child:
+                  isLandscape
+                      ? _buildLandscapeLayout(size, isTablet, analysisResult)
+                      : _buildPortraitLayout(size, isTablet, analysisResult),
+            ),
+          ],
         ),
       ),
       bottomNavigationBar: CustomBottomNavigation(),
@@ -293,73 +277,58 @@ class _DisposalInstructionsPageState
     );
   }
 
-  Widget _buildHeader(BuildContext context, Size size, bool isTablet) {
-    final padding = size.width * 0.04;
-    final titleFontSize = isTablet ? 26.0 : size.width * 0.045;
-
-    return Padding(
-      padding: EdgeInsets.all(padding),
-      child: Stack(
-        alignment: Alignment.center,
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
+        ),
+      ),
+      child: Row(
         children: [
-          // Centered title with icon
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: EdgeInsets.all(isTablet ? 12 : 8),
-                decoration: BoxDecoration(
-                  color: AppConstants.primaryGreen.withValues(alpha: .1),
-                  borderRadius: BorderRadius.circular(isTablet ? 16 : 12),
-                ),
-                child: Icon(
-                  Icons.recycling,
-                  color: AppConstants.primaryGreen,
-                  size: isTablet ? 32 : 28,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => context.pop(),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFF2E7D32),
+                  size: 22,
                 ),
               ),
-              SizedBox(width: isTablet ? 12 : 8),
-              Flexible(
-                child: Text(
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
                   'Disposal Instructions',
                   style: TextStyle(
-                    fontSize: titleFontSize,
+                    color: Color(0xFF1B5E20),
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                    letterSpacing: 0.8,
                   ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
-                  textAlign: TextAlign.center,
                 ),
-              ),
-            ],
-          ),
-
-          // Back button (absolute positioned)
-          Positioned(
-            left: 0,
-            child: Container(
-              width: isTablet ? 56 : 48,
-              height: isTablet ? 56 : 48,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(isTablet ? 18 : 16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 8,
-                    offset: Offset(0, 2),
+                const SizedBox(height: 2),
+                Text(
+                  'AI-powered waste disposal guidance',
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withValues(alpha: 0.8),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
                   ),
-                ],
-              ),
-              child: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black87,
-                  size: isTablet ? 28 : 24,
                 ),
-                onPressed: () => context.pop(),
-              ),
+              ],
             ),
           ),
         ],

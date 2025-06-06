@@ -14,116 +14,196 @@ class ProfileAccountActionsSection extends ConsumerStatefulWidget {
 class _ProfileAccountActionsSectionState
     extends ConsumerState<ProfileAccountActionsSection> {
   bool _isSigningOut = false;
-  bool _isDeletingProfile = false;
 
-  // --- Sign Out Logic ---
+  // --- Enhanced Sign Out Logic ---
   void _showSignOutDialog() {
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (BuildContext context) {
-        return Dialog(
-          alignment: Alignment.topCenter,
-          insetPadding: const EdgeInsets.only(
-            top: 120,
-            left: 24,
-            right: 24,
-            bottom: 200,
-          ),
+        return AlertDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(24),
+          contentPadding: EdgeInsets.zero,
+          content: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.white, Colors.green.shade50.withOpacity(0.3)],
+              ),
+            ),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title Row
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFF66BB6A), Color(0xFF4CAF50)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(Icons.logout, color: Colors.white, size: 24),
+                // Header with gradient background
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [Color(0xFF66BB6A), Color(0xFF4CAF50)],
                     ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        'Sign Out',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Icons.logout_rounded,
+                          color: Colors.white,
+                          size: 24,
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Sign Out',
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Confirm your action',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-
-                const SizedBox(height: 20),
 
                 // Content
-                Text(
-                  'Are you sure you want to sign out of your eco-warrior account? You can always sign back in to continue your sustainability journey!',
-                  style: TextStyle(fontSize: 16, height: 1.4),
-                  textAlign: TextAlign.left,
-                ),
+                Padding(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              Icons.info_outline,
+                              color: Colors.blue.shade600,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Are you sure you want to sign out?',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.grey.shade800,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'You can always sign back in to continue your sustainability journey and eco-warrior progress!',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.grey.shade600,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
 
-                const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                // Action Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                side: BorderSide(color: Colors.grey.shade300),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: Text(
+                                'Cancel',
+                                style: TextStyle(
+                                  color: Colors.grey.shade700,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await _handleSignOut();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4CAF50),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                                elevation: 2,
+                                shadowColor: Colors.green.withOpacity(0.3),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                              child: const Text(
+                                'Sign Out',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      child: Text(
-                        'Cancel',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () async {
-                        Navigator.of(context).pop();
-                        await _handleSignOut();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF4CAF50),
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                      child: Text(
-                        'Sign Out',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -134,380 +214,35 @@ class _ProfileAccountActionsSectionState
   }
 
   Future<void> _handleSignOut() async {
-    setState(() {
-      _isSigningOut = true;
-    });
+    setState(() => _isSigningOut = true);
 
-    try {
-      ref.read(googleAuthProvider.notifier).signOut();
+    ref.read(googleAuthProvider.notifier).signOut();
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Successfully signed out. See you soon, eco-warrior!',
-                    style: TextStyle(fontSize: 14),
-                  ),
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Icon(Icons.check_circle, color: Colors.white),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Successfully signed out. See you soon, eco-warrior!',
+                  style: TextStyle(fontSize: 14),
                 ),
-              ],
-            ),
-            backgroundColor: Color(0xFF4CAF50),
-            duration: const Duration(seconds: 2),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(16),
-            behavior: SnackBarBehavior.floating,
+              ),
+            ],
           ),
-        );
-
-        context.goNamed('login');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Failed to sign out. Please try again.',
-                    style: TextStyle(fontSize: 14),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red[600],
-            duration: const Duration(seconds: 3),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(16),
-            behavior: SnackBarBehavior.floating,
+          backgroundColor: Color(0xFF4CAF50),
+          duration: const Duration(seconds: 2),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
           ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isSigningOut = false;
-        });
-      }
-    }
-  }
-
-  // --- Delete Profile Logic ---
-  void _showDeleteProfileDialog() {
-    String confirmText = '';
-
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return Dialog(
-              alignment: Alignment.topCenter,
-              insetPadding: const EdgeInsets.only(
-                top: 80,
-                left: 16,
-                right: 16,
-                bottom: 80,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title Row
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Icon(
-                              Icons.delete_forever, // Reverted icon here
-                              color: Colors.red[700],
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              'Delete Profile', // Reverted title text
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.red,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Warning Container - Re-added as requested
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Colors.red.withValues(alpha: 0.2),
-                          ),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Icon(
-                                  Icons.warning,
-                                  color: Colors.red[600],
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    'Warning: This action is permanent!',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.red[700],
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                _buildWarningItem(
-                                  'All your eco-points will be lost',
-                                ),
-                                const SizedBox(height: 4),
-                                _buildWarningItem(
-                                  'Your scan history will be deleted',
-                                ),
-                                const SizedBox(height: 4),
-                                _buildWarningItem(
-                                  'Your account cannot be recovered',
-                                ),
-                                const SizedBox(height: 4),
-                                _buildWarningItem(
-                                  'You\'ll lose your eco-warrior progress',
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      const SizedBox(height: 20),
-
-                      // Confirmation Input
-                      Text(
-                        'Type "DELETE" to confirm:', // Reverted text
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      TextField(
-                        onChanged: (value) {
-                          setState(() {
-                            confirmText = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: 'Type DELETE here',
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Colors.red.withValues(alpha: 0.3),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red, width: 2),
-                          ),
-                        ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Action Buttons
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                            ),
-                            child: Text(
-                              'Cancel',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ElevatedButton(
-                            onPressed:
-                                confirmText == 'DELETE'
-                                    ? () async {
-                                      Navigator.of(context).pop();
-                                      await _handleDeleteProfile();
-                                    }
-                                    : null,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor:
-                                  confirmText == 'DELETE'
-                                      ? Colors.red[600]
-                                      : Colors.grey[300],
-                              foregroundColor:
-                                  confirmText == 'DELETE'
-                                      ? Colors.white
-                                      : Colors.grey[500],
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                            ),
-                            child: Text(
-                              'Delete Forever',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
-
-  // Helper method to build warning items with proper wrapping - Re-added
-  Widget _buildWarningItem(String text) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '• ',
-          style: TextStyle(fontSize: 13, color: Colors.red[600], height: 1.4),
+          margin: const EdgeInsets.all(16),
+          behavior: SnackBarBehavior.floating,
         ),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(fontSize: 13, color: Colors.red[600], height: 1.4),
-            softWrap: true,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Future<void> _handleDeleteProfile() async {
-    setState(() {
-      _isDeletingProfile = true;
-    });
-
-    try {
-      // TODO: Implement delete profile logic
-      // await ref.read(userProfileProvider.notifier).deleteProfile();
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.eco_outlined, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Profile deleted. Thank you for being an eco-warrior!',
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Color(0xFF4CAF50),
-            duration: const Duration(seconds: 3),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(16),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-
-        context.goNamed('login');
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.error, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text('Failed to delete profile. Please try again.'),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.red[600],
-            duration: const Duration(seconds: 3),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            margin: const EdgeInsets.all(16),
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isDeletingProfile = false;
-        });
-      }
+      );
+      context.goNamed('login');
     }
   }
 
@@ -521,10 +256,7 @@ class _ProfileAccountActionsSectionState
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed:
-                  _isSigningOut || _isDeletingProfile
-                      ? null
-                      : _showSignOutDialog,
+              onPressed: _isSigningOut ? null : _showSignOutDialog,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
@@ -539,7 +271,7 @@ class _ProfileAccountActionsSectionState
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors:
-                        _isSigningOut || _isDeletingProfile
+                        _isSigningOut
                             ? [Colors.grey[400]!, Colors.grey[500]!]
                             : [Color(0xFF66BB6A), Color(0xFF4CAF50)],
                     begin: Alignment.topLeft,
@@ -547,7 +279,7 @@ class _ProfileAccountActionsSectionState
                   ),
                   borderRadius: BorderRadius.circular(12),
                   boxShadow:
-                      _isSigningOut || _isDeletingProfile
+                      _isSigningOut
                           ? null
                           : [
                             BoxShadow(
@@ -608,14 +340,17 @@ class _ProfileAccountActionsSectionState
 
           const SizedBox(height: 16),
 
-          // Delete Profile Button (Solid Red)
+          // Delete Profile Button - Now navigates to dedicated page
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               onPressed:
-                  _isSigningOut || _isDeletingProfile
+                  _isSigningOut
                       ? null
-                      : _showDeleteProfileDialog,
+                      : () {
+                        // Navigate to the dedicated deletion page
+                        context.push('/account-deletion');
+                      },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 foregroundColor: Colors.white,
@@ -628,57 +363,27 @@ class _ProfileAccountActionsSectionState
                 disabledBackgroundColor: Colors.grey[300],
                 disabledForegroundColor: Colors.grey[500],
               ),
-              child:
-                  _isDeletingProfile
-                      ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                Colors.white,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          const Text(
-                            'Deleting...',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      )
-                      : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.delete_forever,
-                            size: 20,
-                            color: Colors.white,
-                          ), // Reverted icon here
-                          const SizedBox(width: 8),
-                          const Text(
-                            'Delete Profile',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.delete_forever, size: 20, color: Colors.white),
+                  const SizedBox(width: 8),
+                  const Text(
+                    'Delete Profile',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
 
           const SizedBox(height: 20),
 
-          // App version or other footer info
+          // App version
           Text(
             'TRASHOLINI v1.0.0',
             style: TextStyle(

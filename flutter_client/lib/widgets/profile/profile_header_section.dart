@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_client/models/user_profile_data_model.dart';
 import 'package:flutter_client/providers/user_profile_provider.dart';
+import 'package:flutter_client/widgets/profile/profile_update_modal.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,21 +14,6 @@ class ProfileHeaderSection extends ConsumerStatefulWidget {
 }
 
 class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
-  bool _isEditingName = false;
-  late TextEditingController _nameController;
-
-  @override
-  void initState() {
-    super.initState();
-    _nameController = TextEditingController();
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
   // Get user level based on points (every 100 points = 1 level)
   int _getUserLevel(int points) {
     return (points / 100).floor() + 1;
@@ -55,58 +41,91 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
     }
   }
 
+  void _showProfileUpdateModal(UserProfile userProfile) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => ProfileUpdateModal(userProfile: userProfile),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
+        ),
+      ),
+      child: Row(
+        children: [
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => context.goNamed('mainpage'),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFF2E7D32),
+                  size: 22,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Profile',
+                  style: TextStyle(
+                    color: Color(0xFF1B5E20),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Manage your account settings',
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withValues(alpha: 0.8),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildLoadingState() {
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
+        _buildHeader(context),
 
         // Loading Profile Content
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: const BoxDecoration(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -124,7 +143,9 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                   child: const Center(
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Color(0xFF4CAF50),
+                      ),
                     ),
                   ),
                 ),
@@ -163,55 +184,21 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   Widget _buildErrorState(Object error) {
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
+        _buildHeader(context),
 
         // Error Content
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: const BoxDecoration(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -232,6 +219,21 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                   'Please try again later',
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    final _ = ref.refresh(userProfileProvider);
+                  },
+                  icon: const Icon(Icons.refresh),
+                  label: const Text('Retry'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF4CAF50),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -247,194 +249,177 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
 
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const Spacer(),
-            ],
-          ),
-        ),
+        _buildHeader(context),
 
         // Profile Picture and User Info
         Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
-          decoration: const BoxDecoration(
+          width: double.infinity,
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-                // Profile Picture (now the direct tap target for changing photo)
+                // Profile Picture (clickable to open modal)
                 GestureDetector(
-                  onTap: () {
-                    // TODO: Implement image picker
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Change profile picture - Coming-Soon!',
-                        ),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
+                  onTap: () => _showProfileUpdateModal(user),
                   child: Container(
                     width: 100,
                     height: 100,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.grey[300],
                       border: Border.all(
-                        color: Colors.grey[400]!,
+                        color: const Color(0xFF4CAF50),
                         width: 3,
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    child: ClipOval(
-                      child:
-                          user.photoUrl != null
-                              ? Image.network(
-                                user.photoUrl!,
-                                fit: BoxFit.cover,
-                                errorBuilder:
-                                    (context, error, stackTrace) =>
-                                        const Icon(
-                                          Icons.person,
-                                          size: 50,
-                                          color: Colors.grey,
-                                        ),
-                              )
-                              : const Icon(
-                                Icons.person,
-                                size: 50,
-                                color: Colors.grey,
-                              ),
+                    child: Stack(
+                      children: [
+                        ClipOval(
+                          child:
+                              user.photoUrl != null
+                                  ? Image.network(
+                                    user.photoUrl!,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                    errorBuilder:
+                                        (context, error, stackTrace) =>
+                                            Container(
+                                              width: 100,
+                                              height: 100,
+                                              color: Colors.grey[300],
+                                              child: const Icon(
+                                                Icons.person,
+                                                size: 50,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                  )
+                                  : Container(
+                                    width: 100,
+                                    height: 100,
+                                    color: Colors.grey[300],
+                                    child: const Icon(
+                                      Icons.person,
+                                      size: 50,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                        ),
+                        // Edit overlay
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            width: 28,
+                            height: 28,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF4CAF50),
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 14,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                
-                const SizedBox(height: 16), // Retained base spacing
 
-                // User Name with Edit
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (_isEditingName)
-                      Expanded(
-                        child: TextField(
-                          controller: _nameController,
-                          textAlign: TextAlign.center,
+                const SizedBox(height: 16),
+
+                // User Name (clickable to open modal)
+                GestureDetector(
+                  onTap: () => _showProfileUpdateModal(user),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.transparent,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          user.displayName ?? 'Anonymous',
                           style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
+                            color: Color(0xFF1B5E20),
                           ),
-                          decoration: const InputDecoration(
-                            border: UnderlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(horizontal: 8),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: const Color(
+                              0xFF4CAF50,
+                            ).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
                           ),
-                          onSubmitted: (value) {
-                            if (value.trim().isNotEmpty) {
-                              // TODO: Update user name in provider
-                            }
-                            setState(() {
-                              _isEditingName = false;
-                            });
-                          },
+                          child: const Icon(
+                            Icons.edit,
+                            color: Color(0xFF4CAF50),
+                            size: 16,
+                          ),
                         ),
-                      )
-                    else
-                      Text(
-                        user.displayName ?? 'Anonymous',
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () {
-                        if (_isEditingName) {
-                          if (_nameController.text.trim().isNotEmpty) {
-                            // TODO: Update user name in provider
-                          }
-                          setState(() {
-                            _isEditingName = true;
-                          });
-                        } else {
-                          _nameController.text = user.displayName ?? '';
-                          setState(() {
-                            _isEditingName = true;
-                          });
-                        }
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: Colors.green.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          _isEditingName ? Icons.check : Icons.edit,
-                          color: Colors.green,
-                          size: 16,
-                        ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
 
+                const SizedBox(height: 8),
+
                 // User Level with Icon
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(levelIcon, color: levelColor, size: 20),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Level $userLevel',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: levelColor,
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: levelColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(levelIcon, color: levelColor, size: 20),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Level $userLevel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: levelColor,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -448,10 +433,13 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   Widget build(BuildContext context) {
     final userProfileAsync = ref.watch(userProfileProvider);
 
-    return userProfileAsync.when(
-      data: (userProfile) => _buildHeaderContent(userProfile!),
-      loading: () => _buildLoadingState(),
-      error: (error, stackTrace) => _buildErrorState(error),
+    return Container(
+      color: const Color(0xFFF8FCF8), // Match other pages
+      child: userProfileAsync.when(
+        data: (userProfile) => _buildHeaderContent(userProfile!),
+        loading: () => _buildLoadingState(),
+        error: (error, stackTrace) => _buildErrorState(error),
+      ),
     );
   }
 }

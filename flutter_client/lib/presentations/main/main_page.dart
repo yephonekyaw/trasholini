@@ -10,7 +10,6 @@ import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/main/catagories_provider.dart';
-import '../../providers/main/waste_bins_provider.dart';
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
@@ -18,7 +17,6 @@ class MainPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsync = ref.watch(categoriesProvider);
-    final wasteBinsAsync = ref.watch(userSelectedBinsProvider);
 
     return Scaffold(
       backgroundColor: Colors.grey[100],
@@ -33,15 +31,10 @@ class MainPage extends ConsumerWidget {
               const SizedBox(height: 20),
 
               // Waste Bin Profile Section
-              wasteBinsAsync.when(
-                data: (bins) => WasteBinProfile(bins: bins),
-                loading: () => const WasteBinProfileLoading(),
-                error: (error, stack) => WasteBinProfileError(error: error),
-              ),
+              WasteBinProfile(),
               const SizedBox(height: 20),
 
               // Enhanced Categories Section
-              // 🔥 FIREBASE INTEGRATION POINT 10: HANDLE ASYNC CATEGORIES
               categoriesAsync.when(
                 data: (categories) => CategoriesSection(categories: categories),
                 loading: () => const CategoriesSectionLoading(),

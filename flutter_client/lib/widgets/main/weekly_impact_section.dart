@@ -1,14 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_client/providers/waste_history_provider.dart';
 
-class WeeklyImpactSection extends ConsumerWidget {
+class WeeklyImpactSection extends ConsumerStatefulWidget {
   const WeeklyImpactSection({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final weeklyData = _getWeeklyImpactData();
+  ConsumerState<WeeklyImpactSection> createState() =>
+      _WeeklyImpactSectionState();
+}
+
+class _WeeklyImpactSectionState extends ConsumerState<WeeklyImpactSection> {
+  @override
+  void initState() {
+    super.initState();
+    // Load this week's data when widget initializes
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadWeeklyData();
+    });
+  }
+
+  Future<void> _loadWeeklyData() async {
+    try {
+      await ref.read(wasteHistoryProvider.notifier).loadHistoryThisWeek();
+    } catch (e) {
+      // Error handling is managed by the provider
+      debugPrint('WeeklyImpactSection: Error loading weekly data: $e');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final weeklyHistoryState = ref.watch(wasteHistoryProvider);
+    final weeklyData = _getWeeklyImpactData(weeklyHistoryState);
     final scanCount = weeklyData['scanCount'] as int;
     final points = weeklyData['points'] as String;
+    final isLoading = weeklyData['isLoading'] as bool;
     final screenWidth = MediaQuery.of(context).size.width;
     final isSmallScreen = screenWidth < 400;
 
@@ -69,7 +96,9 @@ class WeeklyImpactSection extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis, // Handle text overflow
                     ),
                     Text(
-                      'Keep up the great work!',
+                      isLoading
+                          ? 'Loading your progress...'
+                          : 'Keep up the great work!',
                       style: TextStyle(
                         fontSize:
                             isSmallScreen
@@ -108,14 +137,25 @@ class WeeklyImpactSection extends ConsumerWidget {
                       color: Colors.green[700],
                     ),
                     SizedBox(width: isSmallScreen ? 2 : 4), // Reduced spacing
-                    Text(
-                      '$scanCount',
-                      style: TextStyle(
-                        fontSize: isSmallScreen ? 12 : 14, // Smaller font
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[700],
-                      ),
-                    ),
+                    isLoading
+                        ? SizedBox(
+                          width: isSmallScreen ? 12 : 16,
+                          height: isSmallScreen ? 12 : 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.green[700]!,
+                            ),
+                          ),
+                        )
+                        : Text(
+                          '$scanCount',
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 12 : 14, // Smaller font
+                            fontWeight: FontWeight.bold,
+                            color: Colors.green[700],
+                          ),
+                        ),
                   ],
                 ),
               ),
@@ -204,14 +244,25 @@ class WeeklyImpactSection extends ConsumerWidget {
                       SizedBox(
                         height: isSmallScreen ? 4 : 6,
                       ), // Reduced spacing
-                      Text(
-                        points,
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 24 : 28, // Smaller font
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue[800],
-                        ),
-                      ),
+                      isLoading
+                          ? SizedBox(
+                            width: isSmallScreen ? 60 : 80,
+                            height: isSmallScreen ? 24 : 28,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: Colors.blue[100],
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          )
+                          : Text(
+                            points,
+                            style: TextStyle(
+                              fontSize: isSmallScreen ? 24 : 28, // Smaller font
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue[800],
+                            ),
+                          ),
                       Row(
                         children: [
                           Icon(
@@ -248,7 +299,7 @@ class WeeklyImpactSection extends ConsumerWidget {
                       isSmallScreen ? 6 : 8,
                     ), // Smaller padding
                     decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.1),
+                      color: Colors.blue.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -269,7 +320,7 @@ class WeeklyImpactSection extends ConsumerWidget {
               color: Colors.white.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: _buildWeeklyProgress(scanCount, isSmallScreen),
+            child: _buildWeeklyProgress(scanCount, isSmallScreen, isLoading),
           ),
         ],
       ),
@@ -281,7 +332,11 @@ class WeeklyImpactSection extends ConsumerWidget {
     return (scanCount / weeklyGoal).clamp(0.0, 1.0);
   }
 
-  Widget _buildWeeklyProgress(int scanCount, bool isSmallScreen) {
+  Widget _buildWeeklyProgress(
+    int scanCount,
+    bool isSmallScreen,
+    bool isLoading,
+  ) {
     int weeklyGoal = 15;
     double progress = _calculateProgress(scanCount);
     int remaining = ((1 - progress) * weeklyGoal).ceil();
@@ -317,47 +372,87 @@ class WeeklyImpactSection extends ConsumerWidget {
                 ],
               ),
             ),
-            Text(
-              '$scanCount / $weeklyGoal',
-              style: TextStyle(
-                fontSize: isSmallScreen ? 11 : 13, // Smaller font
-                fontWeight: FontWeight.bold,
-                color: Colors.green[800],
-              ),
-            ),
+            isLoading
+                ? Container(
+                  width: isSmallScreen ? 40 : 50,
+                  height: isSmallScreen ? 11 : 13,
+                  decoration: BoxDecoration(
+                    color: Colors.green[100],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                )
+                : Text(
+                  '$scanCount / $weeklyGoal',
+                  style: TextStyle(
+                    fontSize: isSmallScreen ? 11 : 13, // Smaller font
+                    fontWeight: FontWeight.bold,
+                    color: Colors.green[800],
+                  ),
+                ),
           ],
         ),
         SizedBox(height: isSmallScreen ? 6 : 8), // Reduced spacing
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
-            value: progress,
+            value: isLoading ? null : progress,
             backgroundColor: Colors.green[100],
             valueColor: AlwaysStoppedAnimation<Color>(Colors.green[600]!),
             minHeight: isSmallScreen ? 4 : 6, // Thinner progress bar
           ),
         ),
         SizedBox(height: isSmallScreen ? 6 : 8), // Reduced spacing
-        Text(
-          progress >= 1.0
-              ? '🎉 Amazing! Goal achieved this week!'
-              : remaining == 1
-              ? '🔥 Just 1 more scan to reach your goal!'
-              : '💪 $remaining more scans to reach your weekly goal',
-          style: TextStyle(
-            fontSize: isSmallScreen ? 9 : 11, // Smaller font
-            color: Colors.green[700],
-            fontWeight: FontWeight.w500,
-          ),
-          textAlign: TextAlign.center,
-          overflow: TextOverflow.ellipsis, // Handle text overflow
-          maxLines: 2, // Allow text to wrap to 2 lines
-        ),
+        isLoading
+            ? Container(
+              width: double.infinity,
+              height: isSmallScreen ? 18 : 22,
+              decoration: BoxDecoration(
+                color: Colors.green[50],
+                borderRadius: BorderRadius.circular(4),
+              ),
+            )
+            : Text(
+              progress >= 1.0
+                  ? '🎉 Amazing! Goal achieved this week!'
+                  : remaining == 1
+                  ? '🔥 Just 1 more scan to reach your goal!'
+                  : '💪 $remaining more scans to reach your weekly goal',
+              style: TextStyle(
+                fontSize: isSmallScreen ? 9 : 11, // Smaller font
+                color: Colors.green[700],
+                fontWeight: FontWeight.w500,
+              ),
+              textAlign: TextAlign.center,
+              overflow: TextOverflow.ellipsis, // Handle text overflow
+              maxLines: 2, // Allow text to wrap to 2 lines
+            ),
       ],
     );
   }
 
-  Map<String, dynamic> _getWeeklyImpactData() {
-    return {'scanCount': 12, 'points': '960'};
+  Map<String, dynamic> _getWeeklyImpactData(WasteHistoryState historyState) {
+    // Check if we're currently loading this week's data or if there's an error
+    final isLoadingWeekData =
+        historyState.isLoading &&
+        historyState.dateRangeFilter?.label == 'This Week';
+
+    // If we have data and it's for this week, use it; otherwise use default values
+    int scanCount = 0;
+
+    if (historyState.dateRangeFilter?.label == 'This Week' &&
+        !historyState.isLoading &&
+        historyState.error == null) {
+      // We have this week's data
+      scanCount = historyState.items.length;
+    }
+
+    // Calculate points: each scan = 10 points
+    final points = (scanCount * 10).toString();
+
+    return {
+      'scanCount': scanCount,
+      'points': points,
+      'isLoading': isLoadingWeekData,
+    };
   }
 }

@@ -17,7 +17,7 @@ class ScanPage extends ConsumerWidget {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FDF8), // Very light green background
+      backgroundColor: const Color(0xFFF8FCF8), // Match the background color
       body: SafeArea(
         child: Column(
           children: [
@@ -44,48 +44,54 @@ class ScanPage extends ConsumerWidget {
 
   Widget _buildHeader(BuildContext context, WidgetRef ref) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
+        ),
+      ),
       child: Row(
         children: [
-          // Back button
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
               borderRadius: BorderRadius.circular(12),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 2),
+              onTap: () => ref.read(routerProvider).go('/'),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFF2E7D32),
+                  size: 22,
                 ),
-              ],
-            ),
-            child: IconButton(
-              onPressed: () => ref.read(routerProvider).go('/'),
-              icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-              color: Colors.grey[700],
+              ),
             ),
           ),
-
-          const SizedBox(width: 16),
-
-          // Title
+          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Scan Your Waste',
                   style: TextStyle(
-                    fontSize: 24,
+                    color: Color(0xFF1B5E20),
+                    fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey[800],
+                    letterSpacing: 0.8,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   'Capture or select an image to get started',
-                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withValues(alpha: 0.8),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
                 ),
               ],
             ),

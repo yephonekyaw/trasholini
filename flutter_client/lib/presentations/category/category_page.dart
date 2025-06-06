@@ -5,7 +5,6 @@ import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/main/waste_category.dart';
-import 'category_detail_screen.dart';
 
 class CategoriesScreen extends ConsumerWidget {
   const CategoriesScreen({Key? key}) : super(key: key);
@@ -16,68 +15,76 @@ class CategoriesScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF8FCF8),
-      appBar: _buildAppBar(context, ref),
-      body: _buildBody(context, ref, categoriesAsync),
+      body: SafeArea(
+        child: Column(
+          children: [
+            _buildAppBar(context, ref),
+            Expanded(child: _buildBody(context, ref, categoriesAsync)),
+          ],
+        ),
+      ),
       bottomNavigationBar: CustomBottomNavigation(),
       floatingActionButton: FloatingScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  PreferredSizeWidget _buildAppBar(BuildContext context, WidgetRef ref) {
-    return AppBar(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      scrolledUnderElevation: 0,
-      flexibleSpace: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
-          ),
+  Widget _buildAppBar(BuildContext context, WidgetRef ref) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFE8F5E8), Color(0xFFF1F8E9)],
         ),
       ),
-      leading: Container(
-        margin: const EdgeInsets.only(left: 16, top: 8, bottom: 8),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => ref.read(routerProvider).go('/'),
-            child: const Icon(
-              Icons.arrow_back_ios_new_rounded,
-              color: Color(0xFF2E7D32),
-              size: 22,
-            ),
-          ),
-        ),
-      ),
-      title: Column(
+      child: Row(
         children: [
-          const Text(
-            'Waste Categories',
-            style: TextStyle(
-              color: Color(0xFF1B5E20),
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.8,
+          Material(
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () => ref.read(routerProvider).go('/'),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: Color(0xFF2E7D32),
+                  size: 22,
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            'Choose a category to explore',
-            style: TextStyle(
-              color: const Color(0xFF388E3C).withValues(alpha: 0.8),
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.3,
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Waste Categories',
+                  style: TextStyle(
+                    color: Color(0xFF1B5E20),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    letterSpacing: 0.8,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Choose a category to explore',
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withValues(alpha: 0.8),
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-      centerTitle: true,
-      toolbarHeight: 85,
     );
   }
 
@@ -181,7 +188,7 @@ class CategoriesScreen extends ConsumerWidget {
     final childAspectRatio =
         isSmallScreen ? 0.95 : 0.85; // Taller cards on small screens
     final bottomPadding =
-        isSmallScreen ? 80.0 : 100.0; // Less bottom padding on small screens
+        isSmallScreen ? 60.0 : 80.0; // Less bottom padding on small screens
 
     return RefreshIndicator(
       onRefresh: () async {
@@ -368,31 +375,6 @@ class CategoriesScreen extends ConsumerWidget {
     WidgetRef ref,
     WasteCategory category,
   ) {
-    Navigator.push(
-      context,
-      PageRouteBuilder(
-        pageBuilder:
-            (context, animation, secondaryAnimation) => CategoryDetailScreen(
-              categoryId: category.id,
-              categoryName: category.name,
-            ),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(1.0, 0.0);
-          const end = Offset.zero;
-          const curve = Curves.easeInOutCubic;
-
-          var tween = Tween(
-            begin: begin,
-            end: end,
-          ).chain(CurveTween(curve: curve));
-
-          return SlideTransition(
-            position: animation.drive(tween),
-            child: child,
-          );
-        },
-        transitionDuration: const Duration(milliseconds: 300),
-      ),
-    );
+    ref.read(routerProvider).go('/waste-items/${category.name}');
   }
 }

@@ -96,19 +96,19 @@ class _CategoriesSectionState extends State<CategoriesSection> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Responsive header
+          // Responsive header with matching icon design
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.grey.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(18),
                 ),
                 child: Icon(
                   Icons.category_rounded,
-                  color: Colors.green[700],
-                  size: screenWidth < 360 ? 18 : 20,
+                  color: Colors.grey[600],
+                  size: 22,
                 ),
               ),
               const SizedBox(width: 12),

@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-// 🔥 FIREBASE INTEGRATION: LOADING & ERROR WIDGETS
-
 class WasteBinProfileLoading extends StatelessWidget {
   const WasteBinProfileLoading({super.key});
 
