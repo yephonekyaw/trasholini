@@ -254,7 +254,7 @@ class TrashBinData {
     binName: 'Red Trash Bin',
     binColor: Color(0xFFF44336),
     backgroundColor: Color(0xFFFFEBEE),
-    wasteDescription: 'What type of waste is collected in **red trash bin**?\n\n**E3 waste** such as hazardous and toxic materials',
+    wasteDescription: 'What type of waste is collected in **red trash bin**?\n\n**B3 waste** such as hazardous and toxic materials',
     binIconAsset: 'assets/trash_images/red.png',
     wasteItems: [
       WasteItem(name: 'Battery', assetPath: 'assets/trash_images/battery.png'),
@@ -271,10 +271,10 @@ class TrashBinData {
     wasteDescription: 'What type of waste is collected in **yellow trash bin**?\n\n**Anorganic waste** such as plastic, can, and styrofoam',
     binIconAsset: 'assets/trash_images/yellow.png',
     wasteItems: [
-      WasteItem(name: 'Plastic Bag', assetPath: 'assets/trash_images/plastic_bag.png'),
+      WasteItem(name: 'Plastic Bag', assetPath: 'assets/trash_images/plastic_bag.jpg'),
       WasteItem(name: 'Plastic Bottle', assetPath: 'assets/trash_images/plastic_bottle.png'),
       WasteItem(name: 'Styrofoam', assetPath: 'assets/trash_images/foam.png'),
-      WasteItem(name: 'Can', assetPath: 'assets/trash_images/can.png'),
+      WasteItem(name: 'Can', assetPath: 'assets/trash_images/can.jpg'),
     ],
   );
 
