@@ -17,7 +17,7 @@ class CustomBottomNavigation extends ConsumerWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withValues(alpha: 0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
             spreadRadius: 0,
@@ -43,7 +43,7 @@ class CustomBottomNavigation extends ConsumerWidget {
               _buildNavItem(
                 icon: Icons.category,
                 label: 'Categories',
-                onTap: () => ref.watch(routerProvider).go('/categories'),
+                onTap: () => ref.read(routerProvider).go('/categories'),
               ),
             ],
           ),
@@ -69,7 +69,7 @@ class CustomBottomNavigation extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4CAF50).withOpacity(0.1),
+                  color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, size: 22, color: const Color(0xFF4CAF50)),

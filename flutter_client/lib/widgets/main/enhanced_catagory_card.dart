@@ -4,8 +4,13 @@ import '../../models/main/waste_category.dart';
 
 class EnhancedCategoryCard extends StatefulWidget {
   final WasteCategory category;
+  final bool isCompact;
 
-  const EnhancedCategoryCard({super.key, required this.category});
+  const EnhancedCategoryCard({
+    super.key, 
+    required this.category,
+    this.isCompact = false,
+  });
 
   @override
   State<EnhancedCategoryCard> createState() => _EnhancedCategoryCardState();
@@ -41,34 +46,43 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
   }
 
   Color _getCategoryColor() {
-    // Assign colors based on category type for better visual hierarchy
     switch (widget.category.name.toLowerCase()) {
       case 'plastic':
-        return const Color(0xFF3B82F6); // Blue
+        return const Color(0xFF3B82F6);
       case 'paper':
-        return const Color(0xFF8B5CF6); // Purple
+        return const Color(0xFF8B5CF6);
       case 'glass':
-        return const Color(0xFF06B6D4); // Cyan
+        return const Color(0xFF06B6D4);
       case 'metal':
-        return const Color(0xFF6B7280); // Gray
+        return const Color(0xFF6B7280);
       case 'organic':
-        return const Color(0xFF10B981); // Emerald
+        return const Color(0xFF10B981);
       case 'e-waste':
-        return const Color(0xFFF59E0B); // Amber
+        return const Color(0xFFF59E0B);
+      case 'textile-waste':
       case 'taxtile-waste':
-        return const Color(0xFFEC4899); // Pink
+        return const Color(0xFFEC4899);
       case 'construction':
-        return const Color(0xFF8B5A2B); // Brown
+        return const Color(0xFF8B5A2B);
       case 'inorganic':
-        return const Color(0xFF6366F1); // Indigo
+        return const Color(0xFF6366F1);
       default:
-        return const Color(0xFF059669); // Default green
+        return const Color(0xFF059669);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final categoryColor = _getCategoryColor();
+    final screenWidth = MediaQuery.of(context).size.width;
+    
+    // Responsive sizing
+    final double borderRadius = widget.isCompact ? 14 : 16;
+    final double imageBorderRadius = widget.isCompact ? 10 : 12;
+    final double iconSize = widget.isCompact ? 10 : 12;
+    final double titleFontSize = widget.isCompact ? 11 : 12;
+    final double descriptionFontSize = widget.isCompact ? 7 : 8;
+    final double actionFontSize = widget.isCompact ? 6 : 7;
 
     return AnimatedBuilder(
       animation: _animationController,
@@ -79,15 +93,13 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
             onTapDown: (_) => _animationController.forward(),
             onTapUp: (_) {
               _animationController.reverse();
-              // Handle the tap action here instead of in onTap
               _handleCategoryTap();
             },
             onTapCancel: () => _animationController.reverse(),
-            // Remove the onTap to prevent conflicts
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(borderRadius),
                 boxShadow: [
                   BoxShadow(
                     color: categoryColor.withValues(alpha: 0.15),
@@ -103,13 +115,13 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
               ),
               child: Column(
                 children: [
-                  // Image container with gradient overlay
+                  // Responsive image container
                   Expanded(
-                    flex: 4,
+                    flex: widget.isCompact ? 6 : 7,
                     child: Container(
-                      margin: const EdgeInsets.all(6),
+                      margin: EdgeInsets.all(widget.isCompact ? 3 : 4),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(imageBorderRadius),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.1),
@@ -120,20 +132,25 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
                         ],
                       ),
                       child: ClipRRect(
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(imageBorderRadius),
                         child: Stack(
                           children: [
-                            // Background image
+                            // Background image with error handling
                             Container(
                               decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image: AssetImage(widget.category.imageUrl),
                                   fit: BoxFit.cover,
+                                  onError: (exception, stackTrace) {
+                                    // Handle image loading error
+                                  },
                                 ),
+                                // Fallback color if image fails
+                                color: categoryColor.withValues(alpha: 0.1),
                               ),
                             ),
 
-                            // Gradient overlay for better text readability
+                            // Gradient overlay
                             Container(
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
@@ -149,18 +166,16 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
 
                             // Category icon overlay
                             Positioned(
-                              top: 6,
-                              right: 6,
+                              top: widget.isCompact ? 4 : 6,
+                              right: widget.isCompact ? 4 : 6,
                               child: Container(
-                                padding: const EdgeInsets.all(4),
+                                padding: EdgeInsets.all(widget.isCompact ? 3 : 4),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withValues(alpha: 0.9),
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withValues(
-                                        alpha: 0.1,
-                                      ),
+                                      color: Colors.black.withValues(alpha: 0.1),
                                       spreadRadius: 0,
                                       blurRadius: 3,
                                       offset: const Offset(0, 1),
@@ -170,7 +185,7 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
                                 child: Icon(
                                   _getCategoryIcon(),
                                   color: categoryColor,
-                                  size: 14,
+                                  size: iconSize,
                                 ),
                               ),
                             ),
@@ -180,77 +195,33 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
                     ),
                   ),
 
-                  // Category info
+                  // Responsive category info
                   Expanded(
-                    flex: 3,
+                    flex: widget.isCompact ? 2 : 2,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 4, 10, 6),
+                      padding: EdgeInsets.fromLTRB(
+                        widget.isCompact ? 4 : 6,
+                        widget.isCompact ? 1 : 2,
+                        widget.isCompact ? 4 : 6,
+                        widget.isCompact ? 2 : 3,
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Category name
-                          Text(
-                            widget.category.name,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: categoryColor,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-
-                          const SizedBox(height: 2),
-
-                          // Category description
-                          Text(
-                            widget.category.description,
-                            style: TextStyle(
-                              fontSize: 9,
-                              color: Colors.grey[600],
-                              height: 1.1,
-                            ),
-                            textAlign: TextAlign.center,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-
-                          const SizedBox(height: 4),
-
-                          // Action indicator
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  categoryColor.withValues(alpha: 0.1),
-                                  categoryColor.withValues(alpha: 0.05),
-                                ],
+                          // Category name with overflow protection
+                          Flexible(
+                            child: Text(
+                              widget.category.name,
+                              style: TextStyle(
+                                fontSize: titleFontSize,
+                                fontWeight: FontWeight.bold,
+                                color: categoryColor,
+                                height: 1.0,
                               ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  'Learn More',
-                                  style: TextStyle(
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.w600,
-                                    color: categoryColor,
-                                  ),
-                                ),
-                                const SizedBox(width: 3),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: 6,
-                                  color: categoryColor,
-                                ),
-                              ],
+                              textAlign: TextAlign.center,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -267,15 +238,15 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
   }
 
   void _handleCategoryTap() {
-    // 🔥 FIREBASE INTEGRATION POINT 11: HANDLE CATEGORY SELECTION
     HapticFeedback.lightImpact();
 
-    // Show a simple debug message instead of navigation for now
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Selected: ${widget.category.name}'),
           duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
         ),
       );
     }
@@ -314,6 +285,7 @@ class _EnhancedCategoryCardState extends State<EnhancedCategoryCard>
         return Icons.eco;
       case 'e-waste':
         return Icons.computer;
+      case 'textile-waste':
       case 'taxtile-waste':
         return Icons.checkroom;
       case 'construction':

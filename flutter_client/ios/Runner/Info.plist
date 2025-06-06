@@ -6,6 +6,8 @@
 	<string>This app needs camera access to scan and identify waste items for proper disposal guidance.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>This app may need microphone access for camera functionality.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need photo library access to pick images</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

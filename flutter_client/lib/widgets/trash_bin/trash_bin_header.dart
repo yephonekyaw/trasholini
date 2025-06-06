@@ -1,4 +1,3 @@
-// lib/widgets/trash_bin/trash_bin_header.dart
 import 'package:flutter/material.dart';
 
 class TrashBinHeader extends StatelessWidget {
@@ -16,31 +15,31 @@ class TrashBinHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withValues(alpha: 0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
             spreadRadius: 1,
           ),
         ],
       ),
       child: Column(
         children: [
-          // Illustration placeholder
+          // Compact illustration
           Container(
-            height: 120,
+            height: 80,
             width: double.infinity,
             decoration: BoxDecoration(
               color: const Color(0xFFE8F5E8),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: const Color(0xFF4CAF50).withOpacity(0.2),
+                color: const Color(0xFF4CAF50).withValues(alpha: 0.2),
                 width: 1,
               ),
             ),
@@ -53,7 +52,7 @@ class TrashBinHeader extends StatelessWidget {
                   return const Center(
                     child: Icon(
                       Icons.recycling,
-                      size: 50,
+                      size: 36,
                       color: Color(0xFF4CAF50),
                     ),
                   );
@@ -61,28 +60,25 @@ class TrashBinHeader extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 16),
-          
-          // Title and description
+          const SizedBox(height: 12),
+
+          // Compact title and description
           const Text(
             'About Trash Bins',
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           const Text(
             'Know the information about trash bins',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey),
           ),
-          const SizedBox(height: 16),
-          
-          // Select All button and Save button row
+          const SizedBox(height: 12),
+
+          // Compact Select All button and Save button row
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -104,46 +100,52 @@ class TrashBinHeader extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Container(
-                        width: 18,
-                        height: 18,
+                        width: 16,
+                        height: 16,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: allSelected
-                              ? const Color(0xFF4CAF50)
-                              : Colors.transparent,
+                          color:
+                              allSelected
+                                  ? const Color(0xFF4CAF50)
+                                  : Colors.transparent,
                           border: Border.all(
                             color: const Color(0xFF4CAF50),
                             width: 2,
                           ),
                         ),
-                        child: allSelected
-                            ? const Icon(
-                                Icons.check,
-                                size: 12,
-                                color: Colors.white,
-                              )
-                            : null,
+                        child:
+                            allSelected
+                                ? const Icon(
+                                  Icons.check,
+                                  size: 10,
+                                  color: Colors.white,
+                                )
+                                : null,
                       ),
                     ],
                   ),
                 ),
               ),
-              // Save button
+              // Compact Save button
               ElevatedButton(
                 onPressed: onSavePressed,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF4CAF50),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
                   elevation: 2,
-                  shadowColor: const Color(0xFF4CAF50).withOpacity(0.3),
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  shadowColor: const Color(0xFF4CAF50).withValues(alpha: 0.3),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 6,
+                  ),
+                  minimumSize: const Size(60, 32),
                 ),
                 child: const Text(
                   'Save',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w600,
                     color: Colors.white,
                   ),

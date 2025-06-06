@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../utils/category/category_constants.dart';
 
@@ -36,7 +35,7 @@ class CategoryBadges extends StatelessWidget {
             ...displayCategories.take(2).map((categoryId) {
               final color = CategoryConstants.getColor(categoryId);
               final name = CategoryConstants.getName(categoryId);
-              
+
               return Container(
                 margin: const EdgeInsets.only(right: 4),
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
@@ -45,7 +44,7 @@ class CategoryBadges extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.3),
+                      color: color.withValues(alpha: 0.3),
                       blurRadius: 3,
                       offset: const Offset(0, 1),
                     ),
@@ -71,21 +70,28 @@ class CategoryBadges extends StatelessWidget {
                 if (displayCategories.length > 2)
                   Container(
                     margin: const EdgeInsets.only(right: 4),
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: CategoryConstants.getColor(displayCategories[2]),
                       borderRadius: BorderRadius.circular(8),
                       boxShadow: [
                         BoxShadow(
-                          color: CategoryConstants.getColor(displayCategories[2]).withOpacity(0.3),
+                          color: CategoryConstants.getColor(
+                            displayCategories[2],
+                          ).withValues(alpha: 0.3),
                           blurRadius: 3,
                           offset: const Offset(0, 1),
                         ),
                       ],
                     ),
                     child: Text(
-                      CategoryConstants.getName(displayCategories[2]).length > 6 
-                          ? CategoryConstants.getName(displayCategories[2]).substring(0, 6)
+                      CategoryConstants.getName(displayCategories[2]).length > 6
+                          ? CategoryConstants.getName(
+                            displayCategories[2],
+                          ).substring(0, 6)
                           : CategoryConstants.getName(displayCategories[2]),
                       style: const TextStyle(
                         color: Colors.white,
@@ -96,7 +102,10 @@ class CategoryBadges extends StatelessWidget {
                   ),
                 if (hasMore)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.grey.shade600,
                       borderRadius: BorderRadius.circular(8),
@@ -122,33 +131,34 @@ class CategoryBadges extends StatelessWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: categories.map((categoryId) {
-        final color = CategoryConstants.getColor(categoryId);
-        final name = CategoryConstants.getName(categoryId);
-        
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: color.withOpacity(0.3),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
+      children:
+          categories.map((categoryId) {
+            final color = CategoryConstants.getColor(categoryId);
+            final name = CategoryConstants.getName(categoryId);
+
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: color,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.3),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-            ],
-          ),
-          child: Text(
-            name,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        );
-      }).toList(),
+              child: Text(
+                name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            );
+          }).toList(),
     );
   }
 }

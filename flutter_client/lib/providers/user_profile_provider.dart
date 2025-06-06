@@ -1,7 +1,7 @@
 import 'package:flutter_client/models/google_user_data_model.dart';
 import 'package:flutter_client/models/user_profile_data_model.dart';
 import 'package:flutter_client/providers/google_auth_provider.dart';
-import 'package:flutter_client/services/auth_api_service.dart';
+import 'package:flutter_client/services/apis/auth_api_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userProfileProvider =
