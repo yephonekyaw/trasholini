@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/providers/user_profile_provider.dart';
+import 'package:flutter_client/providers/google_auth_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,13 +7,15 @@ class ProfileAccountActionsSection extends ConsumerStatefulWidget {
   const ProfileAccountActionsSection({super.key});
 
   @override
-  ConsumerState<ProfileAccountActionsSection> createState() => _ProfileAccountActionsSectionState();
+  ConsumerState<ProfileAccountActionsSection> createState() =>
+      _ProfileAccountActionsSectionState();
 }
 
-class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountActionsSection> {
+class _ProfileAccountActionsSectionState
+    extends ConsumerState<ProfileAccountActionsSection> {
   bool _isSigningOut = false;
   bool _isDeletingProfile = false;
-  
+
   // --- Sign Out Logic ---
   void _showSignOutDialog() {
     showDialog(
@@ -49,11 +51,7 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                         ),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(
-                        Icons.logout,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                      child: Icon(Icons.logout, color: Colors.white, size: 24),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -73,10 +71,7 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                 // Content
                 Text(
                   'Are you sure you want to sign out of your eco-warrior account? You can always sign back in to continue your sustainability journey!',
-                  style: TextStyle(
-                    fontSize: 16, 
-                    height: 1.4,
-                  ),
+                  style: TextStyle(fontSize: 16, height: 1.4),
                   textAlign: TextAlign.left,
                 ),
 
@@ -89,7 +84,10 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
                       style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                       ),
                       child: Text(
                         'Cancel',
@@ -109,7 +107,10 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF4CAF50),
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
@@ -138,9 +139,8 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
     });
 
     try {
-      // TODO: Implement sign out logic
-      // await ref.read(userProfileProvider.notifier).signOut();
-      
+      ref.read(googleAuthProvider.notifier).signOut();
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -206,7 +206,7 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
   // --- Delete Profile Logic ---
   void _showDeleteProfileDialog() {
     String confirmText = '';
-    
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -279,7 +279,11 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Icon(Icons.warning, color: Colors.red[600], size: 20),
+                                Icon(
+                                  Icons.warning,
+                                  color: Colors.red[600],
+                                  size: 20,
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -297,13 +301,21 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildWarningItem('All your eco-points will be lost'),
+                                _buildWarningItem(
+                                  'All your eco-points will be lost',
+                                ),
                                 const SizedBox(height: 4),
-                                _buildWarningItem('Your scan history will be deleted'),
+                                _buildWarningItem(
+                                  'Your scan history will be deleted',
+                                ),
                                 const SizedBox(height: 4),
-                                _buildWarningItem('Your account cannot be recovered'),
+                                _buildWarningItem(
+                                  'Your account cannot be recovered',
+                                ),
                                 const SizedBox(height: 4),
-                                _buildWarningItem('You\'ll lose your eco-warrior progress'),
+                                _buildWarningItem(
+                                  'You\'ll lose your eco-warrior progress',
+                                ),
                               ],
                             ),
                           ],
@@ -331,7 +343,9 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                           hintText: 'Type DELETE here',
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(color: Colors.red.withValues(alpha: 0.3)),
+                            borderSide: BorderSide(
+                              color: Colors.red.withValues(alpha: 0.3),
+                            ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -349,7 +363,10 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                             ),
                             child: Text(
                               'Cancel',
@@ -362,16 +379,26 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
-                            onPressed: confirmText == 'DELETE'
-                                ? () async {
-                                    Navigator.of(context).pop();
-                                    await _handleDeleteProfile();
-                                  }
-                                : null,
+                            onPressed:
+                                confirmText == 'DELETE'
+                                    ? () async {
+                                      Navigator.of(context).pop();
+                                      await _handleDeleteProfile();
+                                    }
+                                    : null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: confirmText == 'DELETE' ? Colors.red[600] : Colors.grey[300],
-                              foregroundColor: confirmText == 'DELETE' ? Colors.white : Colors.grey[500],
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              backgroundColor:
+                                  confirmText == 'DELETE'
+                                      ? Colors.red[600]
+                                      : Colors.grey[300],
+                              foregroundColor:
+                                  confirmText == 'DELETE'
+                                      ? Colors.white
+                                      : Colors.grey[500],
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
@@ -404,20 +431,12 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
       children: [
         Text(
           '• ',
-          style: TextStyle(
-            fontSize: 13,
-            color: Colors.red[600],
-            height: 1.4,
-          ),
+          style: TextStyle(fontSize: 13, color: Colors.red[600], height: 1.4),
         ),
         Expanded(
           child: Text(
             text,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.red[600],
-              height: 1.4,
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.red[600], height: 1.4),
             softWrap: true,
           ),
         ),
@@ -433,7 +452,7 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
     try {
       // TODO: Implement delete profile logic
       // await ref.read(userProfileProvider.notifier).deleteProfile();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -442,7 +461,9 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                 Icon(Icons.eco_outlined, color: Colors.white),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text('Profile deleted. Thank you for being an eco-warrior!'),
+                  child: Text(
+                    'Profile deleted. Thank you for being an eco-warrior!',
+                  ),
                 ),
               ],
             ),
@@ -500,7 +521,10 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _isSigningOut || _isDeletingProfile ? null : _showSignOutDialog,
+              onPressed:
+                  _isSigningOut || _isDeletingProfile
+                      ? null
+                      : _showSignOutDialog,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.transparent,
                 foregroundColor: Colors.white,
@@ -514,62 +538,69 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
               child: Ink(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: _isSigningOut || _isDeletingProfile
-                        ? [Colors.grey[400]!, Colors.grey[500]!]
-                        : [Color(0xFF66BB6A), Color(0xFF4CAF50)],
+                    colors:
+                        _isSigningOut || _isDeletingProfile
+                            ? [Colors.grey[400]!, Colors.grey[500]!]
+                            : [Color(0xFF66BB6A), Color(0xFF4CAF50)],
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(12),
-                  boxShadow: _isSigningOut || _isDeletingProfile ? null : [
-                    BoxShadow(
-                      color: Color(0xFF4CAF50).withValues(alpha: 0.3),
-                      spreadRadius: 0,
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  boxShadow:
+                      _isSigningOut || _isDeletingProfile
+                          ? null
+                          : [
+                            BoxShadow(
+                              color: Color(0xFF4CAF50).withValues(alpha: 0.3),
+                              spreadRadius: 0,
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
                 ),
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: _isSigningOut
-                      ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isSigningOut
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            const Text(
-                              'Signing out...',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                              const SizedBox(width: 12),
+                              const Text(
+                                'Signing out...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.logout, size: 20, color: Colors.white),
-                            const SizedBox(width: 8),
-                            const Text(
-                              'Sign Out',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
+                            ],
+                          )
+                          : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.logout, size: 20, color: Colors.white),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Sign Out',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                 ),
               ),
             ),
@@ -581,7 +612,10 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: _isSigningOut || _isDeletingProfile ? null : _showDeleteProfileDialog,
+              onPressed:
+                  _isSigningOut || _isDeletingProfile
+                      ? null
+                      : _showDeleteProfileDialog,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red[600],
                 foregroundColor: Colors.white,
@@ -594,46 +628,51 @@ class _ProfileAccountActionsSectionState extends ConsumerState<ProfileAccountAct
                 disabledBackgroundColor: Colors.grey[300],
                 disabledForegroundColor: Colors.grey[500],
               ),
-              child: _isDeletingProfile
-                  ? Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.white,
+              child:
+                  _isDeletingProfile
+                      ? Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text(
-                          'Deleting...',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Deleting...',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.delete_forever, size: 20, color: Colors.white), // Reverted icon here
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Delete Profile',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        ],
+                      )
+                      : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.delete_forever,
+                            size: 20,
                             color: Colors.white,
+                          ), // Reverted icon here
+                          const SizedBox(width: 8),
+                          const Text(
+                            'Delete Profile',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
             ),
           ),
 

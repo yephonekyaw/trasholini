@@ -31,12 +31,12 @@ class _CategoriesSectionState extends State<CategoriesSection> {
 
   void _onScroll() {
     if (!_scrollController.hasClients) return;
-    
+
     // Calculate current page based on scroll position with safety checks
     final double screenWidth = MediaQuery.of(context).size.width;
     final double cardWidth = _getCardWidth(screenWidth);
     final double itemWidth = cardWidth + 12; // card width + margin
-    
+
     if (itemWidth > 0) {
       final int newPage = (_scrollController.offset / itemWidth).round();
       if (newPage != _currentPage &&
@@ -70,16 +70,12 @@ class _CategoriesSectionState extends State<CategoriesSection> {
   Widget build(BuildContext context) {
     final double screenWidth = MediaQuery.of(context).size.width;
     final double cardWidth = _getCardWidth(screenWidth);
-    
+
     // Responsive padding
     final double horizontalPadding = screenWidth < 360 ? 12 : 20;
     final double verticalPadding = screenWidth < 360 ? 16 : 20;
 
     return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: screenWidth < 360 ? 8 : 16,
-        vertical: 8,
-      ),
       padding: EdgeInsets.symmetric(
         horizontal: horizontalPadding,
         vertical: verticalPadding,
@@ -170,9 +166,10 @@ class _CategoriesSectionState extends State<CategoriesSection> {
                     height: screenWidth < 360 ? 6 : 8,
                     margin: const EdgeInsets.symmetric(horizontal: 3),
                     decoration: BoxDecoration(
-                      color: index == _currentPage
-                          ? Colors.green[600]
-                          : Colors.grey[300],
+                      color:
+                          index == _currentPage
+                              ? Colors.green[600]
+                              : Colors.grey[300],
                       shape: BoxShape.circle,
                     ),
                   ),

@@ -389,7 +389,7 @@ async def save_disposal_tips(
                     current_data = user_doc.to_dict() or {}
 
                     # Award 5 points for saving tips
-                    new_eco_points = current_data.get("eco_points", 0) + 5
+                    new_eco_points = current_data.get("eco_points", 0) + 10
                     new_total_scans = current_data.get("total_scans", 0) + 1
 
                     user_doc.reference.update(

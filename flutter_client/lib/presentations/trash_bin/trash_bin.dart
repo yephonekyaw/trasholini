@@ -6,6 +6,7 @@ import 'package:flutter_client/widgets/trash_bin/trash_bin_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/trash_bin/trash_bin_provider.dart';
 import '../../widgets/trash_bin/trash_bin_header.dart';
+import 'trash_bin_details.dart'; // Import the details page
 
 class TrashBinPage extends ConsumerWidget {
   const TrashBinPage({Key? key}) : super(key: key);
@@ -38,6 +39,25 @@ class TrashBinPage extends ConsumerWidget {
         elevation: 4,
       ),
     );
+  }
+
+  TrashBinDetailPage? _getDetailPageForBin(dynamic bin) {
+    // Map based on bin name or ID
+    String binName = bin.name.toString().toLowerCase();
+
+    if (binName.contains('green')) {
+      return TrashBinData.greenBin;
+    } else if (binName.contains('red')) {
+      return TrashBinData.redBin;
+    } else if (binName.contains('yellow')) {
+      return TrashBinData.yellowBin;
+    } else if (binName.contains('blue')) {
+      return TrashBinData.blueBin;
+    } else if (binName.contains('grey') || binName.contains('gray')) {
+      return TrashBinData.greyBin;
+    }
+
+    return null;
   }
 
   @override
@@ -141,8 +161,7 @@ class TrashBinPage extends ConsumerWidget {
                     bin: bin,
                     onTap: () => trashBinNotifier.toggleBinSelection(bin.id),
                     onArrowTap: () {
-                      // TODO: Add navigation to details page
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => TrashBinDetailPage(bin: bin)));
+                      _navigateToDetailPage(context, bin);
                     },
                   );
                 },
@@ -158,5 +177,21 @@ class TrashBinPage extends ConsumerWidget {
       floatingActionButton: FloatingScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
+  }
+
+  void _navigateToDetailPage(BuildContext context, dynamic bin) {
+    TrashBinDetailPage? detailPage = _getDetailPageForBin(bin);
+
+    if (detailPage != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => detailPage),
+      );
+    } else {
+      // Fallback for unknown bin types
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Details for ${bin.name} coming soon!')),
+      );
+    }
   }
 }

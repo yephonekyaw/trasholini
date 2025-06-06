@@ -152,18 +152,17 @@ class TrashBinDetailPage extends StatelessWidget {
   List<TextSpan> _buildDescriptionSpan() {
     final parts = wasteDescription.split('**');
     List<TextSpan> spans = [];
-    
+
     for (int i = 0; i < parts.length; i++) {
       if (i % 2 == 0) {
         spans.add(TextSpan(text: parts[i]));
       } else {
-        spans.add(TextSpan(
-          text: parts[i],
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: binColor,
+        spans.add(
+          TextSpan(
+            text: parts[i],
+            style: TextStyle(fontWeight: FontWeight.bold, color: binColor),
           ),
-        ));
+        );
       }
     }
     return spans;
@@ -195,16 +194,9 @@ class TrashBinDetailPage extends StatelessWidget {
                 height: 48,
                 fit: BoxFit.contain,
                 errorBuilder: (context, error, stackTrace) {
-                  // Debug print to see which images are failing
-                  print('Failed to load image: ${item.assetPath}');
-                  print('Error: $error');
                   return Container(
                     color: Colors.red[100],
-                    child: Icon(
-                      Icons.error,
-                      size: 24,
-                      color: Colors.red,
-                    ),
+                    child: Icon(Icons.error, size: 24, color: Colors.red),
                   );
                 },
               ),
@@ -230,10 +222,7 @@ class WasteItem {
   final String name;
   final String assetPath;
 
-  WasteItem({
-    required this.name,
-    required this.assetPath,
-  });
+  WasteItem({required this.name, required this.assetPath});
 }
 
 // Example usage and data models
@@ -242,11 +231,18 @@ class TrashBinData {
     binName: 'Green Trash Bin',
     binColor: Color(0xFF4CAF50),
     backgroundColor: Color(0xFFE8F5E8),
-    wasteDescription: 'What type of waste is collected in **green trash bin**?\n\n**Organic waste** such as biodegradable and compostable waste',
+    wasteDescription:
+        'What type of waste is collected in **green trash bin**?\n\n**Organic waste** such as biodegradable and compostable waste',
     binIconAsset: 'assets/trash_images/green.png',
     wasteItems: [
-      WasteItem(name: 'Green Waste', assetPath: 'assets/trash_images/green_waste.png'),
-      WasteItem(name: 'Food Waste', assetPath: 'assets/trash_images/food_waste.jpg'),
+      WasteItem(
+        name: 'Green Waste',
+        assetPath: 'assets/trash_images/green_waste.png',
+      ),
+      WasteItem(
+        name: 'Food Waste',
+        assetPath: 'assets/trash_images/food_waste.jpg',
+      ),
     ],
   );
 
@@ -254,13 +250,23 @@ class TrashBinData {
     binName: 'Red Trash Bin',
     binColor: Color(0xFFF44336),
     backgroundColor: Color(0xFFFFEBEE),
-    wasteDescription: 'What type of waste is collected in **red trash bin**?\n\n**B3 waste** such as hazardous and toxic materials',
+    wasteDescription:
+        'What type of waste is collected in **red trash bin**?\n\n**B3 waste** such as hazardous and toxic materials',
     binIconAsset: 'assets/trash_images/red.png',
     wasteItems: [
       WasteItem(name: 'Battery', assetPath: 'assets/trash_images/battery.png'),
-      WasteItem(name: 'Glass Bottle', assetPath: 'assets/trash_images/glass_bottle.jpg'),
-      WasteItem(name: 'Detergent', assetPath: 'assets/trash_images/detergent.png'),
-      WasteItem(name: 'Pesticide', assetPath: 'assets/trash_images/pesticide.png'),
+      WasteItem(
+        name: 'Glass Bottle',
+        assetPath: 'assets/trash_images/glass_bottle.jpg',
+      ),
+      WasteItem(
+        name: 'Detergent',
+        assetPath: 'assets/trash_images/detergent.png',
+      ),
+      WasteItem(
+        name: 'Pesticide',
+        assetPath: 'assets/trash_images/pesticide.png',
+      ),
     ],
   );
 
@@ -268,11 +274,18 @@ class TrashBinData {
     binName: 'Yellow Trash Bin',
     binColor: Color(0xFFFF9800),
     backgroundColor: Color(0xFFFFF8E1),
-    wasteDescription: 'What type of waste is collected in **yellow trash bin**?\n\n**Anorganic waste** such as plastic, can, and styrofoam',
+    wasteDescription:
+        'What type of waste is collected in **yellow trash bin**?\n\n**Anorganic waste** such as plastic, can, and styrofoam',
     binIconAsset: 'assets/trash_images/yellow.png',
     wasteItems: [
-      WasteItem(name: 'Plastic Bag', assetPath: 'assets/trash_images/plastic_bag.jpg'),
-      WasteItem(name: 'Plastic Bottle', assetPath: 'assets/trash_images/plastic_bottle.png'),
+      WasteItem(
+        name: 'Plastic Bag',
+        assetPath: 'assets/trash_images/plastic_bag.jpg',
+      ),
+      WasteItem(
+        name: 'Plastic Bottle',
+        assetPath: 'assets/trash_images/plastic_bottle.png',
+      ),
       WasteItem(name: 'Styrofoam', assetPath: 'assets/trash_images/foam.png'),
       WasteItem(name: 'Can', assetPath: 'assets/trash_images/can.jpg'),
     ],
@@ -282,12 +295,19 @@ class TrashBinData {
     binName: 'Blue Trash Bin',
     binColor: Color(0xFF2196F3),
     backgroundColor: Color(0xFFE3F2FD),
-    wasteDescription: 'What type of waste is collected in **blue trash bin**?\n\n**Recyclable materials** like dry waste',
+    wasteDescription:
+        'What type of waste is collected in **blue trash bin**?\n\n**Recyclable materials** like dry waste',
     binIconAsset: 'assets/trash_images/blue.png',
     wasteItems: [
-      WasteItem(name: 'Newspaper', assetPath: 'assets/trash_images/newspaper.png'),
+      WasteItem(
+        name: 'Newspaper',
+        assetPath: 'assets/trash_images/newspaper.png',
+      ),
       WasteItem(name: 'Paper', assetPath: 'assets/trash_images/paper.png'),
-      WasteItem(name: 'Cardboard', assetPath: 'assets/trash_images/cardboard.png'),
+      WasteItem(
+        name: 'Cardboard',
+        assetPath: 'assets/trash_images/cardboard.png',
+      ),
     ],
   );
 
@@ -295,12 +315,19 @@ class TrashBinData {
     binName: 'Grey Trash Bin',
     binColor: Color(0xFF757575),
     backgroundColor: Color(0xFFF5F5F5),
-    wasteDescription: 'What type of waste is collected in **grey trash bin**?\n\n**Residual waste** that cannot be classified as recyclable and compostable',
+    wasteDescription:
+        'What type of waste is collected in **grey trash bin**?\n\n**Residual waste** that cannot be classified as recyclable and compostable',
     binIconAsset: 'assets/trash_images/grey.png',
     wasteItems: [
-      WasteItem(name: 'Cigarette', assetPath: 'assets/trash_images/cigarette.png'),
+      WasteItem(
+        name: 'Cigarette',
+        assetPath: 'assets/trash_images/cigarette.png',
+      ),
       WasteItem(name: 'Diaper', assetPath: 'assets/trash_images/diaper.png'),
-      WasteItem(name: 'Sanitary Napkin', assetPath: 'assets/trash_images/napkin.png'),
+      WasteItem(
+        name: 'Sanitary Napkin',
+        assetPath: 'assets/trash_images/napkin.png',
+      ),
     ],
   );
 }
