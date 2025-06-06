@@ -13,7 +13,7 @@ void main() async {
   runApp(ProviderScope(child: TrasholiniApp()));
 }
 
-class TrasholiniApp extends ConsumerWidget {
+class TrasholiniApp extends ConsumerWidget { 
   const TrasholiniApp({super.key});
 
   @override

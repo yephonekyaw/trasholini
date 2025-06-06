@@ -36,35 +36,22 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   // Get level icon based on user level ranges
   IconData _getLevelIcon(int level) {
     if (level >= 25) {
-      return Icons
-          .forest; // Tree/Forest icon for levels 25-50 (Master Eco-Warrior)
+      return Icons.forest;
     } else if (level >= 10) {
-      return Icons.eco; // Eco leaf icon for levels 10-24 (Eco-Champion)
+      return Icons.eco;
     } else {
-      return Icons
-          .energy_savings_leaf; // Small leaf for levels 1-9 (Eco-Beginner)
+      return Icons.energy_savings_leaf;
     }
   }
 
   // Get level color with eco-friendly palette
   Color _getLevelColor(int level) {
     if (level >= 25) {
-      return const Color(0xFF2D5016); // Deep forest green for Master
+      return const Color(0xFF2D5016);
     } else if (level >= 10) {
-      return const Color(0xFF388E3C); // Medium green for Champion
+      return const Color(0xFF388E3C);
     } else {
-      return const Color(0xFF66BB6A); // Light green for Beginner
-    }
-  }
-
-  // Get level title
-  String _getLevelTitle(int level) {
-    if (level >= 25) {
-      return 'Master Eco-Warrior';
-    } else if (level >= 10) {
-      return 'Eco-Champion';
-    } else {
-      return 'Eco-Beginner';
+      return const Color(0xFF66BB6A);
     }
   }
 
@@ -81,13 +68,23 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[200]!, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black87,
-                    size: 20,
+                  child: const Center( // Added Center widget here
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black87,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -176,13 +173,23 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[200]!, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black87,
-                    size: 20,
+                  child: const Center( // Added Center widget here
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black87,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -250,13 +257,23 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                 child: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.3),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.grey[200]!, width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: const Icon(
-                    Icons.arrow_back_ios,
-                    color: Colors.black87,
-                    size: 20,
+                  child: const Center( // Added Center widget here
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black87,
+                      size: 20,
+                    ),
                   ),
                 ),
               ),
@@ -269,6 +286,7 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                   color: Colors.black87,
                 ),
               ),
+              const Spacer(),
             ],
           ),
         ),
@@ -284,74 +302,54 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
             padding: const EdgeInsets.all(24.0),
             child: Column(
               children: [
-                // Profile Picture and Edit
-                Stack(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        // TODO: Implement image picker
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Change profile picture - Coming Soon!',
-                            ),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: Colors.grey[300],
-                          border: Border.all(
-                            color: Colors.grey[400]!,
-                            width: 3,
-                          ),
+                // Profile Picture (now the direct tap target for changing photo)
+                GestureDetector(
+                  onTap: () {
+                    // TODO: Implement image picker
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Change profile picture - Coming-Soon!',
                         ),
-                        child: ClipOval(
-                          child:
-                              user.photoUrl != null
-                                  ? Image.network(
-                                    user.photoUrl!,
-                                    fit: BoxFit.cover,
-                                    errorBuilder:
-                                        (context, error, stackTrace) =>
-                                            const Icon(
-                                              Icons.person,
-                                              size: 50,
-                                              color: Colors.grey,
-                                            ),
-                                  )
-                                  : const Icon(
-                                    Icons.person,
-                                    size: 50,
-                                    color: Colors.grey,
-                                  ),
-                        ),
+                        duration: Duration(seconds: 1),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 100,
+                    height: 100,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[300],
+                      border: Border.all(
+                        color: Colors.grey[400]!,
+                        width: 3,
                       ),
                     ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ),
+                    child: ClipOval(
+                      child:
+                          user.photoUrl != null
+                              ? Image.network(
+                                user.photoUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder:
+                                    (context, error, stackTrace) =>
+                                        const Icon(
+                                          Icons.person,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        ),
+                              )
+                              : const Icon(
+                                Icons.person,
+                                size: 50,
+                                color: Colors.grey,
+                              ),
                     ),
-                  ],
+                  ),
                 ),
-
-                const SizedBox(height: 16),
+                
+                const SizedBox(height: 16), // Retained base spacing
 
                 // User Name with Edit
                 Row(
@@ -373,7 +371,6 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                           onSubmitted: (value) {
                             if (value.trim().isNotEmpty) {
                               // TODO: Update user name in provider
-                              // ref.read(userProfileProvider.notifier).updateProfile(name: value.trim());
                             }
                             setState(() {
                               _isEditingName = false;
@@ -396,10 +393,9 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
                         if (_isEditingName) {
                           if (_nameController.text.trim().isNotEmpty) {
                             // TODO: Update user name in provider
-                            // ref.read(userProfileProvider.notifier).updateProfile(name: _nameController.text.trim());
                           }
                           setState(() {
-                            _isEditingName = false;
+                            _isEditingName = true;
                           });
                         } else {
                           _nameController.text = user.displayName ?? '';
