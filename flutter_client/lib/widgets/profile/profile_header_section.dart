@@ -58,48 +58,8 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   Widget _buildLoadingState() {
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
+        // REMOVED: Header with back button and title from here
+        // It will now be in the AppBar of ProfilePage
 
         // Loading Profile Content
         Container(
@@ -163,48 +123,8 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
   Widget _buildErrorState(Object error) {
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-        ),
+        // REMOVED: Header with back button and title from here
+        // It will now be in the AppBar of ProfilePage
 
         // Error Content
         Container(
@@ -247,49 +167,8 @@ class _ProfileHeaderSectionState extends ConsumerState<ProfileHeaderSection> {
 
     return Column(
       children: [
-        // Header with back button
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Row(
-            children: [
-              GestureDetector(
-                onTap: () => context.goNamed('mainpage'),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[200]!, width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: const Center( // Added Center widget here
-                    child: Icon(
-                      Icons.arrow_back_ios,
-                      color: Colors.black87,
-                      size: 20,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 16),
-              const Text(
-                'TRASHOLINI',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const Spacer(),
-            ],
-          ),
-        ),
+        // REMOVED: Header with back button and title from here
+        // It will now be in the AppBar of ProfilePage
 
         // Profile Picture and User Info
         Container(

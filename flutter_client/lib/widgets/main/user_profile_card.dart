@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/models/user_profile_data_model.dart';
+import 'package:flutter_client/models/user_profile_data_model.dart'; // Ensure this path is correct for your UserProfile model
 import 'package:flutter_client/providers/user_profile_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -79,6 +79,9 @@ class UserProfileCard extends ConsumerWidget {
     final levelIcon = _getLevelIcon(userLevel);
     final levelColor = _getLevelColor(userLevel);
     final levelTitle = _getLevelTitle(userLevel);
+
+    // Removed the dynamic casting, now directly accessing user.totalScans
+    final int totalScans = user.totalScans; 
 
     return Column(
       children: [
@@ -162,18 +165,26 @@ class UserProfileCard extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Stats Row (now only for points)
+        // Stats Row (now for points and total scans)
         Row(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center the single stat card
+          mainAxisAlignment: MainAxisAlignment.spaceAround, // Distribute space
           children: [
-            StatCard(
-              icon:
-                  Icons
-                      .emoji_events, // Changed to a more generic trophy/event icon for points
-              value: "${user.ecoPoints}",
-              label: "points",
-              color: Colors.green,
+            Expanded( // Points card
+              child: StatCard(
+                icon: Icons.emoji_events,
+                value: "${user.ecoPoints}",
+                label: "points",
+                color: Colors.green,
+              ),
+            ),
+            const SizedBox(width: 10), // Spacing between cards
+            Expanded( // Total Scans card
+              child: StatCard(
+                icon: Icons.qr_code_scanner, // Icon for scans
+                value: "${totalScans}", // Using the totalScans data
+                label: "scans",
+                color: Colors.blue, // Using a distinct color for scans
+              ),
             ),
           ],
         ),
@@ -254,12 +265,12 @@ class UserProfileCard extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Loading Stats Row (now only for points)
+        // Loading Stats Row (now for points and total scans)
         Row(
-          mainAxisAlignment:
-              MainAxisAlignment.center, // Center the single stat card
           children: [
-            _buildLoadingStatCard(), // Single loading card
+            _buildLoadingStatCard(), // Loading card for points
+            const SizedBox(width: 10), // Spacing between cards
+            _buildLoadingStatCard(), // Loading card for total scans
           ],
         ),
       ],
