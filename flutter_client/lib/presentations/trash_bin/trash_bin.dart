@@ -141,7 +141,6 @@ class TrashBinPage extends ConsumerWidget {
                     bin: bin,
                     onTap: () => trashBinNotifier.toggleBinSelection(bin.id),
                     onArrowTap: () {
-                      print('Navigate to ${bin.name} details page');
                       // TODO: Add navigation to details page
                       // Navigator.push(context, MaterialPageRoute(builder: (context) => TrashBinDetailPage(bin: bin)));
                     },
