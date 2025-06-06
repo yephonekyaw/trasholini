@@ -49,8 +49,8 @@ class MainPage extends ConsumerWidget {
             const SizedBox(height: 20),
 
             // Quick Actions Section
-            _buildQuickActionsSection(),
-            const SizedBox(height: 20),
+           
+           
 
             // Eco Tips Section (Separated Widget)
             const EcoTipSection(),

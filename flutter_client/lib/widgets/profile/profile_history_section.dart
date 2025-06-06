@@ -286,13 +286,10 @@ class ProfileHistorySection extends StatelessWidget {
                     ...monthData['entries']
                         .map<Widget>((entry) => _buildHistoryItem(entry))
                         .toList(),
-
-                    const SizedBox(height: 16),
                   ],
                 ),
               ),
-
-            const SizedBox(height: 100), // Extra space for bottom navigation
+            // REMOVED: const SizedBox(height: 100), // This is now controlled by parent
           ],
         ),
       ),

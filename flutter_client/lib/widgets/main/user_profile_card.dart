@@ -9,6 +9,44 @@ import 'stat_card.dart';
 class UserProfileCard extends ConsumerWidget {
   const UserProfileCard({super.key});
 
+  // Get user level based on points (every 100 points = 1 level)
+  int _getUserLevel(int points) {
+    return (points / 100).floor() + 1;
+  }
+
+  // Get level icon based on user level ranges
+  IconData _getLevelIcon(int level) {
+    if (level >= 25) {
+      return Icons.forest; // Tree/Forest icon for levels 25-50 (Master Eco-Warrior)
+    } else if (level >= 10) {
+      return Icons.eco; // Eco leaf icon for levels 10-24 (Eco-Champion)
+    } else {
+      return Icons.energy_savings_leaf; // Small leaf for levels 1-9 (Eco-Beginner)
+    }
+  }
+
+  // Get level color with eco-friendly palette
+  Color _getLevelColor(int level) {
+    if (level >= 25) {
+      return const Color(0xFF2D5016); // Deep forest green for Master
+    } else if (level >= 10) {
+      return const Color(0xFF388E3C); // Medium green for Champion
+    } else {
+      return const Color(0xFF66BB6A); // Light green for Beginner
+    }
+  }
+
+  // Get level title
+  String _getLevelTitle(int level) {
+    if (level >= 25) {
+      return 'Master Eco-Warrior';
+    } else if (level >= 10) {
+      return 'Eco-Champion';
+    } else {
+      return 'Eco-Beginner';
+    }
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userProfileAsync = ref.watch(userProfileProvider);
@@ -19,9 +57,7 @@ class UserProfileCard extends ConsumerWidget {
         gradient: LinearGradient(
           colors: [
             Color(0xFFE3F7BA), // #E3F7BA
-            Color(
-              0x524CAF50,
-            ), // #529C4F4D (52 is the alpha, 9C4F4D is the color)
+            Color(0x524CAF50), // #529C4F4D
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -37,6 +73,11 @@ class UserProfileCard extends ConsumerWidget {
   }
 
   Widget _buildUserContent(BuildContext context, UserProfile user) {
+    final userLevel = _getUserLevel(user.ecoPoints);
+    final levelIcon = _getLevelIcon(userLevel);
+    final levelColor = _getLevelColor(userLevel);
+    final levelTitle = _getLevelTitle(userLevel);
+
     return Column(
       children: [
         // User Info Row
@@ -45,53 +86,69 @@ class UserProfileCard extends ConsumerWidget {
             // Profile Picture
             CircleAvatar(
               radius: 30,
-              backgroundImage:
-                  user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
-                      : const AssetImage('assets/profiles/default_profile.png')
-                          as ImageProvider,
+              backgroundImage: user.photoUrl != null
+                  ? NetworkImage(user.photoUrl!)
+                  : const AssetImage('assets/profiles/default_profile.png')
+                      as ImageProvider,
               backgroundColor: Colors.grey[300],
             ),
             const SizedBox(width: 15),
 
-            // User Name and Title
+            // User Name and Level - Centered, Wrapped, and Clickable
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Colors.green[700], size: 30),
-                      const SizedBox(width: 25),
-                      Flexible(
-                        child: Text(
-                          user.displayName ?? 'Anonymous',
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            // Edit Button - Navigate to Profile Page
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.green[600],
-                shape: BoxShape.circle,
-              ),
-              child: IconButton(
-                icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                onPressed: () {
+              child: GestureDetector(
+                onTap: () {
                   // Navigate to profile page using GoRouter
                   context.pushNamed('profilepage', extra: user);
                 },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.white.withOpacity(0.4),
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // User Name
+                      Text(
+                        user.displayName ?? 'Anonymous',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                        textAlign: TextAlign.center,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 8),
+                      // Level Icon and Title/Level Number
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            levelIcon, // Dynamic icon based on level
+                            color: levelColor, // Dynamic color based on level
+                            size: 20,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Level $userLevel ($levelTitle)', // Dynamic Level number and title
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: levelColor, // Dynamic color for text
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ],
@@ -99,25 +156,12 @@ class UserProfileCard extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Stats Row
+        // Stats Row (now only for points)
         Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Center the single stat card
           children: [
             StatCard(
-              icon: Icons.recycling,
-              value: "${0} kg",
-              label: "waste",
-              color: Colors.green,
-            ),
-            const SizedBox(width: 10),
-            StatCard(
-              icon: Icons.cloud,
-              value: "${0} kg",
-              label: "carbon",
-              color: Colors.green,
-            ),
-            const SizedBox(width: 10),
-            StatCard(
-              icon: Icons.arrow_downward,
+              icon: Icons.emoji_events, // Changed to a more generic trophy/event icon for points
               value: "${user.ecoPoints}",
               label: "points",
               color: Colors.green,
@@ -151,37 +195,46 @@ class UserProfileCard extends ConsumerWidget {
             ),
             const SizedBox(width: 15),
 
-            // Loading User Name
+            // Loading User Name Container
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.star, color: Colors.grey[400], size: 30),
-                      const SizedBox(width: 25),
-                      Container(
-                        height: 20,
-                        width: 120,
-                        decoration: BoxDecoration(
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                      ),
-                    ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Colors.white.withOpacity(0.4),
+                    width: 1,
                   ),
-                ],
-              ),
-            ),
-
-            // Loading Edit Button
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                shape: BoxShape.circle,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 20,
+                      width: 120,
+                      decoration: BoxDecoration(
+                        color: Colors.grey[300],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.star, color: Colors.grey[400], size: 20),
+                        const SizedBox(width: 4),
+                        Container(
+                          height: 14,
+                          width: 60,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -189,14 +242,11 @@ class UserProfileCard extends ConsumerWidget {
 
         const SizedBox(height: 20),
 
-        // Loading Stats Row
+        // Loading Stats Row (now only for points)
         Row(
+          mainAxisAlignment: MainAxisAlignment.center, // Center the single stat card
           children: [
-            _buildLoadingStatCard(),
-            const SizedBox(width: 10),
-            _buildLoadingStatCard(),
-            const SizedBox(width: 10),
-            _buildLoadingStatCard(),
+            _buildLoadingStatCard(), // Single loading card
           ],
         ),
       ],
@@ -204,7 +254,7 @@ class UserProfileCard extends ConsumerWidget {
   }
 
   Widget _buildLoadingStatCard() {
-    return Expanded(
+    return Expanded( // Still use Expanded so it fills available width in its row
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
@@ -250,6 +300,7 @@ class UserProfileCard extends ConsumerWidget {
             fontSize: 16,
             fontWeight: FontWeight.w500,
             color: Colors.red[700],
+          
           ),
         ),
         const SizedBox(height: 8),
