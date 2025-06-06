@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:camera/camera.dart';
@@ -135,8 +133,6 @@ class _LiveDetectionCameraOverlayState extends State<LiveDetectionCameraOverlay>
       // Use the camera controller directly instead of the service
       final XFile imageFile = await widget.cameraController.takePicture();
       final imagePath = imageFile.path;
-
-      log('Photo captured: $imagePath');
 
       if (!_isDisposed && widget.onImageCaptured != null) {
         // Stop live detection before navigating

@@ -92,6 +92,7 @@ class TrashBinCard extends StatelessWidget {
           ],
         ),
         child: Column(
+          spacing: 8,
           children: [
             // Selection indicator - Made smaller
             Padding(

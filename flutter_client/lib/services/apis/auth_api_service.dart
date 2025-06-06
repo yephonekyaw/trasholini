@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_client/models/user_profile_data_model.dart';
 import 'package:flutter_client/services/apis/dio_client.dart';
@@ -15,7 +13,6 @@ class AuthApiService {
   }) async {
     try {
       await _dioClient.initialize();
-      log('Authenticating user with Google ID: $googleId, Email: $email');
       final response = await _dioClient.dio.post(
         '/auth/signin',
         data: {

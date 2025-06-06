@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_client/providers/google_auth_provider.dart';
 import 'package:flutter_client/router/router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -44,7 +43,7 @@ class CustomBottomNavigation extends ConsumerWidget {
               _buildNavItem(
                 icon: Icons.category,
                 label: 'Categories',
-                onTap: () => ref.watch(googleAuthProvider.notifier).signOut(),
+                onTap: () => ref.read(routerProvider).go('/categories'),
               ),
             ],
           ),

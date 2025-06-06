@@ -1,16 +1,14 @@
 import time
 import uuid
 from contextlib import asynccontextmanager
-
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-
 import app.core.errors as _
 from app.apis.routes import api_router
 from app.apis.routes.websocket_router import websocket_router
 from app.core.config import settings
 from app.core.logging import logger
-
+from app.middlewares.user_id_middleware import UserIDMiddleware
 from typing import Callable, Awaitable
 
 
@@ -38,6 +36,9 @@ def create_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Add user ID middleware
+    application.add_middleware(UserIDMiddleware)
 
     # Request ID middleware
     @application.middleware("http")

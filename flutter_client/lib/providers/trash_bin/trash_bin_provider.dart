@@ -1,204 +1,177 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../models/trash_bin/trash_bin.dart'; // Import the TrashBin model
+import 'package:flutter_client/models/trash_bin/trash_bin.dart';
+import 'package:flutter_client/services/apis/bin_api_service.dart';
 
-// State Notifier for managing trash bin selection
 class TrashBinNotifier extends StateNotifier<List<TrashBin>> {
-  TrashBinNotifier() : super(_initialBins);
-
-  // Initial trash bins data with image assets
-  static final List<TrashBin> _initialBins = [
-    TrashBin(
-      id: 'green',
-      name: 'Green Bin',
-      description: 'Green Waste',
-      color: const Color(0xFF4CAF50),
-      imagePath: 'assets/trash_images/green.png',
-    ),
-    TrashBin(
-      id: 'red',
-      name: 'Red Bin',
-      description: 'B3 waste',
-      color: const Color(0xFFf44336),
-      imagePath: 'assets/trash_images/red.png',
-    ),
-    TrashBin(
-      id: 'yellow',
-      name: 'Yellow Bin',
-      description: 'Anorganic Waste',
-      color: const Color(0xFFFFEB3B),
-      imagePath: 'assets/trash_images/yellow.png',
-    ),
-    TrashBin(
-      id: 'blue',
-      name: 'Blue Bin',
-      description: 'Recyclables',
-      color: const Color(0xFF2196F3),
-      imagePath: 'assets/trash_images/blue.png',
-    ),
-    TrashBin(
-      id: 'grey',
-      name: 'Grey Bin',
-      description: 'Residual Waste',
-      color: const Color(0xFF9E9E9E),
-      imagePath: 'assets/trash_images/grey.png',
-    ),
-  ];
-
-  /// Toggle selection state of a specific trash bin
-  void toggleBinSelection(String binId) {
-    state = state.map((bin) {
-      if (bin.id == binId) {
-        return bin.copyWith(isSelected: !bin.isSelected);
-      }
-      return bin;
-    }).toList();
+  TrashBinNotifier() : super([]) {
+    _loadBins();
   }
 
-  /// Select a specific trash bin
-  void selectBin(String binId) {
-    state = state.map((bin) {
-      if (bin.id == binId) {
-        return bin.copyWith(isSelected: true);
-      }
-      return bin;
-    }).toList();
-  }
+  final BinApiService _binApiService = BinApiService();
+  bool _isLoading = false;
+  String? _error;
 
-  /// Deselect a specific trash bin
-  void deselectBin(String binId) {
-    state = state.map((bin) {
-      if (bin.id == binId) {
-        return bin.copyWith(isSelected: false);
-      }
-      return bin;
-    }).toList();
-  }
+  // Getters
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+  bool get allSelected => state.every((bin) => bin.isSelected);
+  List<TrashBin> get selectedBins =>
+      state.where((bin) => bin.isSelected).toList();
+  List<TrashBin> get availableBins => state;
 
-  /// Select all trash bins
-  void selectAllBins() {
-    state = state.map((bin) => bin.copyWith(isSelected: true)).toList();
-  }
-
-  /// Deselect all trash bins
-  void deselectAllBins() {
-    state = state.map((bin) => bin.copyWith(isSelected: false)).toList();
-  }
-
-  /// Reset all bins to initial state (unselected)
-  void resetBins() {
-    state = _initialBins;
-  }
-
-  /// Set selection state for multiple bins
-  void setMultipleBinSelection(List<String> binIds, bool isSelected) {
-    state = state.map((bin) {
-      if (binIds.contains(bin.id)) {
-        return bin.copyWith(isSelected: isSelected);
-      }
-      return bin;
-    }).toList();
-  }
-
-  /// Get a specific bin by ID
-  TrashBin? getBinById(String binId) {
+  /// Load bins from backend (combines available bins with user's accessible bins)
+  Future<void> _loadBins() async {
     try {
-      return state.firstWhere((bin) => bin.id == binId);
+      _setLoading(true);
+      _clearError();
+
+      // Get user's bins with details (combines both API calls)
+      final bins = await _binApiService.getUserBinsWithDetails();
+      state = bins;
+
+      debugPrint(
+        'TrashBinProvider: Loaded ${bins.length} bins, ${selectedBins.length} selected',
+      );
     } catch (e) {
-      return null;
+      _setError('Failed to load bins: $e');
+      debugPrint('TrashBinProvider: Error loading bins: $e');
+
+      // Fallback to empty state on error
+      state = [];
+    } finally {
+      _setLoading(false);
     }
   }
 
-  /// Check if a specific bin is selected
-  bool isBinSelected(String binId) {
-    final bin = getBinById(binId);
-    return bin?.isSelected ?? false;
+  /// Save current selection to backend
+  Future<bool> saveBinsToBackend() async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final selectedBinIds = selectedBins.map((bin) => bin.id).toList();
+      await _binApiService.updateUserBinList(selectedBinIds);
+
+      debugPrint(
+        'TrashBinProvider: Saved ${selectedBinIds.length} bins to backend',
+      );
+      return true;
+    } catch (e) {
+      _setError('Failed to save bins: $e');
+      debugPrint('TrashBinProvider: Error saving bins: $e');
+      return false;
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  /// Get list of selected bins
-  List<TrashBin> get selectedBins {
-    return state.where((bin) => bin.isSelected).toList();
+  /// Toggle bin selection (local state only)
+  void toggleBinSelection(String binId) {
+    state =
+        state.map((bin) {
+          if (bin.id == binId) {
+            return bin.copyWith(isSelected: !bin.isSelected);
+          }
+          return bin;
+        }).toList();
+
+    debugPrint(
+      'TrashBinProvider: Toggled bin $binId, now ${selectedBins.length} selected',
+    );
   }
 
-  /// Get list of unselected bins
-  List<TrashBin> get unselectedBins {
-    return state.where((bin) => !bin.isSelected).toList();
+  /// Select all bins (local state only)
+  void selectAllBins() {
+    state = state.map((bin) => bin.copyWith(isSelected: true)).toList();
+    debugPrint('TrashBinProvider: Selected all ${state.length} bins');
   }
 
-  /// Check if all bins are selected
-  bool get allSelected {
-    return state.isNotEmpty && state.every((bin) => bin.isSelected);
+  /// Deselect all bins (local state only)
+  void deselectAllBins() {
+    state = state.map((bin) => bin.copyWith(isSelected: false)).toList();
+    debugPrint('TrashBinProvider: Deselected all bins');
   }
 
-  /// Check if no bins are selected
-  bool get noneSelected {
-    return state.every((bin) => !bin.isSelected);
+  /// Refresh bins from backend
+  Future<void> refreshBins() async {
+    debugPrint('TrashBinProvider: Refreshing bins from backend');
+    await _loadBins();
   }
 
-  /// Get count of selected bins
-  int get selectedCount {
-    return state.where((bin) => bin.isSelected).length;
+  /// Reset to user's saved selection (discard local changes)
+  Future<void> resetToSavedSelection() async {
+    try {
+      _setLoading(true);
+      _clearError();
+
+      final userBinIds = await _binApiService.getUserAccessibleBins();
+
+      // Update state to match saved selection
+      state =
+          state.map((bin) {
+            return bin.copyWith(isSelected: userBinIds.contains(bin.id));
+          }).toList();
+
+      debugPrint('TrashBinProvider: Reset to saved selection: $userBinIds');
+    } catch (e) {
+      _setError('Failed to reset bins: $e');
+      debugPrint('TrashBinProvider: Error resetting bins: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  /// Get count of unselected bins
-  int get unselectedCount {
-    return state.where((bin) => !bin.isSelected).length;
+  /// Check if current selection differs from saved selection
+  Future<bool> hasUnsavedChanges() async {
+    try {
+      final savedBinIds = await _binApiService.getUserAccessibleBins();
+      final currentBinIds = selectedBins.map((bin) => bin.id).toSet();
+      final savedBinIdsSet = savedBinIds.toSet();
+
+      return !currentBinIds.containsAll(savedBinIdsSet) ||
+          !savedBinIdsSet.containsAll(currentBinIds);
+    } catch (e) {
+      debugPrint('TrashBinProvider: Error checking for unsaved changes: $e');
+      return false;
+    }
   }
 
-  /// Get total count of bins
-  int get totalCount {
-    return state.length;
+  // Helper methods
+  void _setLoading(bool loading) {
+    _isLoading = loading;
   }
 
-  /// Get list of selected bin IDs
-  List<String> get selectedBinIds {
-    return selectedBins.map((bin) => bin.id).toList();
+  void _setError(String error) {
+    _error = error;
   }
 
-  /// Get list of selected bin names
-  List<String> get selectedBinNames {
-    return selectedBins.map((bin) => bin.name).toList();
+  void _clearError() {
+    _error = null;
   }
 }
 
-// Main provider
-final trashBinProvider = StateNotifierProvider<TrashBinNotifier, List<TrashBin>>(
-  (ref) => TrashBinNotifier(),
-);
+// Providers
+final trashBinProvider =
+    StateNotifierProvider<TrashBinNotifier, List<TrashBin>>(
+      (ref) => TrashBinNotifier(),
+    );
 
-// Computed providers for convenient access
-final selectedBinsProvider = Provider<List<TrashBin>>((ref) {
-  final bins = ref.watch(trashBinProvider);
-  return bins.where((bin) => bin.isSelected).toList();
+// Additional providers for specific states
+final trashBinLoadingProvider = Provider<bool>((ref) {
+  return ref.watch(trashBinProvider.notifier).isLoading;
 });
 
-final selectedBinCountProvider = Provider<int>((ref) {
-  final selectedBins = ref.watch(selectedBinsProvider);
-  return selectedBins.length;
+final trashBinErrorProvider = Provider<String?>((ref) {
+  return ref.watch(trashBinProvider.notifier).error;
 });
 
+// Provider for selected bins count
+final selectedBinsCountProvider = Provider<int>((ref) {
+  return ref.watch(trashBinProvider.notifier).selectedBins.length;
+});
+
+// Provider for checking if all bins are selected
 final allBinsSelectedProvider = Provider<bool>((ref) {
-  final bins = ref.watch(trashBinProvider);
-  return bins.isNotEmpty && bins.every((bin) => bin.isSelected);
-});
-
-final noneBinsSelectedProvider = Provider<bool>((ref) {
-  final bins = ref.watch(trashBinProvider);
-  return bins.every((bin) => !bin.isSelected);
-});
-
-// Provider for getting a specific bin by ID
-final binByIdProvider = Provider.family<TrashBin?, String>((ref, binId) {
-  final bins = ref.watch(trashBinProvider);
-  try {
-    return bins.firstWhere((bin) => bin.id == binId);
-  } catch (e) {
-    return null;
-  }
-});
-
-// Provider to check if a specific bin is selected
-final isBinSelectedProvider = Provider.family<bool, String>((ref, binId) {
-  final bin = ref.watch(binByIdProvider(binId));
-  return bin?.isSelected ?? false;
+  return ref.watch(trashBinProvider.notifier).allSelected;
 });

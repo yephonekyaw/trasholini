@@ -1,13 +1,15 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart'; // For debugPrint
+import 'package:flutter/foundation.dart';
+import 'package:flutter_client/services/token_storage_service.dart';
 
 class DioClient {
   static DioClient? _instance;
   Dio? _dio;
   bool _isInitialized = false;
+  final TokenStorageService _tokenStorage = TokenStorageService();
 
   // Manual IP configuration - change this to your server IP
-  static const String _baseUrl = 'http://192.168.0.102:8000/api/v1';
+  static const String _baseUrl = 'http://10.4.150.200:8000/api/v1';
 
   DioClient._internal();
 
@@ -39,7 +41,7 @@ class DioClient {
       ),
     );
 
-    _addInterceptors();
+    await _addInterceptors();
     _isInitialized = true;
   }
 
@@ -52,7 +54,7 @@ class DioClient {
   }
 
   // Add interceptors
-  void _addInterceptors() {
+  Future<void> _addInterceptors() async {
     if (_dio == null) return;
 
     // Add log interceptor for debugging
@@ -68,15 +70,12 @@ class DioClient {
       ),
     );
 
-    // Add your custom interceptor for auth and error handling
+    // Add custom interceptor for auth and automatic user ID injection
     _dio!.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
-          // Add auth token if needed
-          // final token = getStoredToken();
-          // if (token != null) {
-          //   options.headers['Authorization'] = 'Bearer $token';
-          // }
+        onRequest: (options, handler) async {
+          // Always try to add user ID to requests
+          await _addUserIdToRequest(options);
           handler.next(options);
         },
         onResponse: (response, handler) {
@@ -97,6 +96,61 @@ class DioClient {
     );
   }
 
+  /// Automatically add user ID to all requests
+  Future<void> _addUserIdToRequest(RequestOptions options) async {
+    try {
+      // Get user ID from token storage
+      final userId = await _tokenStorage.getUserId();
+
+      if (userId != null && userId.isNotEmpty) {
+        // Add user ID as header
+        options.headers['X-User-ID'] = userId;
+
+        // Also add as query parameter for GET requests (optional)
+        if (options.method.toUpperCase() == 'GET') {
+          options.queryParameters['user_id'] = userId;
+        }
+
+        // Add as body parameter for POST/PUT requests if body is a Map
+        if (['POST', 'PUT', 'PATCH'].contains(options.method.toUpperCase())) {
+          if (options.data is Map<String, dynamic>) {
+            options.data['user_id'] = userId;
+          } else if (options.data is FormData) {
+            // For form data requests
+            (options.data as FormData).fields.add(MapEntry('user_id', userId));
+          }
+        }
+
+        debugPrint(
+          'DioClient: Added user ID to ${options.method} ${options.path}: $userId',
+        );
+      } else {
+        debugPrint(
+          'DioClient: No user ID found for request: ${options.method} ${options.path}',
+        );
+      }
+    } catch (e) {
+      debugPrint('DioClient: Error adding user ID to request: $e');
+    }
+  }
+
+  /// Manually refresh user authentication for all future requests
+  Future<void> refreshUserAuth() async {
+    // This will ensure the next request gets the latest user ID
+    debugPrint('DioClient: User authentication refreshed');
+  }
+
+  /// Check if user is authenticated for API calls
+  Future<bool> isUserAuthenticated() async {
+    final userId = await _tokenStorage.getUserId();
+    return userId != null && userId.isNotEmpty;
+  }
+
+  /// Get current user ID
+  Future<String?> getCurrentUserId() async {
+    return await _tokenStorage.getUserId();
+  }
+
   // Get current base URL
   static String get baseUrl => _baseUrl;
 
@@ -114,7 +168,9 @@ class DioClient {
         case 400:
           return BadRequestException(data['message'] ?? 'Bad request');
         case 401:
-          return UnauthorizedException(data['message'] ?? 'Unauthorized');
+          return UnauthorizedException(
+            data['message'] ?? 'Unauthorized - Please login again',
+          );
         case 403:
           return ForbiddenException(data['message'] ?? 'Forbidden');
         case 404:
@@ -138,7 +194,7 @@ class DioClient {
   }
 }
 
-// Exception classes
+// Exception classes (same as before)
 class ApiException implements Exception {
   final String message;
   ApiException(this.message);

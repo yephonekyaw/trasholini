@@ -5,7 +5,6 @@ import 'package:flutter_client/widgets/scan/live_detection_camera_overlay.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import '../../providers/scan_provider.dart';
 import '../../utils/utility.dart';
 
 class ScanPage extends ConsumerWidget {
@@ -15,7 +14,6 @@ class ScanPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final scanState = ref.watch(scanProvider);
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -30,9 +28,9 @@ class ScanPage extends ConsumerWidget {
                 child: Column(
                   children: [
                     const SizedBox(height: 20),
-                    Expanded(child: _buildScanCard(context, scanState, size)),
+                    Expanded(child: _buildScanCard(context, size)),
                     const SizedBox(height: 24),
-                    _buildActionButtons(context, ref, scanState, size),
+                    _buildActionButtons(context, ref, size),
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -86,7 +84,7 @@ class ScanPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Get instant disposal guidance',
+                  'Capture or select an image to get started',
                   style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
@@ -97,7 +95,7 @@ class ScanPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildScanCard(BuildContext context, ScanState scanState, Size size) {
+  Widget _buildScanCard(BuildContext context, Size size) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -197,19 +195,13 @@ class ScanPage extends ConsumerWidget {
             ),
           ),
 
-          // Processing overlay
-          if (scanState.isProcessing) _buildProcessingOverlay(),
+          // Processing overlay (removed since we're not processing here anymore)
         ],
       ),
     );
   }
 
-  Widget _buildActionButtons(
-    BuildContext context,
-    WidgetRef ref,
-    ScanState scanState,
-    Size size,
-  ) {
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref, Size size) {
     return Column(
       children: [
         // Primary camera button
@@ -235,10 +227,7 @@ class ScanPage extends ConsumerWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
-              onTap:
-                  scanState.isProcessing
-                      ? null
-                      : () => _openLiveDetectionCamera(context, ref),
+              onTap: () => _openLiveDetectionCamera(context, ref),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -286,10 +275,7 @@ class ScanPage extends ConsumerWidget {
             color: Colors.transparent,
             child: InkWell(
               borderRadius: BorderRadius.circular(16),
-              onTap:
-                  scanState.isProcessing
-                      ? null
-                      : () => _pickFromGallery(context, ref),
+              onTap: () => _pickFromGallery(context, ref),
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
@@ -400,56 +386,6 @@ class ScanPage extends ConsumerWidget {
     ];
   }
 
-  Widget _buildProcessingOverlay() {
-    return Positioned.fill(
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.95),
-          borderRadius: BorderRadius.circular(24),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50).withValues(alpha: 0.1),
-                shape: BoxShape.circle,
-              ),
-              child: const SizedBox(
-                width: 30,
-                height: 30,
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
-                  strokeWidth: 3,
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 20),
-
-            Text(
-              'Analyzing your waste...',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[800],
-              ),
-            ),
-
-            const SizedBox(height: 8),
-
-            Text(
-              'This will only take a moment',
-              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _openLiveDetectionCamera(
     BuildContext context,
     WidgetRef ref,
@@ -488,36 +424,14 @@ class ScanPage extends ConsumerWidget {
                   cameraController: cameraController,
                   ref: ref,
                   onImageCaptured: (imagePath) async {
-                    // Don't dispose camera here - let the overlay handle it
-                    // Just navigate to the next page
-                    try {
-                      final analysisResult = await ref
-                          .read(scanProvider.notifier)
-                          .processImage(imagePath);
-
-                      if (context.mounted) {
-                        // Navigate to results page with captured image
-                        ref
-                            .read(routerProvider)
-                            .go(
-                              '/category-details',
-                              extra: {
-                                'imagePath': imagePath,
-                                'analysisResult': analysisResult,
-                              },
-                            );
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        // Close camera overlay on error too
-                        Navigator.of(context).pop();
-
-                        Utility.showSnackBar(
-                          context,
-                          'Error processing captured image: ${Utility.getErrorMessage(e)}',
-                          isError: true,
-                        );
-                      }
+                    // Navigate directly to preview page with captured image
+                    if (context.mounted) {
+                      ref
+                          .read(routerProvider)
+                          .go(
+                            '/image-preview',
+                            extra: {'imagePath': imagePath},
+                          );
                     }
                   },
                 ),
@@ -545,25 +459,8 @@ class ScanPage extends ConsumerWidget {
     );
 
     if (image != null && context.mounted) {
-      try {
-        final analysisResult = await ref
-            .read(scanProvider.notifier)
-            .processImage(image.path);
-        if (context.mounted) {
-          context.push(
-            '/category-details',
-            extra: {'imagePath': image.path, 'analysisResult': analysisResult},
-          );
-        }
-      } catch (e) {
-        if (context.mounted) {
-          Utility.showSnackBar(
-            context,
-            'Error processing image: ${Utility.getErrorMessage(e)}',
-            isError: true,
-          );
-        }
-      }
+      // Navigate directly to preview page with selected image
+      context.push('/image-preview', extra: {'imagePath': image.path});
     }
   }
 }
