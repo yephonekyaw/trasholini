@@ -7,11 +7,11 @@ class EnhancedCategoryCard extends StatelessWidget {
   final int index;
 
   const EnhancedCategoryCard({
-    Key? key,
+    super.key,
     required this.category,
     required this.onTap,
     this.index = 0,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

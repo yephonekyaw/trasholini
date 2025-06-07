@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_client/providers/user_profile_provider.dart';
 import 'package:flutter_client/router/router.dart';
 import 'package:flutter_client/widgets/nav/custom_bottom_navigation.dart';
 import 'package:flutter_client/widgets/nav/floating_scan_button.dart';
@@ -171,6 +172,9 @@ class _DisposalInstructionsPageState
             ),
           ),
         );
+        ref
+            .read(userProfileProvider.notifier)
+            .refreshProfile(); // Refresh profile to update history
         ref.read(routerProvider).go('/');
       }
     } catch (e) {

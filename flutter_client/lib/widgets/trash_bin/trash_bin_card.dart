@@ -8,11 +8,11 @@ class TrashBinCard extends StatelessWidget {
   final VoidCallback onArrowTap;
 
   const TrashBinCard({
-    Key? key,
+    super.key,
     required this.bin,
     required this.onTap,
     required this.onArrowTap,
-  }) : super(key: key);
+  });
 
   // Get enhanced color for better visibility
   Color get enhancedBinColor {

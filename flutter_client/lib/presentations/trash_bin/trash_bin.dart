@@ -9,7 +9,7 @@ import '../../widgets/trash_bin/trash_bin_header.dart';
 import 'trash_bin_details.dart'; // Import the details page
 
 class TrashBinPage extends ConsumerWidget {
-  const TrashBinPage({Key? key}) : super(key: key);
+  const TrashBinPage({super.key});
 
   void _showSuccessMessage(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(

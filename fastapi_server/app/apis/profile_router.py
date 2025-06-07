@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 from fastapi import APIRouter, HTTPException, Request, UploadFile, File, Form
 from pydantic import BaseModel
-from google.cloud import storage
+from app.utils.storage import storage_client
 from google.cloud.firestore import FieldFilter
 
 from app.utils.extract_user_id import get_user_id
@@ -13,11 +13,6 @@ from app.core.config import settings
 from app.core.logging import logger
 
 profile_router = APIRouter()
-
-# Configure Google Cloud Storage
-storage_client = storage.Client.from_service_account_json(
-    settings.GOOGLE_STORAGE_CREDENTIALS
-)
 
 
 class UpdateProfileRequest(BaseModel):

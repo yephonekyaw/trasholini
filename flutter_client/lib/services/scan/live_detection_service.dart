@@ -130,7 +130,7 @@ class LiveDetectionService {
     _isCooldownActive = true;
     _updateStatus();
 
-    _cooldownTimer = Timer(Duration(seconds: 5), () {
+    _cooldownTimer = Timer(Duration(seconds: 3), () {
       _isCooldownActive = false;
       _updateStatus();
       debugPrint('LiveDetectionService: Cooldown ended, resuming detection');

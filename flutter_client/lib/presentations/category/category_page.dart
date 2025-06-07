@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/main/waste_category.dart';
 
 class CategoriesScreen extends ConsumerWidget {
-  const CategoriesScreen({Key? key}) : super(key: key);
+  const CategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

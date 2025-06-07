@@ -13,13 +13,14 @@ class Settings(BaseSettings):
     """Pydantic v2 doesn't support parsing List[str] from a plain comma-separated string by default anymore."""
     ALLOWED_HOSTS: Union[str, List[str]] = ""
     LOG_LEVEL: str = ""
-    GOOGLE_APPLICATION_CREDENTIALS: str = ""
+    GOOGLE_FIREBASE_CREDENTIALS: str = ""
     GOOGLE_STORAGE_CREDENTIALS: str = ""
     ROBOFLOW_MODEL_URL: str = ""
     ROBOFLOW_API_KEY: str = ""
     ROBOFLOW_MODEL_ID: str = ""
     GEMINI_API_KEY: str = ""
     GCS_BUCKET_NAME: str = ""
+    ENVIRONMENT: str = "development"
 
     @field_validator("ALLOWED_HOSTS", mode="before")
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> Union[List[str], str]:

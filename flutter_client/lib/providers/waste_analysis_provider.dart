@@ -1,7 +1,6 @@
 import 'package:flutter_client/services/apis/waste_analysis_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Export models from service for convenience
 export 'package:flutter_client/services/apis/waste_analysis_service.dart'
     show WasteAnalysisResult, RecommendedBin;
 

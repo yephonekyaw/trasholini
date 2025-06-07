@@ -7,10 +7,10 @@ class MinimalistDetectionWidget extends StatelessWidget {
   final bool isDetecting;
 
   const MinimalistDetectionWidget({
-    Key? key,
+    super.key,
     this.detection,
     this.isDetecting = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
