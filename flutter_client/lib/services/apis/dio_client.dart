@@ -9,7 +9,8 @@ class DioClient {
   final TokenStorageService _tokenStorage = TokenStorageService();
 
   // Manual IP configuration - change this to your server IP
-  static const String _baseUrl = 'http://10.4.150.200:8000/api/v1';
+  static const String _baseUrl = 'https://api.trasholini.online/api/v1';
+  // static const String _baseUrl = 'http://10.4.150.200:8000/api/v1';
 
   DioClient._internal();
 
@@ -156,7 +157,7 @@ class DioClient {
 
   // Get WebSocket URL (for your waste detection)
   static String get wsUrl => _baseUrl
-      .replaceFirst('http://', 'ws://')
+      .replaceFirst('https://', 'wss://')
       .replaceFirst('/api/v1', '/ws/v1/detect');
 
   Exception _handleError(DioException error) {

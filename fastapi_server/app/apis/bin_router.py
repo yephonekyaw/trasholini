@@ -48,7 +48,6 @@ async def get_all_available_bins():
     Uses Firestore document ID as the bin ID - much simpler!
     """
     try:
-        logger.info("Getting all available bins from Firestore")
 
         # Get all documents from 'bins' collection
         bins_collection = firestore_client.collection("bins")
@@ -107,10 +106,6 @@ async def get_all_available_bins():
 
         # Sort bins by ID for consistent ordering
         available_bins.sort(key=lambda x: x.id)
-
-        logger.info(
-            f"Successfully retrieved {len(available_bins)} available bins from Firestore"
-        )
         return {"bins": available_bins}
 
     except Exception as e:
@@ -128,16 +123,12 @@ async def get_bins_user_has_access_to(request: Request):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Getting accessible bins for user: {user_id}")
 
         # Get user's bin document from Firestore
         doc_ref = firestore_client.collection("available-bins").document(user_id)
         doc = doc_ref.get()
 
         if not doc.exists:
-            logger.info(
-                f"No bin preferences found for user {user_id}, returning empty list"
-            )
             return {"accessible_bin_ids": []}
 
         doc_data = doc.to_dict()
@@ -152,7 +143,6 @@ async def get_bins_user_has_access_to(request: Request):
 
         # Update user's document if some bins were invalid
         if len(validated_bins) != len(accessible_bins):
-            logger.info(f"Removing invalid bin IDs for user {user_id}")
             doc_ref.update(
                 {
                     "bin_ids": validated_bins,
@@ -160,9 +150,6 @@ async def get_bins_user_has_access_to(request: Request):
                 }
             )
 
-        logger.info(
-            f"User {user_id} has access to {len(validated_bins)} bins: {validated_bins}"
-        )
         return {"accessible_bin_ids": validated_bins}
 
     except HTTPException:
@@ -184,7 +171,6 @@ async def allow_user_update_their_bin_list(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Updating bin list for user {user_id}: {bin_data.bin_ids}")
 
         # Validate bin IDs as existing Firestore documents
         validated_bins = await _validate_bin_document_ids(bin_data.bin_ids)
@@ -211,12 +197,10 @@ async def allow_user_update_their_bin_list(
         if doc.exists:
             # Update existing document
             doc_ref.update(doc_data)
-            logger.info(f"Updated existing bin list for user {user_id}")
         else:
             # Create new document with created_at timestamp
             doc_data["created_at"] = datetime.now().isoformat()
             doc_ref.set(doc_data)
-            logger.info(f"Created new bin list for user {user_id}")
 
         return {
             "success": True,

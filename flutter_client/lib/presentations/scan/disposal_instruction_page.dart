@@ -172,9 +172,7 @@ class _DisposalInstructionsPageState
             ),
           ),
         );
-        ref
-            .read(userProfileProvider.notifier)
-            .refreshProfile(); // Refresh profile to update history
+        ref.read(userProfileProvider.notifier).refreshProfile();
         ref.read(routerProvider).go('/');
       }
     } catch (e) {

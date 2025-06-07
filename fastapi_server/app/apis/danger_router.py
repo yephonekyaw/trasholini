@@ -150,7 +150,6 @@ async def DELETE_user_data(
 async def _verify_user_exists(user_id: str, provided_email: str) -> None:
     """Verify user exists and email matches for additional security"""
     try:
-        logger.info(f"Verifying user exists: {user_id}")
 
         profiles_ref = firestore_client.collection("profiles")
         query = profiles_ref.where(filter=FieldFilter("user_id", "==", user_id)).limit(
@@ -186,8 +185,6 @@ async def _verify_user_exists(user_id: str, provided_email: str) -> None:
                 detail="Email verification failed. Provided email does not match user record.",
             )
 
-        logger.info(f"User verification successful: {user_id}")
-
     except HTTPException:
         raise
     except Exception as e:
@@ -210,7 +207,6 @@ async def _delete_firestore_data(user_id: str, force_delete: bool) -> Dict[str, 
             for doc in docs:
                 doc.reference.delete()
                 deleted_counts["profiles"] += 1
-                logger.info(f"Deleted profile document: {doc.id}")
 
         except Exception as e:
             error_msg = f"Error deleting profiles: {str(e)}"
@@ -228,7 +224,6 @@ async def _delete_firestore_data(user_id: str, force_delete: bool) -> Dict[str, 
             for doc in docs:
                 doc.reference.delete()
                 deleted_counts["disposal_history"] += 1
-                logger.info(f"Deleted disposal history document: {doc.id}")
 
         except Exception as e:
             error_msg = f"Error deleting disposal history: {str(e)}"
@@ -245,7 +240,6 @@ async def _delete_firestore_data(user_id: str, force_delete: bool) -> Dict[str, 
             if user_bins_doc.get().exists:
                 user_bins_doc.delete()
                 deleted_counts["available_bins"] += 1
-                logger.info(f"Deleted available-bins document: {user_id}")
 
         except Exception as e:
             error_msg = f"Error deleting available bins: {str(e)}"
@@ -253,8 +247,6 @@ async def _delete_firestore_data(user_id: str, force_delete: bool) -> Dict[str, 
             errors.append(error_msg)
             if not force_delete:
                 raise
-
-        logger.info(f"Firestore deletion completed: {deleted_counts}")
 
     except Exception as e:
         if not force_delete:
@@ -287,7 +279,6 @@ async def _delete_cloud_storage_data(
             disposal_prefix = f"disposal-images/{user_id}/"
             disposal_count = await _delete_storage_folder(bucket, disposal_prefix)
             deleted_counts["disposal_images"] = disposal_count
-            logger.info(f"Deleted {disposal_count} disposal images for user {user_id}")
 
         except Exception as e:
             error_msg = f"Error deleting disposal images: {str(e)}"
@@ -301,7 +292,6 @@ async def _delete_cloud_storage_data(
             profile_prefix = f"profile-images/{user_id}/"
             profile_count = await _delete_storage_folder(bucket, profile_prefix)
             deleted_counts["profile_images"] = profile_count
-            logger.info(f"Deleted {profile_count} profile images for user {user_id}")
 
         except Exception as e:
             error_msg = f"Error deleting profile images: {str(e)}"
@@ -309,8 +299,6 @@ async def _delete_cloud_storage_data(
             errors.append(error_msg)
             if not force_delete:
                 raise
-
-        logger.info(f"Cloud Storage deletion completed: {deleted_counts}")
 
     except Exception as e:
         if not force_delete:
@@ -358,7 +346,6 @@ async def preview_user_deletion(request: Request):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Generating deletion preview for user: {user_id}")
 
         preview_data = {
             "user_id": user_id,

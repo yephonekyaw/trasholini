@@ -65,8 +65,6 @@ async def upload_image_to_gcs(
         if not bucket_name:
             bucket_name = settings.GCS_BUCKET_NAME
 
-        logger.info(f"Uploading image to GCS bucket: {bucket_name}")
-
         # Read file content
         file_content = await file.read()
 
@@ -89,8 +87,6 @@ async def upload_image_to_gcs(
             f"disposal-images/{user_id}/{timestamp}_{unique_id}.{file_extension}"
         )
 
-        logger.info(f"Generated blob name: {blob_name}")
-
         # Get bucket and create blob
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
@@ -107,8 +103,6 @@ async def upload_image_to_gcs(
 
         # Get public URL
         public_url = blob.public_url
-
-        logger.info(f"Image uploaded successfully. Public URL: {public_url}")
 
         return public_url
 
@@ -139,19 +133,16 @@ def is_valid_image_file(file: UploadFile) -> bool:
             )
 
             if has_valid_extension:
-                logger.info(f"File has valid image extension: {file.filename}")
                 return True
 
         # Check 2: MIME type (if provided and reliable)
         if file.content_type and file.content_type.startswith("image/"):
-            logger.info(f"File has valid MIME type: {file.content_type}")
             return True
 
         # Check 3: Guess MIME type from filename
         if file.filename:
             guessed_type, _ = mimetypes.guess_type(file.filename)
             if guessed_type and guessed_type.startswith("image/"):
-                logger.info(f"Guessed valid MIME type: {guessed_type}")
                 return True
 
         # Log what we found for debugging
@@ -177,7 +168,6 @@ def validate_image_content(file_content: bytes) -> bool:
         image = Image.open(io.BytesIO(file_content))
         # Try to verify the image
         image.verify()
-        logger.info(f"Image content validation successful: {image.format} {image.size}")
         return True
     except Exception as e:
         logger.warning(f"Image content validation failed: {e}")
@@ -191,9 +181,7 @@ async def get_user_available_bins(user_id: str) -> List[str]:
         doc = doc_ref.get()
 
         if not doc.exists:
-            logger.info(
-                f"No bin preferences found for user {user_id}, returning all bins"
-            )
+
             return list(AVAILABLE_BINS.keys())
 
         doc_data = doc.to_dict()
@@ -305,7 +293,6 @@ async def save_disposal_tips(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Saving disposal tips for user: {user_id}")
 
         # Validate the uploaded file
         if not is_valid_image_file(file):
@@ -331,7 +318,7 @@ async def save_disposal_tips(
         # Upload image to Google Cloud Storage
         try:
             image_url = await upload_image_to_gcs(file, user_id)
-            logger.info(f"Image uploaded successfully: {image_url}")
+
         except HTTPException:
             raise
         except Exception as upload_error:
@@ -372,8 +359,6 @@ async def save_disposal_tips(
             disposal_collection = firestore_client.collection("disposal-history")
             doc_ref = disposal_collection.add(disposal_record)
 
-            logger.info(f"Disposal tips saved with ID: {doc_ref[1].id}")
-
             # Update user's profile with eco points and scan count
             try:
                 profiles_ref = firestore_client.collection("profiles")
@@ -396,10 +381,6 @@ async def save_disposal_tips(
                             "total_scans": new_total_scans,
                             "updated_at": current_time,
                         }
-                    )
-
-                    logger.info(
-                        f"Updated user {user_id}: eco_points={new_eco_points}, total_scans={new_total_scans}"
                     )
 
             except Exception as profile_error:
@@ -435,7 +416,6 @@ async def analyze_waste_item(scan_data: ScanRequest, request: Request):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Analyzing waste item for user: {user_id}")
 
         # Step 1: Get waste classification from existing detection service
         detection_data = {"type": "detect", "image": scan_data.image}
@@ -464,13 +444,8 @@ async def analyze_waste_item(scan_data: ScanRequest, request: Request):
         waste_class = best_detection.get("class", "unknown")
         confidence = best_detection.get("confidence", 0.0)
 
-        logger.info(
-            f"Detected waste class: {waste_class} with confidence: {confidence}"
-        )
-
         # Step 2: Get user's available bins
         user_bins = await get_user_available_bins(user_id)
-        logger.info(f"User {user_id} has access to bins: {user_bins}")
 
         # Step 3: Get disposal tips from Gemini
         disposal_info = await get_disposal_tips_from_gemini(waste_class, user_bins)
@@ -522,12 +497,6 @@ async def analyze_waste_from_upload(request: Request, file: UploadFile = File(..
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Analyzing uploaded waste image for user: {user_id}")
-
-        # Log file details for debugging
-        logger.info(
-            f"Received file: {file.filename}, size: {file.size}, type: {file.content_type}"
-        )
 
         # Enhanced file validation
         if not is_valid_image_file(file):
@@ -540,7 +509,6 @@ async def analyze_waste_from_upload(request: Request, file: UploadFile = File(..
         # Read file content
         try:
             image_data = await file.read()
-            logger.info(f"Successfully read file content: {len(image_data)} bytes")
         except Exception as e:
             logger.error(f"Error reading file content: {e}")
             raise HTTPException(status_code=400, detail="Failed to read uploaded file")
@@ -558,12 +526,9 @@ async def analyze_waste_from_upload(request: Request, file: UploadFile = File(..
 
             # Convert to RGB if necessary
             if image.mode != "RGB":
-                logger.info(f"Converting image from {image.mode} to RGB")
+
                 image = image.convert("RGB")
 
-            logger.info(
-                f"Image processed successfully: {image.size}, mode: {image.mode}"
-            )
         except Exception as e:
             logger.error(f"Error processing image: {e}")
             raise HTTPException(status_code=400, detail="Failed to process image file")
@@ -573,7 +538,7 @@ async def analyze_waste_from_upload(request: Request, file: UploadFile = File(..
             buffer = io.BytesIO()
             image.save(buffer, format="JPEG", quality=85)
             base64_image = base64.b64encode(buffer.getvalue()).decode()
-            logger.info(f"Image converted to base64: {len(base64_image)} characters")
+
         except Exception as e:
             logger.error(f"Error converting image to base64: {e}")
             raise HTTPException(
@@ -584,7 +549,6 @@ async def analyze_waste_from_upload(request: Request, file: UploadFile = File(..
         scan_data = ScanRequest(image=base64_image)
         result = await analyze_waste_item(scan_data, request)
 
-        logger.info(f"Analysis completed successfully for user: {user_id}")
         return result
 
     except HTTPException:
@@ -604,7 +568,6 @@ async def get_disposal_history(request: Request, limit: int = 20):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Getting disposal history for user: {user_id}")
 
         # Query disposal history for the user
         disposal_collection = firestore_client.collection("disposal-history")

@@ -20,8 +20,6 @@ async def create_or_get_account(account_data: AuthRequest):
         existing_profiles = list(query.stream())
         current_time = datetime.now(timezone.utc)
 
-        logger.info(existing_profiles)
-
         if existing_profiles:
             profile_doc = existing_profiles[0]
             profile_data = profile_doc.to_dict()
@@ -50,7 +48,6 @@ async def create_or_get_account(account_data: AuthRequest):
                     detail=f"Error creating new profile in Firestore: {str(e)}",
                 )
             profile_data = new_profile_data.copy()
-            logger.info(f"Created new user: {account_data.google_id}")
 
         return AuthResponse(**profile_data)
 

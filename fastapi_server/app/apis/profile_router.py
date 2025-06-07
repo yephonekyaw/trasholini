@@ -68,8 +68,6 @@ async def upload_profile_image_to_gcs(
         if not bucket_name:
             bucket_name = settings.GCS_BUCKET_NAME
 
-        logger.info(f"Uploading profile image to GCS bucket: {bucket_name}")
-
         # Read file content
         file_content = await file.read()
         await file.seek(0)
@@ -88,8 +86,6 @@ async def upload_profile_image_to_gcs(
         unique_id = str(uuid.uuid4())[:8]
         blob_name = f"profile-images/{user_id}/{timestamp}_{unique_id}.{file_extension}"
 
-        logger.info(f"Generated blob name: {blob_name}")
-
         # Get bucket and create blob
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(blob_name)
@@ -107,7 +103,6 @@ async def upload_profile_image_to_gcs(
         # Get public URL
         public_url = blob.public_url
 
-        logger.info(f"Profile image uploaded successfully. Public URL: {public_url}")
         return public_url
 
     except Exception as e:
@@ -128,14 +123,12 @@ async def update_user_profile(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Updating profile for user: {user_id}")
 
         update_data = {}
         new_photo_url = None
 
         # Handle profile image upload
         if profile_image and profile_image.filename:
-            logger.info(f"Processing profile image upload: {profile_image.filename}")
 
             # Validate image file
             if not is_valid_image_file(profile_image):
@@ -151,7 +144,7 @@ async def update_user_profile(
                     profile_image, user_id
                 )
                 update_data["photo_url"] = new_photo_url
-                logger.info(f"Profile image uploaded successfully: {new_photo_url}")
+
             except HTTPException:
                 raise
             except Exception as upload_error:
@@ -163,7 +156,6 @@ async def update_user_profile(
         # Handle display name update
         if display_name and display_name.strip():
             update_data["display_name"] = display_name.strip()
-            logger.info(f"Updating display name to: {display_name.strip()}")
 
         # Check if there's anything to update
         if not update_data:
@@ -192,8 +184,6 @@ async def update_user_profile(
 
             # Get updated profile data
             updated_profile = profile_doc.reference.get().to_dict()
-
-            logger.info(f"Profile updated successfully for user: {user_id}")
 
             return ProfileUpdateResponse(
                 success=True,
@@ -225,7 +215,6 @@ async def get_user_profile(request: Request):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Getting profile for user: {user_id}")
 
         # Find user profile in Firestore
         profiles_ref = firestore_client.collection("profiles")
@@ -239,8 +228,6 @@ async def get_user_profile(request: Request):
             raise HTTPException(status_code=404, detail="User profile not found")
 
         profile_data = existing_profiles[0].to_dict()
-
-        logger.info(f"Profile retrieved successfully for user: {user_id}")
 
         return {"success": True, "user_profile": profile_data}
 

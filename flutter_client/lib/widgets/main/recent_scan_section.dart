@@ -381,7 +381,9 @@ class _RecentScansSectionState extends ConsumerState<RecentScansSection>
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      _formatTimeAgo(DateTime.parse(scan.savedAt)),
+                      _formatTimeAgo(
+                        DateTime.parse('${scan.savedAt}Z').toLocal(),
+                      ),
                       style: TextStyle(
                         fontSize: 12,
                         color: Colors.grey.shade600,

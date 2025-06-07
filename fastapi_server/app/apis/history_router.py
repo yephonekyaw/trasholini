@@ -73,9 +73,6 @@ async def get_disposal_history(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(
-            f"Getting disposal history for user: {user_id}, waste_class: {waste_class}"
-        )
 
         # Start building the query
         disposal_collection = firestore_client.collection("disposal-history")
@@ -88,7 +85,6 @@ async def get_disposal_history(
             query = query.where(
                 filter=FieldFilter("waste_class", "==", waste_class.lower())
             )
-            logger.info(f"Filtering by waste_class: {waste_class}")
 
         # Order by saved_at descending and apply limit
         query = query.order_by("saved_at", direction="DESCENDING").limit(limit)
@@ -149,10 +145,6 @@ async def get_disposal_history(
         filter_msg = f" for waste class '{waste_class}'" if waste_class else ""
         message = f"Retrieved {len(history)} disposal records{filter_msg}"
 
-        logger.info(
-            f"Successfully retrieved {len(history)} disposal records for user {user_id}"
-        )
-
         return DisposalHistoryResponse(
             success=True, history=history, count=len(history), message=message
         )
@@ -186,7 +178,6 @@ async def delete_disposal_item(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Attempting to delete disposal item {item_id} for user: {user_id}")
 
         # Get reference to the document
         disposal_collection = firestore_client.collection("disposal-history")
@@ -227,11 +218,6 @@ async def delete_disposal_item(
 
         # Delete the document
         doc_ref.delete()
-
-        logger.info(
-            f"Successfully deleted disposal item {item_id} "
-            f"(waste_class: {waste_class}) for user {user_id}"
-        )
 
         return DeleteResponse(
             success=True,
@@ -277,11 +263,6 @@ async def get_disposal_history_by_date_range(
     """
     try:
         user_id = get_user_id(request)
-        logger.info(
-            f"Getting disposal history for user: {user_id}, "
-            f"date range: {start_date} to {end_date}, "
-            f"waste_class: {waste_class}"
-        )
 
         # Validate and parse dates
         try:
@@ -299,8 +280,6 @@ async def get_disposal_history_by_date_range(
             # Convert back to ISO strings for Firestore comparison
             start_iso = start_dt.isoformat()
             end_iso = end_dt.isoformat()
-
-            logger.info(f"Parsed date range: {start_iso} to {end_iso}")
 
         except ValueError as date_error:
             logger.error(f"Invalid date format: {date_error}")
@@ -325,7 +304,6 @@ async def get_disposal_history_by_date_range(
             query = query.where(
                 filter=FieldFilter("waste_class", "==", waste_class.lower())
             )
-            logger.info(f"Filtering by waste_class: {waste_class}")
 
         # Order by saved_at descending and apply limit
         query = query.order_by("saved_at", direction="DESCENDING").limit(limit)
@@ -391,11 +369,6 @@ async def get_disposal_history_by_date_range(
         date_msg = f" between {start_date_str} and {end_date_str}"
         message = f"Retrieved {len(history)} disposal records{date_msg}{filter_msg}"
 
-        logger.info(
-            f"Successfully retrieved {len(history)} disposal records for user {user_id} "
-            f"in date range {start_date_str} to {end_date_str}"
-        )
-
         return DisposalHistoryResponse(
             success=True, history=history, count=len(history), message=message
         )
@@ -419,7 +392,6 @@ async def get_user_waste_classes(request: Request):
     """
     try:
         user_id = get_user_id(request)
-        logger.info(f"Getting waste classes for user: {user_id}")
 
         # Query all disposal records for the user
         disposal_collection = firestore_client.collection("disposal-history")
@@ -441,10 +413,6 @@ async def get_user_waste_classes(request: Request):
                 continue
 
         waste_classes_list = sorted(list(waste_classes))
-
-        logger.info(
-            f"Found {len(waste_classes_list)} unique waste classes for user {user_id}"
-        )
 
         return {
             "success": True,
