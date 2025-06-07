@@ -6,7 +6,7 @@ import 'package:flutter_client/widgets/trash_bin/trash_bin_card.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../providers/trash_bin/trash_bin_provider.dart';
 import '../../widgets/trash_bin/trash_bin_header.dart';
-import 'trash_bin_details.dart'; // Import the details page
+import 'trash_bin_details.dart';
 
 class TrashBinPage extends ConsumerWidget {
   const TrashBinPage({super.key});
@@ -89,6 +89,7 @@ class TrashBinPage extends ConsumerWidget {
                       onSavePressed: () async {
                         try {
                           await trashBinNotifier.saveBinsToBackend();
+                          await trashBinNotifier.refreshBins();
                           _showSuccessMessage(context);
                         } catch (e) {
                           // Handle error case

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Request, Query
+from fastapi import APIRouter, HTTPException, Request, Query, Path
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, validator
 from app.utils.extract_user_id import get_user_id
@@ -35,6 +35,12 @@ class DisposalHistoryResponse(BaseModel):
     history: List[DisposalHistoryItem]
     count: int
     message: str
+
+
+class DeleteResponse(BaseModel):
+    success: bool
+    message: str
+    deleted_item_id: str
 
 
 class DateRangeRequest(BaseModel):
@@ -157,6 +163,88 @@ async def get_disposal_history(
         logger.error(f"Error getting disposal history: {str(e)}", exc_info=True)
         raise HTTPException(
             status_code=500, detail=f"Failed to retrieve disposal history: {str(e)}"
+        )
+
+
+@history_router.delete("/history/{item_id}", response_model=DeleteResponse)
+async def delete_disposal_item(
+    request: Request,
+    item_id: str = Path(..., description="The ID of the disposal item to delete"),
+):
+    """
+    Delete a specific disposal history item by ID
+
+    The item can only be deleted by the user who created it (security check)
+
+    Parameters:
+    - item_id: The document ID of the disposal history item to delete
+
+    Returns:
+    - success: Boolean indicating if deletion was successful
+    - message: Descriptive message about the operation
+    - deleted_item_id: The ID of the deleted item
+    """
+    try:
+        user_id = get_user_id(request)
+        logger.info(f"Attempting to delete disposal item {item_id} for user: {user_id}")
+
+        # Get reference to the document
+        disposal_collection = firestore_client.collection("disposal-history")
+        doc_ref = disposal_collection.document(item_id)
+
+        # Check if document exists and get its data
+        doc = doc_ref.get()
+
+        if not doc.exists:
+            logger.warning(f"Disposal item {item_id} not found")
+            raise HTTPException(
+                status_code=404, detail=f"Disposal item with ID '{item_id}' not found"
+            )
+
+        # Get document data for security check
+        doc_data = doc.to_dict()
+
+        if doc_data is None:
+            logger.error(f"Document {item_id} exists but has no data")
+            raise HTTPException(
+                status_code=500, detail="Document exists but has no data"
+            )
+
+        # Security check: Ensure the item belongs to the authenticated user
+        doc_user_id = doc_data.get("user_id")
+
+        if doc_user_id != user_id:
+            logger.warning(
+                f"User {user_id} attempted to delete item {item_id} "
+                f"belonging to user {doc_user_id}"
+            )
+            raise HTTPException(
+                status_code=403, detail="You can only delete your own disposal items"
+            )
+
+        # Get waste_class for logging purposes
+        waste_class = doc_data.get("waste_class", "unknown")
+
+        # Delete the document
+        doc_ref.delete()
+
+        logger.info(
+            f"Successfully deleted disposal item {item_id} "
+            f"(waste_class: {waste_class}) for user {user_id}"
+        )
+
+        return DeleteResponse(
+            success=True,
+            message=f"Disposal item '{waste_class}' deleted successfully",
+            deleted_item_id=item_id,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error deleting disposal item {item_id}: {str(e)}", exc_info=True)
+        raise HTTPException(
+            status_code=500, detail=f"Failed to delete disposal item: {str(e)}"
         )
 
 

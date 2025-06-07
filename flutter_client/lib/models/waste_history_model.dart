@@ -160,3 +160,36 @@ class WasteClassesResponse {
     };
   }
 }
+
+class DeleteResponse {
+  final bool success;
+  final String message;
+  final String deletedItemId;
+
+  const DeleteResponse({
+    required this.success,
+    required this.message,
+    required this.deletedItemId,
+  });
+
+  factory DeleteResponse.fromJson(Map<String, dynamic> json) {
+    return DeleteResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      deletedItemId: json['deleted_item_id'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'success': success,
+      'message': message,
+      'deleted_item_id': deletedItemId,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'DeleteResponse(success: $success, message: $message, deletedItemId: $deletedItemId)';
+  }
+}

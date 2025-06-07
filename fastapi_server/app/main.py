@@ -110,25 +110,6 @@ def create_application() -> FastAPI:
 app = create_application()
 
 
-@app.get("/")
-async def root():
-    return {"message": "Greeting from the Trasholini FastAPI Server, ready to serve 🚀"}
-
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": time.time(),
-        "services": {
-            "api": "running",
-            "websocket": "running",
-            "waste_detection": "ready",
-        },
-    }
-
-
 if __name__ == "__main__":
     import uvicorn
 

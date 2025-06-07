@@ -42,6 +42,7 @@ class WasteHistoryState {
   final int totalCount;
   final String? currentFilter;
   final DateRangeFilter? dateRangeFilter;
+  final bool isDeleting;
 
   const WasteHistoryState({
     this.items = const [],
@@ -51,6 +52,7 @@ class WasteHistoryState {
     this.totalCount = 0,
     this.currentFilter,
     this.dateRangeFilter,
+    this.isDeleting = false,
   });
 
   WasteHistoryState copyWith({
@@ -62,6 +64,7 @@ class WasteHistoryState {
     String? currentFilter,
     DateRangeFilter? dateRangeFilter,
     bool clearDateRange = false,
+    bool? isDeleting,
   }) {
     return WasteHistoryState(
       items: items ?? this.items,
@@ -72,6 +75,7 @@ class WasteHistoryState {
       currentFilter: currentFilter ?? this.currentFilter,
       dateRangeFilter:
           clearDateRange ? null : (dateRangeFilter ?? this.dateRangeFilter),
+      isDeleting: isDeleting ?? this.isDeleting,
     );
   }
 }
@@ -80,22 +84,26 @@ class RecentScansState {
   final List<DisposalHistoryItem> items;
   final bool isLoading;
   final String? error;
+  final bool isDeleting;
 
   const RecentScansState({
     this.items = const [],
     this.isLoading = false,
     this.error,
+    this.isDeleting = false,
   });
 
   RecentScansState copyWith({
     List<DisposalHistoryItem>? items,
     bool? isLoading,
     String? error,
+    bool? isDeleting,
   }) {
     return RecentScansState(
       items: items ?? this.items,
       isLoading: isLoading ?? this.isLoading,
       error: error,
+      isDeleting: isDeleting ?? this.isDeleting,
     );
   }
 }
@@ -163,6 +171,41 @@ class RecentScansNotifier extends StateNotifier<RecentScansState> {
       debugPrint('RecentScansNotifier: Error loading recent scans: $e');
 
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// Delete an item from recent scans
+  Future<bool> deleteItem(String itemId) async {
+    if (state.isDeleting) return false;
+
+    state = state.copyWith(isDeleting: true, error: null);
+
+    try {
+      debugPrint('RecentScansNotifier: Deleting item: $itemId');
+
+      final deleteResponse = await _service.deleteDisposalItem(itemId: itemId);
+
+      if (deleteResponse.success) {
+        // Remove the item from current list
+        final updatedItems =
+            state.items.where((item) => item.id != itemId).toList();
+
+        state = state.copyWith(
+          items: updatedItems,
+          isDeleting: false,
+          error: null,
+        );
+
+        debugPrint('RecentScansNotifier: Successfully deleted item: $itemId');
+        return true;
+      } else {
+        throw Exception('Delete failed: ${deleteResponse.message}');
+      }
+    } catch (e) {
+      debugPrint('RecentScansNotifier: Error deleting item: $e');
+
+      state = state.copyWith(isDeleting: false, error: e.toString());
+      return false;
     }
   }
 
@@ -238,6 +281,43 @@ class WasteHistoryNotifier extends StateNotifier<WasteHistoryState> {
       debugPrint('WasteHistoryNotifier: Error loading history: $e');
 
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  /// Delete an item from waste history
+  Future<bool> deleteItem(String itemId) async {
+    if (state.isDeleting) return false;
+
+    state = state.copyWith(isDeleting: true, error: null);
+
+    try {
+      debugPrint('WasteHistoryNotifier: Deleting item: $itemId');
+
+      final deleteResponse = await _service.deleteDisposalItem(itemId: itemId);
+
+      if (deleteResponse.success) {
+        // Remove the item from current list
+        final updatedItems =
+            state.items.where((item) => item.id != itemId).toList();
+        final newTotalCount = state.totalCount > 0 ? state.totalCount - 1 : 0;
+
+        state = state.copyWith(
+          items: updatedItems,
+          isDeleting: false,
+          error: null,
+          totalCount: newTotalCount,
+        );
+
+        debugPrint('WasteHistoryNotifier: Successfully deleted item: $itemId');
+        return true;
+      } else {
+        throw Exception('Delete failed: ${deleteResponse.message}');
+      }
+    } catch (e) {
+      debugPrint('WasteHistoryNotifier: Error deleting item: $e');
+
+      state = state.copyWith(isDeleting: false, error: e.toString());
+      return false;
     }
   }
 
@@ -606,6 +686,14 @@ final isAnyHistoryLoadingProvider = Provider<bool>((ref) {
   return recentScansLoading || wasteHistoryLoading || wasteClassesLoading;
 });
 
+/// Check if any delete operation is in progress
+final isAnyDeletingProvider = Provider<bool>((ref) {
+  final recentScansDeleting = ref.watch(recentScansProvider).isDeleting;
+  final wasteHistoryDeleting = ref.watch(wasteHistoryProvider).isDeleting;
+
+  return recentScansDeleting || wasteHistoryDeleting;
+});
+
 /// Get recent scans error
 final recentScansErrorProvider = Provider<String?>((ref) {
   return ref.watch(recentScansProvider).error;
@@ -668,3 +756,26 @@ class DateRangeOption {
     required this.endDate,
   });
 }
+
+// Delete operation helpers
+/// Provider to check if a specific item is being deleted
+final isItemBeingDeletedProvider = Provider.family<bool, String>((ref, itemId) {
+  final wasteHistoryState = ref.watch(wasteHistoryProvider);
+  final recentScansState = ref.watch(recentScansProvider);
+
+  return (wasteHistoryState.isDeleting || recentScansState.isDeleting);
+});
+
+/// Provider to perform delete operation
+final deleteItemProvider = Provider((ref) {
+  return (String itemId) async {
+    final wasteHistoryNotifier = ref.read(wasteHistoryProvider.notifier);
+    final recentScansNotifier = ref.read(recentScansProvider.notifier);
+
+    // Try to delete from both providers (the one that doesn't have the item will ignore it)
+    final wasteHistoryResult = await wasteHistoryNotifier.deleteItem(itemId);
+    final recentScansResult = await recentScansNotifier.deleteItem(itemId);
+
+    return wasteHistoryResult || recentScansResult;
+  };
+});

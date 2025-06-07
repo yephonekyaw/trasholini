@@ -89,6 +89,72 @@ class WasteHistoryService {
     }
   }
 
+  /// Delete a disposal history item by ID
+  /// [itemId] - The ID of the disposal item to delete
+  /// Returns a DeleteResponse indicating success/failure
+  Future<DeleteResponse> deleteDisposalItem({required String itemId}) async {
+    try {
+      debugPrint('WasteHistoryService: Deleting disposal item');
+      debugPrint('  - Item ID: $itemId');
+
+      // Ensure DioClient is initialized
+      await _dioClient.initialize();
+
+      // Check if user is authenticated
+      final isAuthenticated = await _dioClient.isUserAuthenticated();
+      if (!isAuthenticated) {
+        throw UnauthorizedException(
+          'User not authenticated. Please login first.',
+        );
+      }
+
+      debugPrint(
+        'WasteHistoryService: Sending DELETE request to /disposal/history/$itemId',
+      );
+
+      // Make DELETE API call using DioClient
+      final response = await _dioClient.dio.delete('/disposal/history/$itemId');
+
+      debugPrint(
+        'WasteHistoryService: Received delete response with status: ${response.statusCode}',
+      );
+
+      if (response.statusCode == 200) {
+        final result = DeleteResponse.fromJson(response.data);
+
+        debugPrint('WasteHistoryService: Item deleted successfully');
+        debugPrint('  - Deleted item ID: ${result.deletedItemId}');
+        debugPrint('  - Message: ${result.message}');
+
+        return result;
+      } else {
+        throw ServerException(
+          'Unexpected response status: ${response.statusCode}',
+        );
+      }
+    } on DioException catch (e) {
+      debugPrint(
+        'WasteHistoryService: DioException during delete: ${e.message}',
+      );
+      debugPrint('  - Error type: ${e.type}');
+      debugPrint('  - Response data: ${e.response?.data}');
+      debugPrint('  - Status code: ${e.response?.statusCode}');
+
+      // Handle specific HTTP error codes
+      if (e.response?.statusCode == 404) {
+        throw NotFoundException('Disposal item not found');
+      } else if (e.response?.statusCode == 403) {
+        throw ForbiddenException('You can only delete your own disposal items');
+      }
+
+      // Re-throw the exception as it's already handled by DioClient
+      rethrow;
+    } catch (e) {
+      debugPrint('WasteHistoryService: Unexpected error during delete: $e');
+      throw ApiException('Failed to delete disposal item: ${e.toString()}');
+    }
+  }
+
   /// Get disposal history within a specific date range
   /// [startDate] - Start date (inclusive)
   /// [endDate] - End date (inclusive)

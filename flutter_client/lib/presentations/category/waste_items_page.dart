@@ -293,7 +293,59 @@ class _WasteItemsPageState extends ConsumerState<WasteItemsPage> {
                   ),
                 ),
               ),
-              // Overlay content
+              // Delete icon in top-right corner
+              Positioned(
+                top: 8,
+                right: 8,
+                child: Consumer(
+                  builder: (context, ref, child) {
+                    final isDeleting =
+                        ref.watch(wasteHistoryProvider).isDeleting;
+
+                    return GestureDetector(
+                      onTap:
+                          isDeleting
+                              ? null
+                              : () => _showDeleteConfirmation(context, item),
+                      child: Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color:
+                              isDeleting
+                                  ? Colors.grey.withValues(alpha: 0.9)
+                                  : Colors.red.withValues(alpha: 0.9),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 4,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child:
+                            isDeleting
+                                ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                                : const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              // Overlay content at bottom
               Positioned(
                 left: 8,
                 right: 8,
@@ -316,20 +368,6 @@ class _WasteItemsPageState extends ConsumerState<WasteItemsPage> {
                       Colors.green.withValues(alpha: 0.9),
                       Icons.verified,
                     ),
-                    // const SizedBox(height: 4),
-                    // // Disposal tips preview
-                    // _buildBadge(
-                    //   _truncateText(item.disposalTips, 50),
-                    //   Colors.orange.withValues(alpha: 0.9),
-                    //   Icons.tips_and_updates,
-                    // ),
-                    // const SizedBox(height: 4),
-                    // // Date badge
-                    // _buildBadge(
-                    //   _formatDate(item.savedAt),
-                    //   Colors.purple.withValues(alpha: 0.9),
-                    //   Icons.access_time,
-                    // ),
                   ],
                 ),
               ),
@@ -369,30 +407,271 @@ class _WasteItemsPageState extends ConsumerState<WasteItemsPage> {
     );
   }
 
-  // String _truncateText(String text, int maxLength) {
-  //   if (text.length <= maxLength) return text;
-  //   return '${text.substring(0, maxLength)}...';
-  // }
+  void _showDeleteConfirmation(BuildContext context, DisposalHistoryItem item) {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing during delete operation
+      builder: (BuildContext context) {
+        return Consumer(
+          builder: (context, ref, child) {
+            final isDeleting = ref.watch(wasteHistoryProvider).isDeleting;
 
-  // String _formatDate(String savedAt) {
-  //   try {
-  //     final date = DateTime.parse(savedAt);
-  //     final now = DateTime.now();
-  //     final difference = now.difference(date);
+            return AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    color: Colors.orange[600],
+                    size: 28,
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Delete Item',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1B5E20),
+                    ),
+                  ),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Are you sure you want to delete this ${item.wasteClass} item from your history?',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF5F5F5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(6),
+                          child: Image.network(
+                            item.imageUrl,
+                            width: 50,
+                            height: 50,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Container(
+                                width: 50,
+                                height: 50,
+                                color: const Color(0xFFE8F5E8),
+                                child: const Icon(
+                                  Icons.image_not_supported,
+                                  size: 20,
+                                  color: Color(0xFF4CAF50),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item.wasteClass.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1B5E20),
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                '${(item.confidence * 100).toStringAsFixed(1)}% confidence',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'This action cannot be undone.',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.red[600],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed:
+                      isDeleting
+                          ? null
+                          : () {
+                            Navigator.of(context).pop();
+                          },
+                  style: TextButton.styleFrom(
+                    foregroundColor:
+                        isDeleting ? Colors.grey[400] : Colors.grey[600],
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: const Text(
+                    'Cancel',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed:
+                      isDeleting
+                          ? null
+                          : () {
+                            Navigator.of(context).pop();
+                            _deleteItem(item);
+                          },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        isDeleting ? Colors.grey[400] : Colors.red[600],
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 12,
+                    ),
+                  ),
+                  child:
+                      isDeleting
+                          ? Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                'Deleting...',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          )
+                          : const Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
 
-  //     if (difference.inDays == 0) {
-  //       return DateFormat('HH:mm').format(date);
-  //     } else if (difference.inDays == 1) {
-  //       return 'Yesterday';
-  //     } else if (difference.inDays < 7) {
-  //       return '${difference.inDays}d ago';
-  //     } else {
-  //       return DateFormat('MMM dd').format(date);
-  //     }
-  //   } catch (e) {
-  //     return 'Unknown';
-  //   }
-  // }
+  void _deleteItem(DisposalHistoryItem item) async {
+    try {
+      // Use the provider to delete the item
+      final success = await ref
+          .read(wasteHistoryProvider.notifier)
+          .deleteItem(item.id);
+
+      if (success && mounted) {
+        // Show success message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Item "${item.wasteClass}" deleted successfully'),
+            backgroundColor: Colors.green[600],
+            duration: const Duration(seconds: 3),
+            action: SnackBarAction(
+              label: 'Dismiss',
+              textColor: Colors.white,
+              onPressed: () {
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              },
+            ),
+          ),
+        );
+      } else if (mounted) {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to delete item "${item.wasteClass}"'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () {
+                _deleteItem(item); // Retry deletion
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        // Handle different types of errors
+        String errorMessage = 'Error deleting item';
+
+        if (e.toString().contains('NotFoundException')) {
+          errorMessage = 'Item not found';
+        } else if (e.toString().contains('ForbiddenException')) {
+          errorMessage = 'You can only delete your own items';
+        } else if (e.toString().contains('UnauthorizedException')) {
+          errorMessage = 'Please login to delete items';
+        } else {
+          errorMessage = 'Failed to delete item: ${e.toString()}';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 4),
+            action: SnackBarAction(
+              label: 'Retry',
+              textColor: Colors.white,
+              onPressed: () {
+                _deleteItem(item); // Retry deletion
+              },
+            ),
+          ),
+        );
+      }
+    }
+  }
 
   void _showItemDetails(BuildContext context, DisposalHistoryItem item) {
     showModalBottomSheet(
