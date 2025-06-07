@@ -112,7 +112,7 @@ app = create_application()
 
 @app.get("/")
 async def root():
-    return {"message": "Welcome to the FastAPI application!"}
+    return {"message": "Greeting from the Trasholini FastAPI Server, ready to serve 🚀"}
 
 
 @app.get("/health")
