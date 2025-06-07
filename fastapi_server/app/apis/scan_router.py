@@ -235,9 +235,9 @@ Please provide:
 Please respond in JSON format with the following structure:
 {{
     "recommended_bin_id": "bin_id_here",
-    "disposal_tips": "detailed disposal instructions here",
-    "preparation_steps": "any preparation needed before disposal",
-    "environmental_note": "brief environmental impact or benefit note"
+    "disposal_tips": "detailed disposal instructions here (no more than 200 characters in only one paragraph)",
+    "preparation_steps": "any preparation needed before disposal (no more than 200 characters in only one paragraph)",
+    "environmental_note": "brief environmental impact or benefit note (no more than 200 characters in only one paragraph)"
 }}
 
 Be concise but informative. Focus on practical, actionable advice.
