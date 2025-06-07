@@ -6,11 +6,11 @@ class TrashBinHeader extends StatelessWidget {
   final VoidCallback onSavePressed;
 
   const TrashBinHeader({
-    Key? key,
+    super.key,
     required this.allSelected,
     required this.onSelectAllTap,
     required this.onSavePressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

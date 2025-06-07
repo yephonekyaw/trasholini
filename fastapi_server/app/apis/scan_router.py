@@ -7,7 +7,7 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, Form, HTTPException, Request, UploadFile, File
 from pydantic import BaseModel
 from google import genai
-from google.cloud import storage
+from app.utils.storage import storage_client
 from PIL import Image
 
 from app.utils.extract_user_id import get_user_id
@@ -21,11 +21,6 @@ scan_router = APIRouter()
 
 # Configure Gemini API
 client = genai.Client(api_key=settings.GEMINI_API_KEY)
-
-# Configure Google Cloud Storage
-storage_client = storage.Client.from_service_account_json(
-    settings.GOOGLE_STORAGE_CREDENTIALS
-)
 
 
 class ScanRequest(BaseModel):
@@ -379,7 +374,7 @@ async def save_disposal_tips(
 
             logger.info(f"Disposal tips saved with ID: {doc_ref[1].id}")
 
-            # Update user's profile with eco points and scan count (optional)
+            # Update user's profile with eco points and scan count
             try:
                 profiles_ref = firestore_client.collection("profiles")
                 user_query = profiles_ref.where(

@@ -3,7 +3,7 @@ import 'package:flutter_client/router/router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class CustomBottomNavigation extends ConsumerWidget {
-  const CustomBottomNavigation({Key? key}) : super(key: key);
+  const CustomBottomNavigation({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -32,7 +32,10 @@ class _ProfileAccountActionsSectionState
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [Colors.white, Colors.green.shade50.withOpacity(0.3)],
+                colors: [
+                  Colors.white,
+                  Colors.green.shade50.withValues(alpha: 0.3),
+                ],
               ),
             ),
             child: Column(
@@ -58,7 +61,7 @@ class _ProfileAccountActionsSectionState
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
+                          color: Colors.white.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
@@ -85,7 +88,7 @@ class _ProfileAccountActionsSectionState
                               'Confirm your action',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.white.withOpacity(0.9),
+                                color: Colors.white.withValues(alpha: 0.9),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -186,7 +189,9 @@ class _ProfileAccountActionsSectionState
                                   vertical: 12,
                                 ),
                                 elevation: 2,
-                                shadowColor: Colors.green.withOpacity(0.3),
+                                shadowColor: Colors.green.withValues(
+                                  alpha: 0.3,
+                                ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

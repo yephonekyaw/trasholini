@@ -5,12 +5,12 @@ from app.utils.extract_user_id import get_user_id
 from app.utils.firestore import firestore_client
 from app.core.config import settings
 from app.core.logging import logger
-from google.cloud import storage
 from google.cloud.firestore import FieldFilter
 from datetime import datetime, timezone
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import traceback
+from app.utils.storage import storage_client
 
 
 danger_router = APIRouter()
@@ -42,16 +42,6 @@ class UserDeletionSummary(BaseModel):
     total_files_deleted: int
     total_documents_deleted: int
     errors_encountered: List[str]
-
-
-# Initialize Google Cloud Storage client
-try:
-    storage_client = storage.Client.from_service_account_json(
-        settings.GOOGLE_STORAGE_CREDENTIALS
-    )
-except Exception as e:
-    logger.error(f"Failed to initialize Google Cloud Storage client: {e}")
-    storage_client = None
 
 
 @danger_router.delete("/user/delete-all-data", response_model=UserDeletionResponse)

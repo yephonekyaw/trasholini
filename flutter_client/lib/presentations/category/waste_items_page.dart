@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 class WasteItemsPage extends ConsumerStatefulWidget {
   final String wasteClass;
 
-  const WasteItemsPage({Key? key, required this.wasteClass}) : super(key: key);
+  const WasteItemsPage({super.key, required this.wasteClass});
 
   @override
   ConsumerState<WasteItemsPage> createState() => _WasteItemsPageState();

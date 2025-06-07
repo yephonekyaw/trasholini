@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from app.apis.routes import (
+from app.apis import (
     auth_router,
     test_router,
     bin_router,

@@ -9,14 +9,14 @@ class TrashBinDetailPage extends StatelessWidget {
   final List<WasteItem> wasteItems;
 
   const TrashBinDetailPage({
-    Key? key,
+    super.key,
     required this.binName,
     required this.binColor,
     required this.backgroundColor,
     required this.wasteDescription,
     required this.binIconAsset,
     required this.wasteItems,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -4,8 +4,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import app.core.errors as _
-from app.apis.routes import api_router
-from app.apis.routes.websocket_router import websocket_router
+from app.apis import api_router
+from app.apis.websocket_router import websocket_router
 from app.core.config import settings
 from app.core.logging import logger
 from app.middlewares.user_id_middleware import UserIDMiddleware

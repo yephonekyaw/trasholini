@@ -14,11 +14,11 @@ class LiveDetectionCameraOverlay extends StatefulWidget {
   final Function(String imagePath)? onImageCaptured;
 
   const LiveDetectionCameraOverlay({
-    Key? key,
+    super.key,
     required this.cameraController,
     required this.ref,
     this.onImageCaptured,
-  }) : super(key: key);
+  });
 
   @override
   State<LiveDetectionCameraOverlay> createState() =>
@@ -120,9 +120,9 @@ class _LiveDetectionCameraOverlayState extends State<LiveDetectionCameraOverlay>
   Future<void> _capturePhoto() async {
     if (_isCapturing ||
         _isDisposed ||
-        !widget.cameraController.value.isInitialized)
+        !widget.cameraController.value.isInitialized) {
       return;
-
+    }
     setState(() {
       _isCapturing = true;
     });

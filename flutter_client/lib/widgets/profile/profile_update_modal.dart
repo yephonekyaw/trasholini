@@ -8,8 +8,7 @@ import 'package:flutter_client/providers/user_profile_provider.dart';
 class ProfileUpdateModal extends ConsumerStatefulWidget {
   final UserProfile userProfile;
 
-  const ProfileUpdateModal({Key? key, required this.userProfile})
-    : super(key: key);
+  const ProfileUpdateModal({super.key, required this.userProfile});
 
   @override
   ConsumerState<ProfileUpdateModal> createState() => _ProfileUpdateModalState();
