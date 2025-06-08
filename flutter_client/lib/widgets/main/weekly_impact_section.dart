@@ -21,14 +21,13 @@ class _WeeklyImpactSectionState extends ConsumerState<WeeklyImpactSection> {
   }
 
   Future<void> _loadWeeklyData() async {
-    try {
-      await ref.read(wasteHistoryProvider.notifier).loadHistoryThisWeek();
-    } catch (e) {
-      // Error handling is managed by the provider
-      debugPrint('WeeklyImpactSection: Error loading weekly data: $e');
-    }
+  try {
+    // Load ALL history instead of filtered "This Week"
+    await ref.read(wasteHistoryProvider.notifier).loadHistory(); // Remove the "ThisWeek" filter
+  } catch (e) {
+    debugPrint('WeeklyImpactSection: Error loading weekly data: $e');
   }
-
+}
   @override
   Widget build(BuildContext context) {
     final weeklyHistoryState = ref.watch(wasteHistoryProvider);
@@ -431,28 +430,56 @@ class _WeeklyImpactSectionState extends ConsumerState<WeeklyImpactSection> {
   }
 
   Map<String, dynamic> _getWeeklyImpactData(WasteHistoryState historyState) {
-    // Check if we're currently loading this week's data or if there's an error
-    final isLoadingWeekData =
-        historyState.isLoading &&
-        historyState.dateRangeFilter?.label == 'This Week';
+  print("🔥 _getWeeklyImpactData called!");
+  print("🔥 Total items available: ${historyState.items.length}");
+  
+  final isLoadingWeekData = historyState.isLoading;
 
-    // If we have data and it's for this week, use it; otherwise use default values
-    int scanCount = 0;
+  int scanCount = 0;
+  int weeklyPoints = 0;
 
-    if (historyState.dateRangeFilter?.label == 'This Week' &&
-        !historyState.isLoading &&
-        historyState.error == null) {
-      // We have this week's data
-      scanCount = historyState.items.length;
-    }
-
-    // Calculate points: each scan = 10 points
-    final points = (scanCount * 10).toString();
-
-    return {
-      'scanCount': scanCount,
-      'points': points,
-      'isLoading': isLoadingWeekData,
-    };
+  if (!historyState.isLoading && historyState.error == null) {
+    // Filter ALL items to find this week's items (ignore provider's filter)
+    final thisWeekItems = historyState.items.where((item) {
+      try {
+        final dateTime = DateTime.parse(item.savedAt);
+        final isThisWeek = _isFromThisWeek(dateTime);
+        print("🔥 Item date: ${item.savedAt}, isThisWeek: $isThisWeek");
+        return isThisWeek;
+      } catch (e) {
+        print("🔥 Error parsing date: ${item.savedAt}, error: $e");
+        return false;
+      }
+    }).toList();
+    
+    scanCount = thisWeekItems.length;
+    weeklyPoints = thisWeekItems.length * 10;
+    
+    print("🔥 This week items found: ${thisWeekItems.length}");
+    print("🔥 Weekly points calculated: $weeklyPoints");
   }
+
+  return {
+    'scanCount': scanCount,
+    'points': weeklyPoints.toString(),
+    'isLoading': isLoadingWeekData,
+  };
+}
+// Your timezone-aware week check method
+bool _isFromThisWeek(DateTime itemDate) {
+  final now = DateTime.now();
+  final itemLocal = itemDate.toLocal();
+  
+  // Include items from the last 7 days
+  final sevenDaysAgo = now.subtract(Duration(days: 7));
+  
+  print("🗓️ Now: $now");
+  print("🗓️ Item date: $itemLocal");
+  print("🗓️ Seven days ago: $sevenDaysAgo");
+  
+  final isInLastWeek = itemLocal.isAfter(sevenDaysAgo);
+  print("🗓️ Is in last 7 days: $isInLastWeek");
+  
+  return isInLastWeek;
+}
 }
