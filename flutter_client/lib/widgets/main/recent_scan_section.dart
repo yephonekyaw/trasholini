@@ -296,32 +296,7 @@ class _RecentScansSectionState extends ConsumerState<RecentScansSection>
       child: Column(
         children: [
           ...recentScans.take(5).map((scan) => _buildScanItem(scan)),
-
-          if (recentScans.length > 5)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: TextButton(
-                onPressed: () => context.go('/disposal-history'),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.grey.shade600,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'View ${recentScans.length - 5} more scans',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    const Icon(Icons.arrow_forward_ios, size: 14),
-                  ],
-                ),
-              ),
-            ),
+          // Removed the "View more" button that was causing the navigation error
         ],
       ),
     );
