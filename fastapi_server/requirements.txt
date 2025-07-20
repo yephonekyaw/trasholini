@@ -46,7 +46,7 @@ numpy==2.2.6
 opencv-python==4.10.0.84
 packaging==25.0
 passlib==1.7.4
-pillow==11.2.1
+pillow==11.3.0
 propcache==0.3.1
 proto-plus==1.26.1
 protobuf==6.31.1
